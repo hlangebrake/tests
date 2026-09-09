@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>iPad Motion Meter – 1-m Sensor Test</title>
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#0b0d10; --panel:#14181d; --panel2:#1b2027; --text:#f1f5f9;
+  --muted:#99a4b2; --line:#2b333d; --ok:#5ad68a; --warn:#ffd166; --bad:#ff6b6b;
+  --accent:#78a9ff; --accent2:#b891ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
+body{min-height:100vh;padding:env(safe-area-inset-top) max(14px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(14px,env(safe-area-inset-left))}
+header{padding:18px 0 10px;position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 80%,transparent)}
+h1{font-size:24px;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:17px;margin:0 0 12px}
+p{line-height:1.45}
+.sub{color:var(--muted);font-size:13px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;max-width:1200px;margin:auto}
+.card{grid-column:span 12;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 30px #0004}
+@media(min-width:760px){.half{grid-column:span 6}.third{grid-column:span 4}.twoThird{grid-column:span 8}}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,.button{
+  appearance:none;border:1px solid #3a4655;background:var(--panel2);color:var(--text);
+  padding:12px 14px;border-radius:12px;font-size:15px;font-weight:650;min-height:44px;touch-action:manipulation
+}
+button.primary{background:#2b61bd;border-color:#4b7bd0}
+button.good{background:#1d673d;border-color:#37805a}
+button.warn{background:#755d15;border-color:#927820}
+button.danger{background:#6c2626;border-color:#8d3939}
+button:disabled{opacity:.45}
+input,select{
+  background:#0e1217;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 11px;font-size:16px;min-width:0
+}
+label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;background:#555;box-shadow:0 0 0 3px #ffffff0a}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:520px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:#0f1318;border:1px solid var(--line);border-radius:12px;padding:10px}
+.kpi .v{font-variant-numeric:tabular-nums;font-size:22px;font-weight:730;letter-spacing:-.03em}
+.kpi .l{font-size:11px;color:var(--muted);margin-top:3px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:12px}
+td,th{border-bottom:1px solid var(--line);padding:7px 5px;text-align:right}
+th:first-child,td:first-child{text-align:left;color:var(--muted)}
+.badge{display:inline-flex;padding:3px 7px;border-radius:999px;border:1px solid var(--line);font-size:11px}
+.badge.ok{color:var(--ok)} .badge.warn{color:var(--warn)} .badge.bad{color:var(--bad)}
+canvas{width:100%;height:210px;display:block;background:#0c1015;border:1px solid var(--line);border-radius:12px}
+.note{font-size:12px;color:var(--muted);background:#0e1217;border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+.testBox{padding:12px;border-radius:12px;background:#0d1217;border:1px solid var(--line)}
+.testResult{font-size:14px;line-height:1.5}
+.bigResult{font-size:32px;font-weight:780;letter-spacing:-.04em}
+.progress{height:8px;border-radius:99px;background:#0d1116;overflow:hidden;border:1px solid var(--line)}
+.progress>i{display:block;height:100%;width:0;background:var(--accent)}
+pre{white-space:pre-wrap;word-break:break-word;font-size:11px;color:#c8d1dc;margin:0;max-height:180px;overflow:auto}
+details summary{cursor:pointer;color:#cbd5e1;font-weight:650}
+.toggle{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.toggle input{width:19px;height:19px}
+video{width:100%;max-height:230px;background:#000;border-radius:12px;object-fit:cover}
+.small{font-size:11px;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+  <div style="max-width:1200px;margin:auto">
+    <h1>iPad Motion Meter</h1>
+    <p class="sub">Single‑File Diagnose für DeviceMotion / DeviceOrientation · Drift, Kalibrierung und Referenzstrecken-Test</p>
+  </div>
+</header>
+
+<main class="grid">
+  <section class="card">
+    <h2>1 · Start & Systemcheck</h2>
+    <div class="row">
+      <button id="startBtn" class="primary">Sensoren freigeben & starten</button>
+      <button id="calBtn" class="good" disabled>3 s kalibrieren</button>
+      <button id="resetBtn" disabled>Position zurücksetzen</button>
+      <button id="wakeBtn">Display wach halten</button>
+    </div>
+    <div style="height:10px"></div>
+    <div class="row">
+      <span class="status"><i id="motionDot" class="dot"></i><span id="motionStatus">DeviceMotion: nicht gestartet</span></span>
+      <span class="status"><i id="orientDot" class="dot"></i><span id="orientStatus">Orientation: nicht gestartet</span></span>
+      <span class="status"><i id="secureDot" class="dot"></i><span id="secureStatus"></span></span>
+    </div>
+    <div style="height:10px"></div>
+    <div id="apiBadges" class="row"></div>
+    <p class="note" style="margin-bottom:0"><b>Wichtig:</b> Für iPad/Safari die Seite über <b>HTTPS</b> öffnen. Während der Kalibrierung das iPad 3 Sekunden völlig ruhig halten. Eine Web-App erhält auf iPadOS keine ARKit-Positionspose; diese Datei misst deshalb bewusst, wie stark reine Web-Sensorintegration driftet.</p>
+  </section>
+
+  <section class="card half">
+    <h2>2 · Live-Messwerte</h2>
+    <div class="kpis">
+      <div class="kpi"><div id="hz" class="v">0.0</div><div class="l">Samples/s</div></div>
+      <div class="kpi"><div id="accMag" class="v">0.000</div><div class="l">|a| m/s²</div></div>
+      <div class="kpi"><div id="gyroMag" class="v">0.00</div><div class="l">|ω| °/s</div></div>
+      <div class="kpi"><div id="stationary" class="v">—</div><div class="l">Stillstand</div></div>
+    </div>
+    <table style="margin-top:10px">
+      <thead><tr><th></th><th>X</th><th>Y</th><th>Z</th><th>Betrag</th></tr></thead>
+      <tbody>
+        <tr><td>Beschl. Gerät</td><td id="adx">—</td><td id="ady">—</td><td id="adz">—</td><td id="adm">—</td></tr>
+        <tr><td>Beschl. Welt</td><td id="awx">—</td><td id="awy">—</td><td id="awz">—</td><td id="awm">—</td></tr>
+        <tr><td>Gefiltert</td><td id="afx">—</td><td id="afy">—</td><td id="afz">—</td><td id="afm">—</td></tr>
+        <tr><td>Orientierung °</td><td id="oa">—</td><td id="ob">—</td><td id="og">—</td><td id="oabs">—</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card half">
+    <h2>3 · Positionsschätzung</h2>
+    <div class="kpis">
+      <div class="kpi"><div id="rawDist" class="v">0.000</div><div class="l">Roh-Δ r [m]</div></div>
+      <div class="kpi"><div id="stableDist" class="v">0.000</div><div class="l">Stabil-Δ r [m]</div></div>
+      <div class="kpi"><div id="rawVel" class="v">0.000</div><div class="l">Roh |v| [m/s]</div></div>
+      <div class="kpi"><div id="stableVel" class="v">0.000</div><div class="l">Stabil |v| [m/s]</div></div>
+    </div>
+    <table style="margin-top:10px">
+      <thead><tr><th></th><th>X</th><th>Y</th><th>Z</th></tr></thead>
+      <tbody>
+        <tr><td>Rohposition [m]</td><td id="rpx">0</td><td id="rpy">0</td><td id="rpz">0</td></tr>
+        <tr><td>Stabil [m]</td><td id="spx">0</td><td id="spy">0</td><td id="spz">0</td></tr>
+        <tr><td>Bias [m/s²]</td><td id="bix">0</td><td id="biy">0</td><td id="biz">0</td></tr>
+      </tbody>
+    </table>
+    <p class="small">„Roh“ = Bias-korrigierte doppelte Integration. „Stabil“ = zusätzlich Tiefpass, Deadband, Dämpfung und Zero‑Velocity‑Update (ZUPT). Beide sind <b>keine</b> absolute Positionsmessung.</p>
+  </section>
+
+  <section class="card twoThird">
+    <h2>4 · 1‑Meter / Referenzstrecken-Test</h2>
+    <div class="testBox">
+      <div class="row">
+        <label>Reale Referenzstrecke [m]
+          <input id="referenceMeters" type="number" value="1.000" min="0.05" max="50" step="0.001" style="width:150px">
+        </label>
+        <label>Auswertung
+          <select id="metricMode">
+            <option value="3d">3D-Verschiebungsbetrag</option>
+            <option value="horizontal">Horizontal X/Z</option>
+            <option value="dominant">Dominante Achse</option>
+          </select>
+        </label>
+      </div>
+      <div style="height:10px"></div>
+      <div class="row">
+        <button id="testStart" class="good" disabled>Test starten</button>
+        <button id="testStop" class="warn" disabled>Stopp & auswerten</button>
+      </div>
+      <div id="testState" class="note" style="margin-top:10px">Noch kein Test aktiv.</div>
+      <div id="testResults" class="testResult" style="margin-top:12px"></div>
+    </div>
+    <p class="small">Ablauf: iPad ruhig halten → „Test starten“ → entlang einer exakt gemessenen Strecke bewegen → am Ziel wieder ruhig halten → „Stopp & auswerten“. Für faire Ergebnisse das iPad möglichst nicht drehen.</p>
+  </section>
+
+  <section class="card third">
+    <h2>Filter & ZUPT</h2>
+    <div class="row">
+      <label>Deadband [m/s²]<input id="deadband" type="number" value="0.060" min="0" max="2" step="0.005" style="width:120px"></label>
+      <label>Stillstand a [m/s²]<input id="stillAcc" type="number" value="0.110" min="0.01" max="2" step="0.01" style="width:120px"></label>
+      <label>Stillstand ω [°/s]<input id="stillGyro" type="number" value="3.5" min="0.1" max="50" step="0.1" style="width:120px"></label>
+      <label>Dämpfung [1/s]<input id="damping" type="number" value="0.10" min="0" max="5" step="0.02" style="width:120px"></label>
+      <label>Tiefpass τ [ms]<input id="smoothTau" type="number" value="70" min="0" max="1000" step="10" style="width:120px"></label>
+    </div>
+    <hr>
+    <div id="calibrationInfo" class="small">Keine Kalibrierung durchgeführt.</div>
+  </section>
+
+  <section class="card half">
+    <h2>Beschleunigung / Geschwindigkeit</h2>
+    <canvas id="graph"></canvas>
+    <div class="small">Letzte ~12 s. Linien: |a gefiltert|, |v stabil|, Test-Verschiebung.</div>
+  </section>
+
+  <section class="card half">
+    <h2>Pfadprojektion X/Z</h2>
+    <canvas id="path"></canvas>
+    <div class="small">Automatisch skaliert. Nur sinnvoll, wenn die Orientierungsdaten plausibel sind und das iPad während des Tests wenig gedreht wird.</div>
+  </section>
+
+  <section class="card half">
+    <h2>Optionale Kamera-Bewegungsdiagnose</h2>
+    <div class="row">
+      <button id="cameraBtn">Rückkamera starten</button>
+      <span class="status"><i id="camDot" class="dot"></i><span id="camStatus">aus</span></span>
+    </div>
+    <div style="height:8px"></div>
+    <video id="video" playsinline muted></video>
+    <canvas id="camCanvas" width="64" height="48" style="display:none"></canvas>
+    <div class="kpis" style="margin-top:8px">
+      <div class="kpi"><div id="visualMotion" class="v">0.0</div><div class="l">Frame-Differenz [%]</div></div>
+      <div class="kpi"><div id="camFps" class="v">0.0</div><div class="l">Analyse-FPS</div></div>
+    </div>
+    <p class="small">Das ist <b>keine metrische Visual Odometry</b>. Der Wert zeigt nur, ob sich das Kamerabild verändert und hilft zu erkennen, ob „Stillstand“ der IMU mit visueller Ruhe übereinstimmt.</p>
+  </section>
+
+  <section class="card half">
+    <h2>Logging / Diagnose</h2>
+    <div class="row">
+      <button id="csvBtn" disabled>CSV exportieren</button>
+      <button id="jsonBtn" disabled>JSON exportieren</button>
+      <button id="clearLogBtn" disabled>Log leeren</button>
+    </div>
+    <p class="small"><span id="logCount">0</span> Samples im Speicher (Limit 30.000). Enthält Zeit, Roh-/Welt-/Filterbeschleunigung, Gyro, Orientierung, Positionen und Geschwindigkeiten.</p>
+    <details>
+      <summary>API-Details / Ereignislog</summary>
+      <pre id="debug"></pre>
+    </details>
+  </section>
+</main>
+
+<footer>
+  Diese Datei ist ein Diagnosewerkzeug, kein Ersatz für ARKit. DeviceMotion liefert Beschleunigung in m/s² und Rotationsrate; daraus entsteht Position erst durch doppelte Integration, wodurch Bias und Rauschen stark anwachsen. Für echte 6‑DoF-Position in Metern auf dem iPad ist eine native ARKit/VIO-Schicht die robuste Lösung.
+</footer>
+
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const fmt = (v,n=3) => Number.isFinite(v) ? v.toFixed(n) : '—';
+  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+  const mag=v=>Math.hypot(v.x||0,v.y||0,v.z||0);
+  const sub=(a,b)=>({x:a.x-b.x,y:a.y-b.y,z:a.z-b.z});
+  const copy=v=>({x:v.x,y:v.y,z:v.z});
+  const zero=()=>({x:0,y:0,z:0});
+  const now=()=>performance.now()/1000;
+  const rad=d=>d*Math.PI/180;
+
+  const S = {
+    running:false, calibrated:false, lastT:null, eventCount:0, hz:0, hzWindowStart:now(),
+    orientation:{alpha:0,beta:0,gamma:0,absolute:false,valid:false},
+    accDevice:zero(), accWorld:zero(), accFiltered:zero(), gyro:zero(),
+    bias:zero(), noise:zero(),
+    rawVel:zero(), rawPos:zero(), stableVel:zero(), stablePos:zero(),
+    originRaw:zero(), originStable:zero(), filtered:zero(),
+    stillSince:null, isStationary:false,
+    test:null, graph:[], path:[], logs:[],
+    wakeLock:null, stream:null, prevCam:null, lastCamT:0, camFrames:0, camFpsStart:now()
+  };
+
+  function debug(msg){
+    const t=new Date().toLocaleTimeString();
+    $('debug').textContent = `[${t}] ${msg}\n` + $('debug').textContent.slice(0,7000);
+  }
+
+  function badge(name, ok, extra=''){
+    const s=document.createElement('span');
+    s.className='badge '+(ok?'ok':'bad');
+    s.textContent=name+(extra?` ${extra}`:'');
+    $('apiBadges').appendChild(s);
+  }
+
+  async function systemCheck(){
+    $('secureStatus').textContent = window.isSecureContext ? 'Sicherer Kontext (HTTPS)' : 'NICHT sicherer Kontext';
+    $('secureDot').className='dot '+(window.isSecureContext?'ok':'bad');
+
+    const checks = [
+      ['DeviceMotion', 'DeviceMotionEvent' in window],
+      ['DeviceOrientation', 'DeviceOrientationEvent' in window],
+      ['Generic Accelerometer', 'Accelerometer' in window],
+      ['Generic Gyroscope', 'Gyroscope' in window],
+      ['AbsoluteOrientationSensor', 'AbsoluteOrientationSensor' in window],
+      ['MediaDevices', !!navigator.mediaDevices?.getUserMedia],
+      ['WakeLock', !!navigator.wakeLock],
+      ['WebXR', !!navigator.xr],
+      ['Geolocation', !!navigator.geolocation]
+    ];
+    checks.forEach(x=>badge(x[0],x[1]));
+
+    if(navigator.xr){
+      try{
+        const ar = await navigator.xr.isSessionSupported('immersive-ar');
+        badge('immersive-ar',ar);
+        debug('WebXR immersive-ar: '+ar);
+      }catch(e){ debug('WebXR-Test: '+e.message); }
+    }
+    debug(`UA: ${navigator.userAgent}`);
+    debug(`secureContext=${window.isSecureContext}, crossOriginIsolated=${window.crossOriginIsolated}`);
+  }
+
+  // W3C DeviceOrientation: intrinsic Z(alpha) -> X(beta) -> Y(gamma).
+  // Matrix R = Rz(alpha) * Rx(beta) * Ry(gamma), applied device -> earth-like frame.
+  function rotateDeviceToWorld(v, o=S.orientation){
+    if(!o.valid) return copy(v);
+    const a=rad(o.alpha||0), b=rad(o.beta||0), g=rad(o.gamma||0);
+    const ca=Math.cos(a), sa=Math.sin(a), cb=Math.cos(b), sb=Math.sin(b), cg=Math.cos(g), sg=Math.sin(g);
+    const r11=ca*cg-sa*sb*sg, r12=-sa*cb, r13=ca*sg+sa*sb*cg;
+    const r21=sa*cg+ca*sb*sg, r22= ca*cb, r23=sa*sg-ca*sb*cg;
+    const r31=-cb*sg,             r32= sb,    r33=cb*cg;
+    return {
+      x:r11*v.x+r12*v.y+r13*v.z,
+      y:r21*v.x+r22*v.y+r23*v.z,
+      z:r31*v.x+r32*v.y+r33*v.z
+    };
+  }
+
+  function setDot(id,state){
+    $(id).className='dot '+state;
+  }
+
+  async function startSensors(){
+    try{
+      // iOS requires requestPermission() from the same user activation.
+      const req=[];
+      if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function')
+        req.push(DeviceMotionEvent.requestPermission().then(x=>['motion',x]));
+      if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function')
+        req.push(DeviceOrientationEvent.requestPermission().then(x=>['orientation',x]));
+      const results=await Promise.all(req);
+      for(const [kind,res] of results){
+        debug(`${kind} permission: ${res}`);
+        if(res!=='granted') throw new Error(`${kind}-Berechtigung: ${res}`);
+      }
+
+      window.addEventListener('deviceorientation', onOrientation, true);
+      window.addEventListener('deviceorientationabsolute', onOrientationAbsolute, true);
+      window.addEventListener('devicemotion', onMotion, true);
+
+      S.running=true;
+      $('startBtn').disabled=true;
+      $('calBtn').disabled=false; $('resetBtn').disabled=false;
+      $('testStart').disabled=false; $('csvBtn').disabled=false; $('jsonBtn').disabled=false; $('clearLogBtn').disabled=false;
+      $('motionStatus').textContent='DeviceMotion: Listener aktiv';
+      $('orientStatus').textContent='Orientation: Listener aktiv';
+      setDot('motionDot','warn'); setDot('orientDot','warn');
+      debug('Sensor-Listener gestartet.');
+    }catch(e){
+      setDot('motionDot','bad');
+      $('motionStatus').textContent='Start fehlgeschlagen';
+      debug('Sensorstart FEHLER: '+e.message);
+      alert('Sensorzugriff fehlgeschlagen: '+e.message+'\n\nAuf dem iPad: Seite über HTTPS öffnen und Bewegung/Orientierung erlauben.');
+    }
+  }
+
+  function onOrientation(e){
+    if([e.alpha,e.beta,e.gamma].some(Number.isFinite)){
+      S.orientation={
+        alpha:Number.isFinite(e.alpha)?e.alpha:0,
+        beta:Number.isFinite(e.beta)?e.beta:0,
+        gamma:Number.isFinite(e.gamma)?e.gamma:0,
+        absolute:!!e.absolute, valid:true
+      };
+      setDot('orientDot','ok');
+      $('orientStatus').textContent='Orientation: Daten empfangen';
+    }
+  }
+  function onOrientationAbsolute(e){
+    if([e.alpha,e.beta,e.gamma].every(Number.isFinite)){
+      S.orientation={alpha:e.alpha,beta:e.beta,gamma:e.gamma,absolute:true,valid:true};
+    }
+  }
+
+  function sanitizeAcc(a){
+    return {
+      x:Number.isFinite(a?.x)?a.x:0,
+      y:Number.isFinite(a?.y)?a.y:0,
+      z:Number.isFinite(a?.z)?a.z:0
+    };
+  }
+
+  function onMotion(e){
+    const t=now();
+    let dt=S.lastT==null ? (Number(e.interval)||16.667)/1000 : t-S.lastT;
+    S.lastT=t;
+    dt=clamp(dt,0.001,0.08);
+
+    const ad=sanitizeAcc(e.acceleration);
+    const gg=e.accelerationIncludingGravity;
+    const haveUserAcc = e.acceleration && [e.acceleration.x,e.acceleration.y,e.acceleration.z].some(Number.isFinite);
+    if(!haveUserAcc && gg){
+      // Fallback only: low-pass gravity estimate in device frame.
+      const aig=sanitizeAcc(gg);
+      if(!S.gravityLP) S.gravityLP=copy(aig);
+      const k=1-Math.exp(-dt/0.7);
+      for(const q of ['x','y','z']) S.gravityLP[q]+=k*(aig[q]-S.gravityLP[q]);
+      for(const q of ['x','y','z']) ad[q]=aig[q]-S.gravityLP[q];
+    }
+
+    S.accDevice=ad;
+    S.accWorld=rotateDeviceToWorld(ad);
+    S.gyro={
+      x:Number.isFinite(e.rotationRate?.beta)?e.rotationRate.beta:0,
+      y:Number.isFinite(e.rotationRate?.gamma)?e.rotationRate.gamma:0,
+      z:Number.isFinite(e.rotationRate?.alpha)?e.rotationRate.alpha:0
+    };
+
+    integrate(dt,t);
+    updateRate(t);
+    pushLog(t,dt);
+    setDot('motionDot','ok');
+    $('motionStatus').textContent='DeviceMotion: Daten empfangen';
+  }
+
+  function integrate(dt,t){
+    const unbiased=sub(S.accWorld,S.bias);
+
+    // Raw double integration (trapezoid-like position using updated velocity).
+    for(const q of ['x','y','z']){
+      S.rawVel[q]+=unbiased[q]*dt;
+      S.rawPos[q]+=S.rawVel[q]*dt;
+    }
+
+    const tau=Math.max(0,Number($('smoothTau').value)||0)/1000;
+    const alpha=tau<=0?1:1-Math.exp(-dt/tau);
+    for(const q of ['x','y','z']) S.filtered[q]+=alpha*(unbiased[q]-S.filtered[q]);
+
+    const db=Math.max(0,Number($('deadband').value)||0);
+    let filt={};
+    for(const q of ['x','y','z']){
+      const x=S.filtered[q];
+      filt[q]=Math.abs(x)<=db ? 0 : Math.sign(x)*(Math.abs(x)-db);
+    }
+    S.accFiltered=filt;
+
+    const accStill=mag(unbiased) < (Number($('stillAcc').value)||0.11);
+    const gyroStill=mag(S.gyro) < (Number($('stillGyro').value)||3.5);
+    if(accStill && gyroStill){
+      if(S.stillSince==null) S.stillSince=t;
+      S.isStationary=(t-S.stillSince)>0.28;
+    }else{
+      S.stillSince=null; S.isStationary=false;
+    }
+
+    const damp=Math.max(0,Number($('damping').value)||0.1);
+    for(const q of ['x','y','z']){
+      S.stableVel[q]+=filt[q]*dt;
+      S.stableVel[q]*=Math.exp(-damp*dt);
+      S.stablePos[q]+=S.stableVel[q]*dt;
+    }
+
+    if(S.isStationary){
+      S.stableVel=zero();
+      // Very slow online bias correction while stationary.
+      const kb=1-Math.exp(-dt/12);
+      for(const q of ['x','y','z']) S.bias[q]+=kb*(S.accWorld[q]-S.bias[q]);
+    }
+
+    const relStable=sub(S.stablePos,S.originStable);
+    const relRaw=sub(S.rawPos,S.originRaw);
+    const testDisp=S.test?.active ? displacement(sub(S.stablePos,S.test.startStable), $('metricMode').value) : 0;
+
+    S.graph.push({t,a:mag(filt),v:mag(S.stableVel),d:testDisp});
+    if(S.graph.length>900) S.graph.splice(0,S.graph.length-900);
+    S.path.push({x:relStable.x,z:relStable.z});
+    if(S.path.length>2500) S.path.splice(0,S.path.length-2500);
+  }
+
+  function updateRate(t){
+    S.eventCount++;
+    const d=t-S.hzWindowStart;
+    if(d>=1){
+      S.hz=S.eventCount/d; S.eventCount=0; S.hzWindowStart=t;
+    }
+  }
+
+  function pushLog(t,dt){
+    if(S.logs.length>=30000) S.logs.shift();
+    S.logs.push({
+      t,dt,
+      adx:S.accDevice.x,ady:S.accDevice.y,adz:S.accDevice.z,
+      awx:S.accWorld.x,awy:S.accWorld.y,awz:S.accWorld.z,
+      afx:S.accFiltered.x,afy:S.accFiltered.y,afz:S.accFiltered.z,
+      gx:S.gyro.x,gy:S.gyro.y,gz:S.gyro.z,
+      alpha:S.orientation.alpha,beta:S.orientation.beta,gamma:S.orientation.gamma,
+      rpx:S.rawPos.x,rpy:S.rawPos.y,rpz:S.rawPos.z,
+      spx:S.stablePos.x,spy:S.stablePos.y,spz:S.stablePos.z,
+      rv:mag(S.rawVel),sv:mag(S.stableVel),stationary:S.isStationary?1:0
+    });
+  }
+
+  function resetPosition(){
+    S.rawVel=zero(); S.stableVel=zero();
+    S.rawPos=zero(); S.stablePos=zero();
+    S.originRaw=zero(); S.originStable=zero();
+    S.path=[]; S.graph=[];
+    S.test=null; $('testStop').disabled=true; $('testStart').disabled=false;
+    $('testState').textContent='Position und Teststatus zurückgesetzt.';
+    $('testResults').innerHTML='';
+    debug('Positionen/Velocities zurückgesetzt.');
+  }
+
+  async function calibrate(){
+    if(!S.running) return;
+    $('calBtn').disabled=true;
+    const samples=[];
+    const start=now();
+    const dur=3;
+    const box=$('calibrationInfo');
+
+    await new Promise(resolve=>{
+      function step(){
+        const elapsed=now()-start;
+        samples.push(copy(S.accWorld));
+        box.innerHTML=`Kalibrierung läuft… iPad <b>ruhig halten</b><br>${Math.min(100,elapsed/dur*100).toFixed(0)} % · ${samples.length} Samples`;
+        if(elapsed<dur) requestAnimationFrame(step); else resolve();
+      }
+      step();
+    });
+
+    const mean=zero(), sd=zero();
+    for(const s of samples) for(const q of ['x','y','z']) mean[q]+=s[q]/samples.length;
+    for(const s of samples) for(const q of ['x','y','z']) sd[q]+=(s[q]-mean[q])**2/samples.length;
+    for(const q of ['x','y','z']) sd[q]=Math.sqrt(sd[q]);
+    S.bias=mean; S.noise=sd; S.calibrated=true;
+    const rec=3*Math.max(sd.x,sd.y,sd.z);
+    const cur=Number($('deadband').value)||0;
+    if(rec>cur && rec<0.5) $('deadband').value=rec.toFixed(3);
+
+    resetPosition();
+    $('calBtn').disabled=false;
+    box.innerHTML=`Bias: [${fmt(mean.x,4)}, ${fmt(mean.y,4)}, ${fmt(mean.z,4)}] m/s²<br>`+
+      `Rauschen σ: [${fmt(sd.x,4)}, ${fmt(sd.y,4)}, ${fmt(sd.z,4)}] m/s²<br>`+
+      `3σ-Empfehlung Deadband: ${fmt(rec,3)} m/s²`;
+    debug(`Kalibriert: bias=${JSON.stringify(mean)} noise=${JSON.stringify(sd)}`);
+  }
+
+  function displacement(v, mode){
+    if(mode==='horizontal') return Math.hypot(v.x,v.z);
+    if(mode==='dominant') return Math.max(Math.abs(v.x),Math.abs(v.y),Math.abs(v.z));
+    return mag(v);
+  }
+
+  function startTest(){
+    const ref=Number($('referenceMeters').value);
+    if(!Number.isFinite(ref)||ref<=0){ alert('Bitte eine gültige Referenzstrecke eingeben.'); return; }
+    S.test={
+      active:true, ref, mode:$('metricMode').value, startT:now(),
+      startRaw:copy(S.rawPos), startStable:copy(S.stablePos),
+      maxStable:0
+    };
+    $('testStart').disabled=true; $('testStop').disabled=false;
+    $('testState').innerHTML=`Test aktiv. Referenz: <b>${ref.toFixed(3)} m</b>. Jetzt bewegen, am Ziel wieder ruhig halten.`;
+    $('testResults').innerHTML='';
+    debug(`Referenztest gestartet: ${ref} m, mode=${S.test.mode}`);
+  }
+
+  function stopTest(){
+    if(!S.test?.active)return;
+    const tr=S.test; tr.active=false; tr.endT=now();
+    const dr=sub(S.rawPos,tr.startRaw), ds=sub(S.stablePos,tr.startStable);
+    const raw=displacement(dr,tr.mode), stable=displacement(ds,tr.mode);
+    const er=raw-tr.ref, es=stable-tr.ref;
+    const erp=100*er/tr.ref, esp=100*es/tr.ref;
+    const grade = Math.abs(esp)<=5 ? 'ok' : Math.abs(esp)<=20 ? 'warn' : 'bad';
+    const gradeText = grade==='ok'?'≤ 5 % Fehler':grade==='warn'?'5–20 % Fehler':'> 20 % Fehler';
+
+    $('testState').innerHTML=`Test beendet nach ${(tr.endT-tr.startT).toFixed(2)} s.`;
+    $('testResults').innerHTML=`
+      <div class="bigResult">${stable.toFixed(3)} m</div>
+      <div><span class="badge ${grade}">${gradeText}</span></div>
+      <table style="margin-top:8px">
+        <tr><th></th><th>Gemessen</th><th>Fehler</th><th>relativ</th></tr>
+        <tr><td>Rohintegration</td><td>${raw.toFixed(3)} m</td><td>${er>=0?'+':''}${er.toFixed(3)} m</td><td>${erp>=0?'+':''}${erp.toFixed(1)} %</td></tr>
+        <tr><td>Stabilisiert</td><td>${stable.toFixed(3)} m</td><td>${es>=0?'+':''}${es.toFixed(3)} m</td><td>${esp>=0?'+':''}${esp.toFixed(1)} %</td></tr>
+      </table>
+      <div class="small">Stabil-Vektor: [${ds.x.toFixed(3)}, ${ds.y.toFixed(3)}, ${ds.z.toFixed(3)}] m · Roh: [${dr.x.toFixed(3)}, ${dr.y.toFixed(3)}, ${dr.z.toFixed(3)}] m</div>`;
+    $('testStart').disabled=false; $('testStop').disabled=true;
+    debug(`Test: ref=${tr.ref}, raw=${raw}, stable=${stable}, stableErrPct=${esp}`);
+  }
+
+  async function toggleWake(){
+    try{
+      if(S.wakeLock){ await S.wakeLock.release(); S.wakeLock=null; $('wakeBtn').textContent='Display wach halten'; return; }
+      if(!navigator.wakeLock) throw new Error('Wake Lock API nicht verfügbar');
+      S.wakeLock=await navigator.wakeLock.request('screen');
+      $('wakeBtn').textContent='Wake Lock aktiv';
+      S.wakeLock.addEventListener('release',()=>{$('wakeBtn').textContent='Display wach halten';S.wakeLock=null});
+    }catch(e){ debug('WakeLock: '+e.message); alert(e.message); }
+  }
+
+  async function toggleCamera(){
+    if(S.stream){
+      S.stream.getTracks().forEach(t=>t.stop()); S.stream=null;
+      $('video').srcObject=null; $('cameraBtn').textContent='Rückkamera starten';
+      $('camStatus').textContent='aus'; setDot('camDot','');
+      return;
+    }
+    try{
+      S.stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:{ideal:'environment'},width:{ideal:640},height:{ideal:480}}, audio:false
+      });
+      $('video').srcObject=S.stream; await $('video').play();
+      $('cameraBtn').textContent='Kamera stoppen'; $('camStatus').textContent='aktiv'; setDot('camDot','ok');
+      S.prevCam=null; S.lastCamT=0; requestAnimationFrame(cameraLoop);
+    }catch(e){ setDot('camDot','bad'); $('camStatus').textContent='Fehler'; debug('Kamera: '+e.message); }
+  }
+
+  function cameraLoop(ts){
+    if(!S.stream)return;
+    if(ts-S.lastCamT>120 && $('video').readyState>=2){
+      S.lastCamT=ts;
+      const c=$('camCanvas'), ctx=c.getContext('2d',{willReadFrequently:true});
+      ctx.drawImage($('video'),0,0,c.width,c.height);
+      const d=ctx.getImageData(0,0,c.width,c.height).data;
+      const cur=new Uint8Array(c.width*c.height);
+      let k=0;
+      for(let i=0;i<d.length;i+=4)cur[k++]=(d[i]*77+d[i+1]*150+d[i+2]*29)>>8;
+      if(S.prevCam){
+        let sum=0;
+        for(let i=0;i<cur.length;i++)sum+=Math.abs(cur[i]-S.prevCam[i]);
+        $('visualMotion').textContent=(100*sum/(cur.length*255)).toFixed(2);
+      }
+      S.prevCam=cur;
+      S.camFrames++;
+      const t=now(), dd=t-S.camFpsStart;
+      if(dd>1){$('camFps').textContent=(S.camFrames/dd).toFixed(1); S.camFrames=0; S.camFpsStart=t;}
+    }
+    requestAnimationFrame(cameraLoop);
+  }
+
+  function download(name,content,type){
+    const blob=new Blob([content],{type});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download=name; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+
+  function exportCSV(){
+    if(!S.logs.length)return;
+    const keys=Object.keys(S.logs[0]);
+    const rows=[keys.join(',')];
+    for(const r of S.logs) rows.push(keys.map(k=>Number.isFinite(r[k])?r[k]:'').join(','));
+    download(`ipad-motion-${new Date().toISOString().replace(/[:.]/g,'-')}.csv`,rows.join('\n'),'text/csv');
+  }
+  function exportJSON(){
+    const payload={
+      meta:{created:new Date().toISOString(),ua:navigator.userAgent,secureContext:isSecureContext,calibrated:S.calibrated,bias:S.bias,noise:S.noise,
+        settings:{deadband:$('deadband').value,stillAcc:$('stillAcc').value,stillGyro:$('stillGyro').value,damping:$('damping').value,smoothTau:$('smoothTau').value}},
+      samples:S.logs
+    };
+    download(`ipad-motion-${new Date().toISOString().replace(/[:.]/g,'-')}.json`,JSON.stringify(payload,null,2),'application/json');
+  }
+
+  function clearLog(){S.logs=[];debug('Messlog geleert.');}
+
+  function drawGraph(){
+    const c=$('graph'), dpr=devicePixelRatio||1, rect=c.getBoundingClientRect();
+    const w=Math.max(1,Math.floor(rect.width*dpr)), h=Math.max(1,Math.floor(rect.height*dpr));
+    if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+    const x=c.getContext('2d'); x.clearRect(0,0,w,h);
+    x.strokeStyle='#26303a';x.lineWidth=dpr;
+    for(let i=1;i<4;i++){x.beginPath();x.moveTo(0,h*i/4);x.lineTo(w,h*i/4);x.stroke()}
+    if(S.graph.length<2)return;
+    const tmax=S.graph[S.graph.length-1].t, tmin=tmax-12;
+    const arr=S.graph.filter(p=>p.t>=tmin);
+    const ymax=Math.max(0.2,...arr.flatMap(p=>[p.a,p.v,p.d]))*1.08;
+    function line(key,color){
+      x.strokeStyle=color;x.lineWidth=1.8*dpr;x.beginPath();
+      arr.forEach((p,i)=>{const px=(p.t-tmin)/12*w, py=h-clamp(p[key]/ymax,0,1)*h;(i?x.lineTo(px,py):x.moveTo(px,py))});x.stroke();
+    }
+    line('a','#78a9ff');line('v','#5ad68a');line('d','#ffd166');
+    x.fillStyle='#9ca8b7';x.font=`${11*dpr}px system-ui`;x.fillText(`Skala 0 … ${ymax.toFixed(2)}`,7*dpr,15*dpr);
+  }
+
+  function drawPath(){
+    const c=$('path'), dpr=devicePixelRatio||1, rect=c.getBoundingClientRect();
+    const w=Math.max(1,Math.floor(rect.width*dpr)), h=Math.max(1,Math.floor(rect.height*dpr));
+    if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+    const x=c.getContext('2d');x.clearRect(0,0,w,h);
+    const pts=S.path;
+    const maxAbs=Math.max(0.25,...pts.flatMap(p=>[Math.abs(p.x),Math.abs(p.z)]))*1.15;
+    const scale=Math.min(w,h)/(2*maxAbs), cx=w/2, cy=h/2;
+    x.strokeStyle='#26303a';x.lineWidth=dpr;x.beginPath();x.moveTo(cx,0);x.lineTo(cx,h);x.moveTo(0,cy);x.lineTo(w,cy);x.stroke();
+    if(pts.length>1){
+      x.strokeStyle='#b891ff';x.lineWidth=2*dpr;x.beginPath();
+      pts.forEach((p,i)=>{const px=cx+p.x*scale, py=cy-p.z*scale;(i?x.lineTo(px,py):x.moveTo(px,py))});x.stroke();
+      const p=pts[pts.length-1];x.fillStyle='#ffd166';x.beginPath();x.arc(cx+p.x*scale,cy-p.z*scale,4*dpr,0,Math.PI*2);x.fill();
+    }
+    x.fillStyle='#9ca8b7';x.font=`${11*dpr}px system-ui`;x.fillText(`±${maxAbs.toFixed(2)} m`,7*dpr,15*dpr);
+  }
+
+  function render(){
+    $('hz').textContent=S.hz.toFixed(1);
+    $('accMag').textContent=fmt(mag(S.accFiltered));
+    $('gyroMag').textContent=fmt(mag(S.gyro),2);
+    $('stationary').textContent=S.isStationary?'JA':'NEIN';
+    $('stationary').style.color=S.isStationary?'var(--ok)':'var(--text)';
+
+    const vals=[
+      ['adx',S.accDevice.x],['ady',S.accDevice.y],['adz',S.accDevice.z],['adm',mag(S.accDevice)],
+      ['awx',S.accWorld.x],['awy',S.accWorld.y],['awz',S.accWorld.z],['awm',mag(S.accWorld)],
+      ['afx',S.accFiltered.x],['afy',S.accFiltered.y],['afz',S.accFiltered.z],['afm',mag(S.accFiltered)],
+      ['oa',S.orientation.alpha],['ob',S.orientation.beta],['og',S.orientation.gamma],
+      ['rpx',S.rawPos.x],['rpy',S.rawPos.y],['rpz',S.rawPos.z],
+      ['spx',S.stablePos.x],['spy',S.stablePos.y],['spz',S.stablePos.z],
+      ['bix',S.bias.x],['biy',S.bias.y],['biz',S.bias.z]
+    ];
+    vals.forEach(([id,v])=>$(id).textContent=fmt(v));
+    $('oabs').textContent=S.orientation.absolute?'ABS':'rel.';
+    $('rawDist').textContent=fmt(mag(sub(S.rawPos,S.originRaw)));
+    $('stableDist').textContent=fmt(mag(sub(S.stablePos,S.originStable)));
+    $('rawVel').textContent=fmt(mag(S.rawVel));
+    $('stableVel').textContent=fmt(mag(S.stableVel));
+    $('logCount').textContent=S.logs.length.toLocaleString('de-DE');
+
+    drawGraph();drawPath();
+    requestAnimationFrame(render);
+  }
+
+  $('startBtn').addEventListener('click',startSensors);
+  $('calBtn').addEventListener('click',calibrate);
+  $('resetBtn').addEventListener('click',resetPosition);
+  $('testStart').addEventListener('click',startTest);
+  $('testStop').addEventListener('click',stopTest);
+  $('wakeBtn').addEventListener('click',toggleWake);
+  $('cameraBtn').addEventListener('click',toggleCamera);
+  $('csvBtn').addEventListener('click',exportCSV);
+  $('jsonBtn').addEventListener('click',exportJSON);
+  $('clearLogBtn').addEventListener('click',clearLog);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible' && S.wakeLock===null && $('wakeBtn').textContent==='Wake Lock aktiv') toggleWake();
+  });
+
+  systemCheck();
+  requestAnimationFrame(render);
+})();
+</script>
+</body>
+</html>
