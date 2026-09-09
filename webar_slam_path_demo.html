@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>WebAR Forest Path Demo</title>
+<title>WebAR Cozy Forest Path Demo</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@8thwall/coaching-overlay@1/dist/coaching-overlay.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
@@ -122,7 +122,7 @@ pre{
   <div class="top">
     <div>
       <h1>WebAR Waldlichtung · Path Test</h1>
-      <p class="sub">3D-Waldszene + Karte von oben · Tracking-Reset nur per Knopfdruck</p>
+      <p class="sub">Gemütliche Waldlichtung + Karte von oben · Reset nur per Knopfdruck</p>
     </div>
     <div class="actions">
       <span class="status"><i id="statusDot" class="dot"></i><span id="statusText">Engine lädt …</span></span>
@@ -290,6 +290,7 @@ pre{
     logLines:[],
     gl:null,
     glReady:false,
+    renderErrorLogged:false,
   };
 
   function log(msg){
@@ -767,12 +768,53 @@ pre{
     gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
   }
 
-  function drawTree(ctx,x,z,variant,t){
-    const sway = Math.sin(t*1.35 + x*0.32 + z*0.27)*0.06;
-    drawCube(ctx,{x,y:0.85,z,w:0.34,h:1.7,d:0.34,c:[0.44,0.28,0.16,1]});
-    drawCube(ctx,{x:x-0.18,y:1.85,z:z+0.02,w:1.35,h:0.95,d:1.35,ry:sway,c:variant===0?[0.35,0.68,0.40,1]:[0.30,0.60,0.36,1]});
-    drawCube(ctx,{x:x+0.38,y:2.15,z:z-0.12,w:1.00,h:0.75,d:1.00,ry:-sway*1.2,c:variant===0?[0.42,0.76,0.45,1]:[0.36,0.68,0.42,1]});
-    drawCube(ctx,{x:x-0.32,y:2.28,z:z-0.22,w:0.85,h:0.62,d:0.85,ry:sway*0.9,c:variant===0?[0.48,0.80,0.50,1]:[0.42,0.72,0.46,1]});
+
+  function drawOakTree(ctx,x,z,scale,t,variant=0){
+    const sway = Math.sin(t*0.9 + x*0.21 + z*0.17)*0.06;
+    const trunk = [0.50,0.34,0.20,1];
+    const leafA = variant===0?[0.28,0.55,0.30,1]:[0.34,0.60,0.34,1];
+    const leafB = variant===0?[0.34,0.64,0.37,1]:[0.40,0.70,0.40,1];
+    const leafC = variant===0?[0.44,0.74,0.44,1]:[0.50,0.78,0.48,1];
+
+    drawCube(ctx,{x,y:1.10*scale,z,w:0.34*scale,h:2.20*scale,d:0.34*scale,c:trunk});
+    drawCube(ctx,{x:x-0.25*scale,y:2.55*scale,z:z+0.10*scale,w:1.80*scale,h:1.15*scale,d:1.55*scale,ry:sway,c:leafA});
+    drawCube(ctx,{x:x+0.42*scale,y:2.80*scale,z:z-0.08*scale,w:1.35*scale,h:0.95*scale,d:1.20*scale,ry:-sway*1.1,c:leafB});
+    drawCube(ctx,{x:x-0.46*scale,y:3.05*scale,z:z-0.20*scale,w:1.08*scale,h:0.78*scale,d:1.05*scale,ry:sway*0.8,c:leafC});
+    drawCube(ctx,{x:x+0.05*scale,y:3.22*scale,z:z+0.28*scale,w:0.95*scale,h:0.62*scale,d:0.88*scale,ry:-sway*0.6,c:leafC});
+  }
+
+  function drawPineTree(ctx,x,z,scale,t,variant=0){
+    const sway = Math.sin(t*0.8 + x*0.19 + z*0.23)*0.04;
+    const trunk = [0.46,0.30,0.18,1];
+    const dark = variant===0?[0.22,0.46,0.26,1]:[0.26,0.50,0.30,1];
+    const mid  = variant===0?[0.30,0.58,0.34,1]:[0.34,0.62,0.36,1];
+    const lite = variant===0?[0.40,0.72,0.42,1]:[0.44,0.76,0.46,1];
+
+    drawCube(ctx,{x,y:1.05*scale,z,w:0.28*scale,h:2.10*scale,d:0.28*scale,c:trunk});
+    drawCube(ctx,{x,y:2.10*scale,z,w:1.55*scale,h:0.62*scale,d:1.55*scale,ry:sway,c:dark});
+    drawCube(ctx,{x,y:2.62*scale,z,z:z,w:1.18*scale,h:0.54*scale,d:1.18*scale,ry:-sway*1.1,c:mid});
+    drawCube(ctx,{x,y:3.04*scale,z,w:0.86*scale,h:0.46*scale,d:0.86*scale,ry:sway*0.7,c:lite});
+    drawCube(ctx,{x,y:3.38*scale,z,w:0.56*scale,h:0.34*scale,d:0.56*scale,ry:-sway*0.5,c:lite});
+  }
+
+  function drawShrub(ctx,x,z,scale,variant=0,t=0){
+    const sway = Math.sin(t*1.2 + x*0.41 + z*0.34)*0.05;
+    const c1 = variant===0?[0.24,0.50,0.28,1]:[0.32,0.56,0.32,1];
+    const c2 = variant===0?[0.30,0.60,0.34,1]:[0.38,0.66,0.38,1];
+    drawCube(ctx,{x,y:0.18*scale,z,w:0.70*scale,h:0.34*scale,d:0.62*scale,ry:sway,c:c1});
+    drawCube(ctx,{x:x+0.18*scale,y:0.28*scale,z:z-0.10*scale,w:0.48*scale,h:0.26*scale,d:0.44*scale,ry:-sway,c:c2});
+    drawCube(ctx,{x:x-0.22*scale,y:0.25*scale,z:z+0.08*scale,w:0.42*scale,h:0.22*scale,d:0.40*scale,ry:sway*0.8,c:c2});
+  }
+
+  function drawRock(ctx,x,z,scale,variant=0){
+    const c = variant===0?[0.54,0.58,0.64,1]:[0.62,0.64,0.68,1];
+    drawCube(ctx,{x,y:0.16*scale,z,w:0.58*scale,h:0.26*scale,d:0.42*scale,ry:0.25,c});
+    drawCube(ctx,{x:x+0.10*scale,y:0.27*scale,z:z-0.02*scale,w:0.30*scale,h:0.14*scale,d:0.22*scale,ry:-0.2,c:[c[0]+0.08,c[1]+0.08,c[2]+0.08,1]});
+  }
+
+  function drawMushroom(ctx,x,z,scale,cap){
+    drawCube(ctx,{x,y:0.12*scale,z,w:0.06*scale,h:0.20*scale,d:0.06*scale,c:[0.95,0.92,0.85,1]});
+    drawCube(ctx,{x,y:0.24*scale,z,w:0.22*scale,h:0.08*scale,d:0.22*scale,c:cap});
   }
 
   function drawFlowerCluster(ctx,x,z,c1,c2){
@@ -785,10 +827,16 @@ pre{
   }
 
   function drawLantern(ctx,x,z,t){
-    const glow = 0.85 + 0.15*Math.sin(t*3 + x + z);
-    drawCube(ctx,{x,y:0.55,z,w:0.08,h:1.10,d:0.08,c:[0.34,0.24,0.15,1]});
-    drawCube(ctx,{x,y:1.18,z,w:0.20,h:0.24,d:0.20,c:[0.99*glow,0.82*glow,0.45*glow,1]});
-    drawCube(ctx,{x,y:1.38,z,w:0.28,h:0.06,d:0.28,c:[0.42,0.28,0.18,1]});
+    const glow = 0.82 + 0.18*Math.sin(t*3 + x + z);
+    drawCube(ctx,{x,y:0.62,z,w:0.08,h:1.24,d:0.08,c:[0.35,0.24,0.14,1]});
+    drawCube(ctx,{x,y:1.34,z,w:0.24,h:0.28,d:0.24,c:[1.00*glow,0.84*glow,0.50*glow,1]});
+    drawCube(ctx,{x,y:1.56,z,w:0.34,h:0.06,d:0.34,c:[0.42,0.28,0.16,1]});
+  }
+
+  function drawLogBench(ctx,x,z,dir=0){
+    drawCube(ctx,{x,y:0.18,z,w:1.15,h:0.22,d:0.28,ry:dir,c:[0.50,0.34,0.18,1]});
+    drawCube(ctx,{x:x-0.44*Math.cos(dir),y:0.10,z:z-0.44*Math.sin(dir),w:0.10,h:0.20,d:0.10,c:[0.43,0.28,0.14,1]});
+    drawCube(ctx,{x:x+0.44*Math.cos(dir),y:0.10,z:z+0.44*Math.sin(dir),w:0.10,h:0.20,d:0.10,c:[0.43,0.28,0.14,1]});
   }
 
   function drawRabbit(ctx,x,z,t,dir=1){
@@ -809,12 +857,16 @@ pre{
   }
 
   function drawDeer(ctx,x,z,t,dir=1){
-    const bob = Math.sin(t*1.4 + x+z)*0.02;
-    drawCube(ctx,{x,y:0.52+bob,z,w:0.85,h:0.48,d:0.30,ry:dir*0.2,c:[0.73,0.56,0.38,1]});
-    drawCube(ctx,{x:x+0.48*dir,y:0.82+bob,z:w=0?0:0,w:0.22,h:0.52,d:0.22,ry:dir*0.2,c:[0.73,0.56,0.38,1]});
-    drawCube(ctx,{x:x+0.54*dir,y:1.11+bob,z,w:0.26,h:0.20,d:0.18,ry:dir*0.2,c:[0.78,0.61,0.42,1]});
-    drawCube(ctx,{x:x+0.62*dir,y:1.29+bob,z:z-0.07,w:0.05,h:0.18,d:0.05,c:[0.85,0.78,0.52,1]});
-    drawCube(ctx,{x:x+0.62*dir,y:1.29+bob,z:z+0.07,w:0.05,h:0.18,d:0.05,c:[0.85,0.78,0.52,1]});
+    const bob = Math.sin(t*1.4 + x + z)*0.02;
+    drawCube(ctx,{x,y:0.54+bob,z,w:0.88,h:0.48,d:0.30,ry:dir*0.20,c:[0.73,0.56,0.38,1]});
+    drawCube(ctx,{x:x-0.18*dir,y:0.16+bob,z:z-0.08,w:0.05,h:0.32,d:0.05,c:[0.57,0.40,0.24,1]});
+    drawCube(ctx,{x:x-0.18*dir,y:0.16+bob,z:z+0.08,w:0.05,h:0.32,d:0.05,c:[0.57,0.40,0.24,1]});
+    drawCube(ctx,{x:x+0.18*dir,y:0.16+bob,z:z-0.08,w:0.05,h:0.32,d:0.05,c:[0.57,0.40,0.24,1]});
+    drawCube(ctx,{x:x+0.18*dir,y:0.16+bob,z:z+0.08,w:0.05,h:0.32,d:0.05,c:[0.57,0.40,0.24,1]});
+    drawCube(ctx,{x:x+0.47*dir,y:0.86+bob,z,w:0.20,h:0.52,d:0.18,ry:dir*0.20,c:[0.74,0.57,0.39,1]});
+    drawCube(ctx,{x:x+0.57*dir,y:1.14+bob,z,w:0.26,h:0.20,d:0.18,ry:dir*0.20,c:[0.80,0.62,0.43,1]});
+    drawCube(ctx,{x:x+0.64*dir,y:1.32+bob,z:z-0.07,w:0.05,h:0.18,d:0.05,c:[0.86,0.79,0.53,1]});
+    drawCube(ctx,{x:x+0.64*dir,y:1.32+bob,z:z+0.07,w:0.05,h:0.18,d:0.05,c:[0.86,0.79,0.53,1]});
   }
 
   function drawButterfly(ctx,x,z,t){
@@ -840,43 +892,59 @@ pre{
   }
 
   function drawScene(ctx, t){
-    // sky / ground
-    drawCube(ctx,{x:0,y:-0.08,z:0,w:36,h:0.14,d:36,c:[0.18,0.31,0.22,1]});
+    // lush stylized meadow base
+    drawCube(ctx,{x:0,y:-0.10,z:0,w:38,h:0.18,d:38,c:[0.24,0.40,0.26,1]});
 
-    // central clearing patches
+    // warm dirt clearing
     const clearPatches = [
-      [0,0,6.6,0.03,6.4],[1.8,0.4,2.2,0.03,1.8],[-1.9,-1.1,1.9,0.03,1.7],
-      [2.4,-1.8,1.6,0.03,1.6],[-2.4,1.6,1.8,0.03,1.5]
+      [0.0,0.0,7.8,0.03,7.2],
+      [2.0,0.3,2.3,0.03,1.9],
+      [-2.0,-1.1,2.1,0.03,1.8],
+      [2.4,-1.8,1.9,0.03,1.6],
+      [-2.7,1.7,2.0,0.03,1.7],
+      [0.8,2.6,1.6,0.03,1.4]
     ];
     for(const p of clearPatches){
-      drawCube(ctx,{x:p[0],y:-0.045,z:p[1],w:p[2],h:p[3],d:p[4],c:[0.53,0.43,0.29,1]});
+      drawCube(ctx,{x:p[0],y:-0.045,z:p[1],w:p[2],h:p[3],d:p[4],c:[0.58,0.46,0.31,1]});
     }
 
-    // perimeter trees
-    const ring = [
-      [-11,-8,0],[-9,-11,1],[-5,-12,0],[0,-12,1],[5,-12,0],[9,-10,1],[12,-7,0],
-      [12,-1,1],[11,5,0],[10,10,1],[5,12,0],[-1,12,1],[-7,11,0],[-11,8,1],[-12,2,0],[-12,-4,1],
-      [-8,4,0],[-6,-7,1],[7,7,0],[-3,9,1],[8,-4,0]
+    // stylized forest ring: mix of oak and pine
+    const trees = [
+      [-12,-8,'oak',1.22,0],[-10,-11,'pine',1.16,1],[-6,-12,'oak',1.28,1],[-1,-12,'pine',1.22,0],
+      [4,-12,'oak',1.18,0],[9,-10,'pine',1.26,1],[12,-7,'oak',1.12,1],[12,-1,'pine',1.14,0],
+      [11,5,'oak',1.20,0],[10,10,'pine',1.18,1],[5,12,'oak',1.26,1],[-1,12,'pine',1.20,0],
+      [-7,11,'oak',1.16,0],[-11,8,'pine',1.24,1],[-12,2,'oak',1.10,1],[-12,-4,'pine',1.18,0],
+      [-8,4,'oak',1.10,0],[-6,-7,'pine',1.06,1],[7,7,'oak',1.18,1],[-3,9,'pine',1.10,0],[8,-4,'oak',1.14,0]
     ];
-    for(const tr of ring) drawTree(ctx,tr[0],tr[1],tr[2],t);
+    for(const tr of trees){
+      if(tr[2]==='oak') drawOakTree(ctx,tr[0],tr[1],tr[3],t,tr[4]);
+      else drawPineTree(ctx,tr[0],tr[1],tr[3],t,tr[4]);
+    }
 
-    // shrubs / flowers
-    const flowers = [
-      [-1.8,1.2],[2.8,0.8],[-2.6,-0.8],[1.5,-2.0],[0.6,2.5],[-4.2,2.0],[4.6,-1.2],[6.0,4.8]
-    ];
-    flowers.forEach((f,i)=>drawFlowerCluster(ctx,f[0],f[1], i%2?[0.98,0.56,0.80,1]:[0.90,0.90,0.40,1], [0.74,0.63,1.0,1]));
+    // foreground shrubs and rocks for a cozier first impression
+    const shrubs = [[-4.8,3.0,1],[-5.4,2.3,0],[5.7,3.8,1],[6.4,4.5,0],[4.2,-5.5,0],[-6.6,-5.0,1],[8.2,6.8,0],[-8.0,6.7,1]];
+    shrubs.forEach((q,i)=>drawShrub(ctx,q[0],q[1],1.0+(i%3)*0.18,q[2],t));
+    const rocks = [[-3.6,3.7,1],[-2.9,4.2,0],[3.6,-3.0,1],[2.6,-2.7,0],[6.9,-6.0,1],[-7.7,7.9,0],[-9.4,-7.1,1]];
+    rocks.forEach(r=>drawRock(ctx,r[0],r[1],1.0,r[2]));
 
-    // romantic center: blanket and lanterns
-    drawCube(ctx,{x:0.4,y:0.01,z:0.2,w:1.55,h:0.03,d:1.15,c:[0.76,0.35,0.45,1]});
-    drawCube(ctx,{x:0.4,y:0.04,z:0.2,w:1.10,h:0.02,d:0.80,c:[0.99,0.80,0.85,1]});
-    drawLantern(ctx,-1.0,0.8,t);
-    drawLantern(ctx,1.7,-0.2,t);
+    // flowers and mushrooms
+    const flowers = [[-1.8,1.2],[2.8,0.8],[-2.6,-0.8],[1.5,-2.0],[0.6,2.5],[-4.2,2.0],[4.6,-1.2],[6.0,4.8],[-6.9,5.3],[-8.8,7.4]];
+    flowers.forEach((f,i)=>drawFlowerCluster(ctx,f[0],f[1],i%2?[0.98,0.56,0.80,1]:[0.90,0.90,0.40,1],[0.74,0.63,1.0,1]));
+    [[-0.8,1.7],[0.0,1.9],[3.1,1.2],[-3.4,-2.2],[7.8,-5.3]].forEach((m,i)=>drawMushroom(ctx,m[0],m[1],1.0+(i%2)*0.1,i%2?[0.98,0.28,0.34,1]:[0.93,0.77,0.20,1]));
 
-    // pond secret
-    drawCube(ctx,{x:-7.8,y:-0.02,z:6.4,w:2.7,h:0.04,d:2.1,c:[0.20,0.56,0.80,1]});
-    drawCube(ctx,{x:-7.8,y:0.02,z:6.4,w:1.9,h:0.02,d:1.3,c:[0.46,0.84,0.96,1]});
-    drawFlowerCluster(ctx,-6.9,5.3,[0.88,0.92,1.0,1],[0.94,0.78,0.94,1]);
-    drawFlowerCluster(ctx,-8.8,7.4,[0.88,0.92,1.0,1],[0.94,0.78,0.94,1]);
+    // romantic center
+    drawCube(ctx,{x:0.4,y:0.01,z:0.2,w:1.65,h:0.03,d:1.20,c:[0.78,0.37,0.49,1]});
+    drawCube(ctx,{x:0.4,y:0.04,z:0.2,w:1.16,h:0.02,d:0.86,c:[0.99,0.83,0.88,1]});
+    drawLantern(ctx,-1.05,0.85,t);
+    drawLantern(ctx,1.75,-0.18,t);
+    drawLogBench(ctx,-1.8,-0.9,0.35);
+    drawLogBench(ctx,2.1,1.0,-0.55);
+
+    // hidden pond with heart stone
+    drawCube(ctx,{x:-7.8,y:-0.02,z:6.4,w:2.9,h:0.04,d:2.2,c:[0.20,0.56,0.80,1]});
+    drawCube(ctx,{x:-7.8,y:0.02,z:6.4,w:2.0,h:0.02,d:1.4,c:[0.50,0.86,0.98,1]});
+    const heartC = discovered('pond') ? [1.00,0.54,0.68,1] : [0.76,0.50,0.56,1];
+    drawCube(ctx,{x:-6.3,y:0.16,z:7.9,w:0.30,h:0.28,d:0.18,c:heartC});
 
     // animals
     drawRabbit(ctx,-2.1,1.9,t,1);
@@ -884,13 +952,15 @@ pre{
     drawDeer(ctx,4.9,-3.7,t,1);
     drawFox(ctx,8.8,7.6,t,-1);
 
-    // butterflies and fireflies
+    // ambient life
     drawButterfly(ctx,0.2,1.8,t);
     drawButterfly(ctx,-1.4,-0.4,t+0.9);
+    drawButterfly(ctx,1.8,2.7,t+1.6);
+
     for(let i=0;i<5;i++) drawFirefly(ctx,7.2,-5.7,t,i*1.7,[0.78,1.00,0.70]);
     for(let i=0;i<4;i++) drawFirefly(ctx,0.8,0.0,t+1.3+i,i*2.1,[1.00,0.84,0.50]);
 
-    // secrets emphasized when found / near
+    // secrets
     const fairyGlow = discovered('fairy') ? [0.44,0.98,0.78,1] : [0.28,0.60,0.48,1];
     drawCube(ctx,{x:7.2,y:0.04,z:-5.7,w:1.35,h:0.03,d:1.35,c:[0.40,0.45,0.24,1]});
     drawCube(ctx,{x:7.2,y:0.12,z:-5.7,w:0.35,h:0.08,d:0.35,c:fairyGlow});
@@ -898,13 +968,9 @@ pre{
     const chestOpen = discovered('chest') ? 1 : 0;
     drawChest(ctx,-8.7,-7.8,chestOpen);
 
-    // hidden heart stone near pond
-    const heartC = discovered('pond') ? [1.00,0.54,0.68,1] : [0.72,0.46,0.52,1];
-    drawCube(ctx,{x:-6.3,y:0.16,z:7.9,w:0.28,h:0.28,d:0.18,c:heartC});
-
-    // fox secret bush
-    drawCube(ctx,{x:8.1,y:0.25,z:7.2,w:1.0,h:0.4,d:0.8,c:[0.26,0.50,0.28,1]});
-    drawCube(ctx,{x:9.5,y:0.23,z:8.1,w:0.9,h:0.36,d:0.7,c:[0.30,0.56,0.32,1]});
+    // fox secret bushes
+    drawShrub(ctx,8.1,7.2,1.35,0,t);
+    drawShrub(ctx,9.5,8.1,1.25,1,t);
   }
 
   function draw3D(){
@@ -916,7 +982,7 @@ pre{
     gl.viewport(0,0,c.width,c.height);
     gl.enable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
-    gl.clearColor(0.52,0.72,0.90,1); // soft cartoon sky
+    gl.clearColor(0.63,0.80,0.94,1); // cozy stylized sky
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(pr);
 
@@ -944,11 +1010,18 @@ pre{
     gl.uniform4fv(uc,new Float32Array([0.32,0.42,0.34,1]));
     gl.drawArrays(gl.LINES,0,gridCount);
 
-    const secretText = S.activeSecret !== '—' ? `<br>Nahe bei: <b>${S.activeSecret}</b>` : '';
-    $('hud').innerHTML =
-      `x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m` +
-      `<br>Pfad ${fmt(S.pathLength,2)} m · Geheimnisse ${S.discoveredCount}/${SECRETS.length}` +
-      secretText;
+    if(!S.originSet){
+      $('hud').innerHTML =
+        S.trackingStatus==='NORMAL'
+          ? 'Tracking bereit.<br><b>Bitte „Nullpunkt setzen / Reset“ drücken.</b>'
+          : 'Warte auf Tracking …';
+    }else{
+      const secretText = S.activeSecret !== '—' ? `<br>Nahe bei: <b>${S.activeSecret}</b>` : '';
+      $('hud').innerHTML =
+        `x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m` +
+        `<br>Pfad ${fmt(S.pathLength,2)} m · Geheimnisse ${S.discoveredCount}/${SECRETS.length}` +
+        secretText;
+    }
   }
 
   function drawMap(){
@@ -1061,9 +1134,17 @@ pre{
       S.frameCount = 0;
       S.fpsT = t;
     }
-    draw3D();
-    drawMap();
-    updateDebug();
+    try{
+      draw3D();
+      drawMap();
+      updateDebug();
+    }catch(err){
+      if(!S.renderErrorLogged){
+        S.renderErrorLogged = true;
+        log('Render-Fehler: ' + (err && err.message ? err.message : String(err)));
+        setStatus('Render-Fehler','bad');
+      }
+    }
     requestAnimationFrame(frame);
   }
 
