@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>WebAR SLAM 1:1 Path Test · Direction Fix</title>
+<title>WebAR SLAM 1:1 Path Test · Heading Lock</title>
 
 <script
   src="https://cdn.jsdelivr.net/npm/@8thwall/coaching-overlay@1/dist/coaching-overlay.js"
@@ -129,7 +129,7 @@ pre{
   <div class="top">
     <div>
       <h1>WebAR SLAM · 1:1 Meter-Test</h1>
-      <p class="sub">Absolute Scale · Richtungsfix · Roll-freie First-Person-Kamera · Top-Down-Pfad</p>
+      <p class="sub">Absolute Scale · Heading-Lock · Roll-freie First-Person-Kamera · Top-Down-Pfad</p>
     </div>
     <div class="actions">
       <span class="status"><i id="statusDot" class="dot"></i><span id="statusText">Engine lädt …</span></span>
@@ -180,7 +180,7 @@ pre{
     <div class="debugHead">
       <div>
         <h2>Debug View</h2>
-        <div class="note">Raw XR8 → getrennte Pose-Achsen → Nullpunkt → 1:1 Meter → 12-mm-Jitter-Deadzone.</div>
+        <div class="note">Raw XR8 → gemeinsame Kamera-Basis → Nullpunkt → 1:1 Meter → 12-mm-Jitter-Deadzone.</div>
       </div>
       <button id="closeDebugBtn">Schließen</button>
     </div>
@@ -206,6 +206,9 @@ pre{
             <tr><td>Mapped Δ X [m]</td><td id="mappedX">—</td></tr>
             <tr><td>Mapped Δ Y [m]</td><td id="mappedY">—</td></tr>
             <tr><td>Mapped Δ Z [m]</td><td id="mappedZ">—</td></tr>
+            <tr><td>Origin Forward X/Z</td><td id="basisForward">—</td></tr>
+            <tr><td>Origin Right X/Z</td><td id="basisRight">—</td></tr>
+            <tr><td>Move/View alignment</td><td id="moveAlignment">—</td></tr>
             <tr><td>Final X [m]</td><td id="localX">—</td></tr>
             <tr><td>Final Y [m]</td><td id="localY">—</td></tr>
             <tr><td>Final Z [m]</td><td id="localZ">—</td></tr>
@@ -225,10 +228,10 @@ pre{
     </div>
 
     <p class="note">
-      XR8 läuft mit <b>scale: "absolute"</b>. Translation und Blickrichtung werden getrennt
-      konvertiert: Die XR8-Kameraposition nutzt für Vorwärts/Rückwärts ein anderes Z-Vorzeichen als
-      unser WebGL-Blickvektor. Es gibt <b>keinen Skalierungsfaktor</b>. Die Ausrichtung verwendet nur
-      Yaw und korrigiertes Pitch; Roll wird absichtlich nicht gerendert.
+      XR8 läuft mit <b>scale: "absolute"</b>. Beim Nullsetzen werden die horizontale
+      Kameravorwärts- und Rechtsachse gespeichert. Sowohl Translation als auch Yaw werden anschließend
+      aus genau dieser Basis berechnet. Dadurch bleibt Vorwärtsbewegung auch nach Drehungen an die
+      iPad-Blickrichtung gekoppelt. Es gibt <b>keinen Skalierungsfaktor</b>; Roll wird nicht gerendert.
     </p>
   </section>
 </div>
@@ -256,7 +259,7 @@ pre{
     trackingStatus:'—',trackingReason:'—',
     scaleReady:false,coachAvailable:false,autoCentered:false,
     rawPos:null,rawQ:null,
-    originRawPos:null,originYaw:0,originPitch:0,
+    originRawPos:null,originForward:null,originRight:null,originUp:{x:0,y:1,z:0},
     mappedDelta:{x:0,y:0,z:0},
     localPos:{x:0,y:0,z:0},
     rawYaw:0,rawPitch:0,rawRoll:0,
@@ -311,50 +314,103 @@ pre{
     return {x:c*v.x+s*v.z,y:v.y,z:-s*v.x+c*v.z};
   }
 
-  // XR8 orientation basis -> our WebGL viewing basis.
-  // Kept separate from translation because XR8's returned CAMERA POSITION
-  // changes with the opposite Z sign from the camera's forward viewing vector.
-  function xrOrientationVecToWeb(v){return {x:-v.x,y:v.y,z:-v.z}}
+  // ----- Unified pose basis -----
+  // We do NOT guess XR8 world-axis signs anymore.
+  // At recenter we capture the actual XR camera optical-forward direction and build
+  // an orthonormal horizontal basis from it. Translation and yaw are then computed
+  // from this SAME basis. This guarantees that "walk where the iPad looks" remains
+  // aligned after arbitrary left/right turns.
+  //
+  // Camera optical forward uses local -Z (standard camera convention). If XR8's
+  // camera quaternion changes, qRotate() places that forward vector in the XR scene.
+  function xrCameraForward(q){
+    return norm(qRotate(q,{x:0,y:0,z:-1}));
+  }
+  function xrCameraUp(q){
+    return norm(qRotate(q,{x:0,y:1,z:0}));
+  }
+  function horizontal(v){
+    const h={x:v.x,y:0,z:v.z};
+    const m=Math.hypot(h.x,h.z);
+    return m>1e-6 ? {x:h.x/m,y:0,z:h.z/m} : null;
+  }
 
-  // XR8 camera-position delta -> our WebGL world.
-  // Empirically / pose-convention-correct:
-  //   walk forward  => local Z becomes negative => virtual camera moves forward
-  //   walk backward => local Z becomes positive => virtual camera moves backward
-  // No scale is applied: 1 XR8 meter remains 1 virtual meter.
-  function xrTranslationToWeb(v){return {x:-v.x,y:v.y,z:v.z}}
+  function basisFromCamera(q){
+    const forward3=xrCameraForward(q);
+    const forwardH=horizontal(forward3);
+    if(!forwardH)return null;
 
-  function cameraAnglesFromXR(q){
-    // XR8 camera forward is +Z in its documented scene axes.
-    const forward=norm(xrOrientationVecToWeb(qRotate(q,{x:0,y:0,z:1})));
-    const up=norm(xrOrientationVecToWeb(qRotate(q,{x:0,y:1,z:0})));
-
-    const yaw=Math.atan2(forward.x,-forward.z);
-    // Screen/camera pitch convention is opposite to our lookAt pitch convention.
-    // Therefore invert it: iPad down => camera looks down, iPad up => camera looks up.
-    const pitch=-Math.asin(clamp(forward.y,-1,1));
-
-    // Roll is measured only for diagnostics and deliberately discarded in rendering.
-    let right=cross(forward,{x:0,y:1,z:0});
-    if(Math.hypot(right.x,right.y,right.z)<1e-5)right={x:1,y:0,z:0};
+    // Right-handed camera basis: right = forward × worldUp.
+    let right=cross(forwardH,{x:0,y:1,z:0});
     right=norm(right);
-    const horizonUp=norm(cross(right,forward));
-    const roll=Math.atan2(dot(cross(horizonUp,up),forward),clamp(dot(horizonUp,up),-1,1));
 
-    return {yaw,pitch,roll};
+    return {
+      forward3,
+      forwardH,
+      right,
+      up:xrCameraUp(q)
+    };
+  }
+
+  function anglesRelativeToOrigin(q){
+    const b=basisFromCamera(q);
+    if(!b || !S.originForward || !S.originRight){
+      return {yaw:0,pitch:0,roll:0,rawYaw:0,rawPitch:0,rawRoll:0};
+    }
+
+    // Yaw is the signed horizontal angle from the initial camera-forward vector
+    // to the current camera-forward vector. Positive yaw = turn right.
+    const fDot=clamp(dot(b.forwardH,S.originForward),-1,1);
+    const rDot=clamp(dot(b.forwardH,S.originRight),-1,1);
+    const yaw=Math.atan2(rDot,fDot);
+
+    // Pitch is derived directly from optical forward. Looking up => positive.
+    const pitch=Math.asin(clamp(b.forward3.y,-1,1));
+
+    // Roll only for diagnostics; rendering always uses world-up.
+    let horizonRight=cross(b.forward3,{x:0,y:1,z:0});
+    if(Math.hypot(horizonRight.x,horizonRight.y,horizonRight.z)<1e-5){
+      horizonRight={...b.right};
+    }else{
+      horizonRight=norm(horizonRight);
+    }
+    const horizonUp=norm(cross(horizonRight,b.forward3));
+    const roll=Math.atan2(
+      dot(cross(horizonUp,b.up),b.forward3),
+      clamp(dot(horizonUp,b.up),-1,1)
+    );
+
+    // Raw angles are expressed in the same origin basis for useful debug output.
+    const rawYaw=Math.atan2(rDot,fDot);
+    const rawPitch=pitch;
+    const rawRoll=roll;
+    return {yaw,pitch,roll,rawYaw,rawPitch,rawRoll};
   }
 
   function mappedDeltaFromOrigin(){
-    if(!S.rawPos||!S.originRawPos)return {x:0,y:0,z:0};
-    const rawDelta={
+    if(!S.rawPos||!S.originRawPos||!S.originForward||!S.originRight){
+      return {x:0,y:0,z:0};
+    }
+
+    const d={
       x:S.rawPos.x-S.originRawPos.x,
       y:S.rawPos.y-S.originRawPos.y,
       z:S.rawPos.z-S.originRawPos.z
     };
-    const webDelta=xrTranslationToWeb(rawDelta);
 
-    // Align initial horizontal viewing direction with virtual -Z.
-    // Rotation is rigid: |Δ| remains exactly unchanged.
-    return rotateY(webDelta,S.originYaw);
+    // Project the ABSOLUTE SLAM displacement onto the camera basis captured
+    // at the null point. No integration and no scale factor are applied.
+    //
+    // +X virtual = physical right at the start.
+    // -Z virtual = physical forward at the start.
+    const rightMeters=dot(d,S.originRight);
+    const forwardMeters=dot(d,S.originForward);
+
+    return {
+      x:rightMeters,
+      y:d.y,
+      z:-forwardMeters
+    };
   }
 
   function recenter(force=false){
@@ -368,11 +424,18 @@ pre{
       return;
     }
 
-    const a=cameraAnglesFromXR(S.rawQ);
+    const b=basisFromCamera(S.rawQ);
+    if(!b){
+      log('Nullpunkt nicht möglich: Kameravorwärtsachse nicht bestimmbar.');
+      return;
+    }
+
     S.originRawPos={...S.rawPos};
-    S.originYaw=a.yaw;
-    S.originPitch=a.pitch;
-    S.rawYaw=a.yaw;S.rawPitch=a.pitch;S.rawRoll=a.roll;
+    S.originForward={...b.forwardH};
+    S.originRight={...b.right};
+
+    const a=anglesRelativeToOrigin(S.rawQ);
+    S.rawYaw=a.rawYaw;S.rawPitch=a.rawPitch;S.rawRoll=a.rawRoll;
     S.yaw=0;S.pitch=0;
     S.mappedDelta={x:0,y:0,z:0};
     S.localPos={x:0,y:0,z:0};
@@ -387,19 +450,20 @@ pre{
   function updateLocalPose(){
     if(!S.rawPos||!S.rawQ)return;
 
-    const a=cameraAnglesFromXR(S.rawQ);
-    S.rawYaw=a.yaw;S.rawPitch=a.pitch;S.rawRoll=a.roll;
-
     if(!S.originRawPos){
       if(S.trackingStatus==='NORMAL' && (S.scaleReady || !S.coachAvailable))recenter(true);
       return;
     }
 
-    // Correct first-person orientation: Yaw + Pitch only, NO roll.
-    S.yaw=wrapPi(S.rawYaw-S.originYaw);
-    S.pitch=clamp(S.rawPitch-S.originPitch,rad(-80),rad(80));
+    // Orientation and translation now use the SAME camera basis.
+    const a=anglesRelativeToOrigin(S.rawQ);
+    S.rawYaw=a.rawYaw;S.rawPitch=a.rawPitch;S.rawRoll=a.rawRoll;
 
-    // Absolute XR8 meter position, only rigid basis/heading transforms.
+    // Correct first-person orientation: Yaw + Pitch only, NO roll.
+    S.yaw=wrapPi(a.yaw);
+    S.pitch=clamp(a.pitch,rad(-80),rad(80));
+
+    // Absolute XR8 meter position projected into the initial camera basis.
     const candidate=mappedDeltaFromOrigin();
     S.mappedDelta={...candidate};
 
@@ -787,6 +851,19 @@ pre{
 
     $('rawX').textContent=fmt(S.rawPos?.x);$('rawY').textContent=fmt(S.rawPos?.y);$('rawZ').textContent=fmt(S.rawPos?.z);
     $('mappedX').textContent=fmt(S.mappedDelta.x);$('mappedY').textContent=fmt(S.mappedDelta.y);$('mappedZ').textContent=fmt(S.mappedDelta.z);
+    if($('basisForward'))$('basisForward').textContent=S.originForward?`${fmt(S.originForward.x,3)} / ${fmt(S.originForward.z,3)}`:'—';
+    if($('basisRight'))$('basisRight').textContent=S.originRight?`${fmt(S.originRight.x,3)} / ${fmt(S.originRight.z,3)}`:'—';
+
+    if($('moveAlignment')){
+      const f={x:Math.sin(S.yaw),z:-Math.cos(S.yaw)};
+      const lp=S.path.length;
+      if(lp>=2){
+        const a=S.path[lp-2],b=S.path[lp-1],dx=b.x-a.x,dz=b.z-a.z,m=Math.hypot(dx,dz);
+        const align=m>1e-4?(dx*f.x+dz*f.z)/m:0;
+        $('moveAlignment').textContent=m>1e-4?`${fmt(align,2)} (1.00 = vorwärts)`:'—';
+      }else $('moveAlignment').textContent='—';
+    }
+
     $('localX').textContent=fmt(S.localPos.x);$('localY').textContent=fmt(S.localPos.y);$('localZ').textContent=fmt(S.localPos.z);
     $('yawRaw').textContent=fmt(deg(S.rawYaw),2)+'°';$('yawLocal').textContent=fmt(deg(S.yaw),2)+'°';
     $('pitchRaw').textContent=fmt(deg(S.rawPitch),2)+'°';$('pitchLocal').textContent=fmt(deg(S.pitch),2)+'°';
