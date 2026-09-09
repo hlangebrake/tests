@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>WebAR SLAM Meter Test</title>
+
+<!-- 8th Wall Distributed Engine Binary. SLAM chunk is preloaded for World Tracking. -->
+<script
+  src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js"
+  async
+  crossorigin="anonymous"
+  data-preload-chunks="slam"></script>
+
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#090b0e;
+  --panel:#12161b;
+  --panel2:#181e25;
+  --line:#2a323c;
+  --text:#eef3f7;
+  --muted:#96a2af;
+  --accent:#79a9ff;
+  --ok:#5bd68b;
+  --warn:#ffd166;
+  --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
+body{
+  min-height:100vh;
+  padding:
+    max(12px,env(safe-area-inset-top))
+    max(12px,env(safe-area-inset-right))
+    max(18px,env(safe-area-inset-bottom))
+    max(12px,env(safe-area-inset-left));
+}
+.shell{max-width:1400px;margin:auto}
+.top{
+  display:flex;gap:10px;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;margin-bottom:12px
+}
+.brand{min-width:0}
+h1{font-size:21px;letter-spacing:-.02em;margin:0 0 4px}
+.sub{font-size:12px;color:var(--muted);margin:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{
+  appearance:none;border:1px solid #3b4654;background:var(--panel2);color:var(--text);
+  border-radius:11px;min-height:44px;padding:10px 13px;font:600 14px inherit;
+  touch-action:manipulation
+}
+button.primary{background:#285cad;border-color:#4777c5}
+button:disabled{opacity:.45}
+.status{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--line);
+  background:var(--panel);border-radius:999px;font-size:12px;color:var(--muted)
+}
+.dot{width:9px;height:9px;border-radius:50%;background:#606872}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(310px,1fr);gap:12px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px;min-width:0}
+.panelTitle{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  margin:1px 3px 9px;font-size:12px;color:var(--muted)
+}
+.viewport{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#080b0f}
+#world3d,#map{
+  display:block;width:100%;height:min(64vw,610px);min-height:390px;border:0
+}
+@media(max-width:850px){
+  #world3d{height:62vw;min-height:360px}
+  #map{height:52vw;min-height:330px}
+}
+@media(max-width:520px){
+  #world3d{height:72vw;min-height:330px}
+  #map{height:70vw;min-height:310px}
+}
+.hud{
+  position:absolute;left:9px;top:9px;z-index:3;padding:7px 9px;
+  border:1px solid #ffffff20;border-radius:9px;background:#070a0dcc;
+  font-size:11px;font-variant-numeric:tabular-nums;pointer-events:none
+}
+.hint{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:28px;z-index:2;background:#080b0ec9;color:#d8e0e7;
+  font-size:14px;line-height:1.5
+}
+.hint.hidden{display:none}
+.cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);pointer-events:none}
+.cross:before,.cross:after{content:"";position:absolute;background:#ffffffa8}
+.cross:before{left:8px;top:1px;width:1px;height:16px}
+.cross:after{top:8px;left:1px;width:16px;height:1px}
+.debug{
+  margin-top:12px;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;padding:13px;display:none
+}
+.debug.open{display:block}
+.debugHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:11px}
+.debug h2{margin:0;font-size:16px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media(max-width:850px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{background:#0d1116;border:1px solid var(--line);border-radius:11px;padding:9px;min-width:0}
+.card .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.card .l{font-size:10px;color:var(--muted);margin-top:3px}
+.debugGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:760px){.debugGrid{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}
+td:first-child{text-align:left;color:var(--muted)}
+pre{
+  margin:0;background:#0b0f13;border:1px solid var(--line);border-radius:10px;
+  padding:9px;max-height:210px;overflow:auto;white-space:pre-wrap;word-break:break-word;
+  color:#c6d0da;font-size:10px
+}
+.note{font-size:11px;color:var(--muted);line-height:1.45}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.swatch{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
+#xrCanvas{
+  position:absolute;left:-10000px;top:0;width:640px;height:480px;
+  opacity:.001;pointer-events:none
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div class="brand">
+      <h1>WebAR SLAM · Meter-Test</h1>
+      <p class="sub">8th Wall World Tracking · absolute scale · First Person + Top-Down-Pfad</p>
+    </div>
+
+    <div class="actions">
+      <span class="status"><i id="statusDot" class="dot"></i><span id="statusText">Engine lädt …</span></span>
+      <button id="startBtn" class="primary" disabled>WebAR starten</button>
+      <button id="recenterBtn" disabled>Nullpunkt setzen</button>
+      <button id="clearBtn" disabled>Pfad löschen</button>
+      <button id="debugBtn">Debug</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="panelTitle">
+        <span>3D-UMGEBUNG · 1 KACHEL = 1 m</span>
+        <span id="trackLabel">kein Tracking</span>
+      </div>
+      <div class="viewport">
+        <canvas id="world3d"></canvas>
+        <div class="cross"></div>
+        <div id="hud" class="hud">x 0.00 · y 1.65 · z 0.00 m</div>
+        <div id="hint" class="hint">
+          <div>
+            <b>WebAR starten</b><br>
+            Kamera erlauben, dann das iPad einige Sekunden langsam bewegen,<br>
+            bis SLAM auf <b>NORMAL</b> wechselt.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panelTitle">
+        <span>PFAD VON OBEN</span>
+        <span id="distanceLabel">0.00 m</span>
+      </div>
+      <div class="viewport">
+        <canvas id="map"></canvas>
+      </div>
+      <div class="legend" style="margin:8px 3px 1px">
+        <span><i class="swatch" style="background:#34404b"></i>Objekte</span>
+        <span><i class="swatch" style="background:#b891ff"></i>Pfad</span>
+        <span><i class="swatch" style="background:#ffd166"></i>Position/Blick</span>
+      </div>
+    </section>
+  </div>
+
+  <section id="debugView" class="debug">
+    <div class="debugHead">
+      <div>
+        <h2>Debug View</h2>
+        <div class="note">Direkte SLAM-Ausgabe und daraus berechnete lokale Meterkoordinaten.</div>
+      </div>
+      <button id="closeDebugBtn">Schließen</button>
+    </div>
+
+    <div class="cards">
+      <div class="card"><div id="dbgStatus" class="v">—</div><div class="l">Tracking</div></div>
+      <div class="card"><div id="dbgHz" class="v">0.0</div><div class="l">Pose Updates/s</div></div>
+      <div class="card"><div id="dbgFps" class="v">0.0</div><div class="l">Render FPS</div></div>
+      <div class="card"><div id="dbgPoints" class="v">0</div><div class="l">SLAM World Points</div></div>
+      <div class="card"><div id="dbgDisplacement" class="v">0.000 m</div><div class="l">Verschiebung vom Nullpunkt</div></div>
+      <div class="card"><div id="dbgPath" class="v">0.000 m</div><div class="l">Pfadlänge</div></div>
+      <div class="card"><div id="dbgSamples" class="v">0</div><div class="l">Pfad-Samples</div></div>
+      <div class="card"><div id="dbgScale" class="v">absolute</div><div class="l">XR8 Scale Mode</div></div>
+    </div>
+
+    <div class="debugGrid">
+      <div>
+        <table>
+          <tbody>
+            <tr><td>Raw Position X</td><td id="rawX">—</td></tr>
+            <tr><td>Raw Position Y</td><td id="rawY">—</td></tr>
+            <tr><td>Raw Position Z</td><td id="rawZ">—</td></tr>
+            <tr><td>Local X [m]</td><td id="localX">—</td></tr>
+            <tr><td>Local Y [m]</td><td id="localY">—</td></tr>
+            <tr><td>Local Z [m]</td><td id="localZ">—</td></tr>
+            <tr><td>Quaternion W</td><td id="qw">—</td></tr>
+            <tr><td>Quaternion X</td><td id="qx">—</td></tr>
+            <tr><td>Quaternion Y</td><td id="qy">—</td></tr>
+            <tr><td>Quaternion Z</td><td id="qz">—</td></tr>
+            <tr><td>Tracking Reason</td><td id="trackReason">—</td></tr>
+            <tr><td>Secure Context</td><td id="secure">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <pre id="log"></pre>
+      </div>
+    </div>
+
+    <p class="note">
+      Der XR-Controller ist mit <b>scale: "absolute"</b> konfiguriert. Die rohe XR8-Pose wird beim
+      Nullsetzen in ein lokales Koordinatensystem transformiert. Die 3D-Welt und die Karte verwenden
+      anschließend exakt dieselben lokalen Meterkoordinaten.
+    </p>
+  </section>
+</div>
+
+<canvas id="xrCanvas" width="640" height="480" aria-hidden="true"></canvas>
+
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+  const fmt = (v,n=3) => Number.isFinite(v) ? v.toFixed(n) : '—';
+  const rad = d => d*Math.PI/180;
+
+  const S = {
+    engineReady:false,
+    started:false,
+    running:false,
+    trackingStatus:'—',
+    trackingReason:'—',
+    rawPos:null,
+    rawQ:null,
+    originPos:null,
+    originQ:null,
+    originYaw:0,
+    localPos:{x:0,y:0,z:0},
+    localQ:{w:1,x:0,y:0,z:0},
+    path:[],
+    pathLength:0,
+    lastPathPoint:null,
+    worldPoints:0,
+    poseCount:0,
+    poseHz:0,
+    poseHzT:performance.now(),
+    frameCount:0,
+    fps:0,
+    fpsT:performance.now(),
+    gl:null,
+    glReady:false,
+    errors:[],
+  };
+
+  function log(msg){
+    const line=`[${new Date().toLocaleTimeString()}] ${msg}`;
+    S.errors.unshift(line);
+    S.errors=S.errors.slice(0,70);
+    $('log').textContent=S.errors.join('\n');
+  }
+
+  function setStatus(text,kind=''){
+    $('statusText').textContent=text;
+    $('statusDot').className='dot '+kind;
+  }
+
+  function qNorm(q){
+    const m=Math.hypot(q.w,q.x,q.y,q.z)||1;
+    return {w:q.w/m,x:q.x/m,y:q.y/m,z:q.z/m};
+  }
+  function qInv(q){
+    q=qNorm(q);
+    return {w:q.w,x:-q.x,y:-q.y,z:-q.z};
+  }
+  function qMul(a,b){
+    return {
+      w:a.w*b.w-a.x*b.x-a.y*b.y-a.z*b.z,
+      x:a.w*b.x+a.x*b.w+a.y*b.z-a.z*b.y,
+      y:a.w*b.y-a.x*b.z+a.y*b.w+a.z*b.x,
+      z:a.w*b.z+a.x*b.y-a.y*b.x+a.z*b.w
+    };
+  }
+  function qRotate(q,v){
+    q=qNorm(q);
+    const u={x:q.x,y:q.y,z:q.z}, s=q.w;
+    const dot=u.x*v.x+u.y*v.y+u.z*v.z;
+    const cross={
+      x:u.y*v.z-u.z*v.y,
+      y:u.z*v.x-u.x*v.z,
+      z:u.x*v.y-u.y*v.x
+    };
+    const uu=u.x*u.x+u.y*u.y+u.z*u.z;
+    return {
+      x:2*dot*u.x+(s*s-uu)*v.x+2*s*cross.x,
+      y:2*dot*u.y+(s*s-uu)*v.y+2*s*cross.y,
+      z:2*dot*u.z+(s*s-uu)*v.z+2*s*cross.z
+    };
+  }
+  function rotateY(v,a){
+    const c=Math.cos(a),s=Math.sin(a);
+    return {x:c*v.x+s*v.z,y:v.y,z:-s*v.x+c*v.z};
+  }
+  function horizontalYaw(q){
+    const f=qRotate(q,{x:0,y:0,z:-1});
+    return Math.atan2(f.x,-f.z);
+  }
+
+  function recenter(){
+    if(!S.rawPos || !S.rawQ){
+      log('Nullpunkt noch nicht möglich: keine SLAM-Pose.');
+      return;
+    }
+    S.originPos={...S.rawPos};
+    S.originQ=qNorm(S.rawQ);
+    S.originYaw=horizontalYaw(S.originQ);
+    S.localPos={x:0,y:0,z:0};
+    S.localQ={w:1,x:0,y:0,z:0};
+    S.path=[];
+    S.pathLength=0;
+    S.lastPathPoint=null;
+    addPathPoint(true);
+    log(`Nullpunkt gesetzt. Raw origin = ${fmt(S.originPos.x)}, ${fmt(S.originPos.y)}, ${fmt(S.originPos.z)}`);
+  }
+
+  function updateLocalPose(){
+    if(!S.rawPos || !S.rawQ)return;
+    if(!S.originPos || !S.originQ){
+      if(S.trackingStatus==='NORMAL') recenter();
+      else return;
+    }
+
+    const d={
+      x:S.rawPos.x-S.originPos.x,
+      y:S.rawPos.y-S.originPos.y,
+      z:S.rawPos.z-S.originPos.z
+    };
+
+    // Keep gravity/Y vertical. Only remove the initial heading from translation.
+    S.localPos=rotateY(d,-S.originYaw);
+
+    // Full relative camera orientation, so the initial viewing direction becomes neutral.
+    S.localQ=qNorm(qMul(qInv(S.originQ),S.rawQ));
+
+    addPathPoint(false);
+  }
+
+  function addPathPoint(force){
+    const p=S.localPos;
+    if(!S.lastPathPoint){
+      S.lastPathPoint={...p};
+      S.path.push({...p});
+      return;
+    }
+    const dx=p.x-S.lastPathPoint.x,dy=p.y-S.lastPathPoint.y,dz=p.z-S.lastPathPoint.z;
+    const d=Math.hypot(dx,dy,dz);
+    if(force || d>=0.015){
+      S.pathLength+=d;
+      S.path.push({...p});
+      S.lastPathPoint={...p};
+      if(S.path.length>12000)S.path.splice(0,S.path.length-12000);
+    }
+  }
+
+  function posePipelineModule(){
+    return {
+      name:'meter-pose-reader',
+
+      onCameraStatusChange:({status})=>{
+        log('Kamera: '+status);
+        if(status==='requesting')setStatus('Kamerazugriff …','warn');
+        if(status==='hasStream')setStatus('Kamera aktiv · SLAM startet','warn');
+        if(status==='hasVideo')setStatus('SLAM initialisiert …','warn');
+        if(status==='failed')setStatus('Kamera fehlgeschlagen','bad');
+      },
+
+      onUpdate:({processCpuResult})=>{
+        const r=processCpuResult && processCpuResult.reality;
+        if(!r || !r.position || !r.rotation)return;
+
+        S.rawPos={x:r.position.x,y:r.position.y,z:r.position.z};
+        S.rawQ={w:r.rotation.w,x:r.rotation.x,y:r.rotation.y,z:r.rotation.z};
+        S.trackingStatus=r.trackingStatus || '—';
+        S.trackingReason=r.trackingReason || '—';
+        S.worldPoints=Array.isArray(r.worldPoints)?r.worldPoints.length:0;
+
+        S.poseCount++;
+        const t=performance.now(),dt=(t-S.poseHzT)/1000;
+        if(dt>=1){
+          S.poseHz=S.poseCount/dt;
+          S.poseCount=0;
+          S.poseHzT=t;
+        }
+
+        updateLocalPose();
+
+        if(S.trackingStatus==='NORMAL'){
+          setStatus('SLAM NORMAL','ok');
+          $('hint').classList.add('hidden');
+        }else{
+          setStatus(`SLAM ${S.trackingStatus}`,'warn');
+        }
+      },
+
+      onException:(e)=>{
+        const m=e && e.message ? e.message : String(e);
+        log('XR Exception: '+m);
+        setStatus('XR Fehler','bad');
+      }
+    };
+  }
+
+  async function startWebAR(){
+    if(S.started)return;
+    if(!window.isSecureContext){
+      setStatus('HTTPS erforderlich','bad');
+      log('WebAR benötigt HTTPS / secure context.');
+      alert('Diese Demo muss über HTTPS geöffnet werden, damit Safari die Kamera für WebAR freigibt.');
+      return;
+    }
+    if(!window.XR8){
+      setStatus('XR8 nicht geladen','bad');
+      log('XR8 Engine ist nicht verfügbar.');
+      return;
+    }
+
+    try{
+      S.started=true;
+      $('startBtn').disabled=true;
+      setStatus('SLAM wird geladen …','warn');
+
+      if(typeof XR8.loadChunk==='function'){
+        await XR8.loadChunk('slam');
+      }
+
+      XR8.XrController.configure({
+        disableWorldTracking:false,
+        enableWorldPoints:true,
+        enableLighting:false,
+        scale:'absolute'
+      });
+
+      XR8.addCameraPipelineModule(XR8.XrController.pipelineModule());
+      XR8.addCameraPipelineModule(posePipelineModule());
+
+      XR8.run({
+        canvas:$('xrCanvas'),
+        allowedDevices:XR8.XrConfig.device().MOBILE_AND_HEADSETS
+      });
+
+      S.running=true;
+      $('recenterBtn').disabled=false;
+      $('clearBtn').disabled=false;
+      setStatus('Kamera wird angefordert …','warn');
+      log('XR8 gestartet: World Tracking, scale=absolute, worldPoints=true.');
+    }catch(e){
+      S.started=false;
+      $('startBtn').disabled=false;
+      const m=e && e.message ? e.message : String(e);
+      setStatus('Start fehlgeschlagen','bad');
+      log('Startfehler: '+m);
+    }
+  }
+
+  function onEngineLoaded(){
+    if(S.engineReady)return;
+    S.engineReady=true;
+    $('startBtn').disabled=false;
+    setStatus('Engine bereit','');
+    log('8th Wall Engine geladen.');
+  }
+
+  // ---------- WebGL virtual world ----------
+  const HALF=12;
+  const BOXES=[
+    {x:-4.0,y:.60,z:-3.2,w:1.6,h:1.2,d:1.6,c:[.28,.48,.72,1]},
+    {x: 3.6,y:.90,z:-4.8,w:2.0,h:1.8,d:1.0,c:[.68,.38,.28,1]},
+    {x: 4.2,y:.45,z: 3.1,w:1.2,h:.9,d:2.4,c:[.35,.64,.42,1]},
+    {x:-3.2,y:1.25,z:4.8,w:1.0,h:2.5,d:1.0,c:[.58,.42,.68,1]},
+    {x: 0.0,y:.35,z:-1.8,w:1.0,h:.7,d:1.0,c:[.72,.62,.30,1]},
+    {x: 0.0,y:1.00,z:-7.0,w:4.0,h:2.0,d:.25,c:[.25,.30,.36,1]}
+  ];
+
+  function matMul(a,b){
+    const o=new Float32Array(16);
+    for(let c=0;c<4;c++)for(let r=0;r<4;r++)
+      o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];
+    return o;
+  }
+  function perspective(fovy,aspect,near,far){
+    const f=1/Math.tan(fovy/2),nf=1/(near-far);
+    return new Float32Array([
+      f/aspect,0,0,0,
+      0,f,0,0,
+      0,0,(far+near)*nf,-1,
+      0,0,2*far*near*nf,0
+    ]);
+  }
+  function lookAt(e,c,u){
+    let zx=e[0]-c[0],zy=e[1]-c[1],zz=e[2]-c[2];
+    let l=Math.hypot(zx,zy,zz)||1;zx/=l;zy/=l;zz/=l;
+    let xx=u[1]*zz-u[2]*zy,xy=u[2]*zx-u[0]*zz,xz=u[0]*zy-u[1]*zx;
+    l=Math.hypot(xx,xy,xz)||1;xx/=l;xy/=l;xz/=l;
+    const yx=zy*xz-zz*xy,yy=zz*xx-zx*xz,yz=zx*xy-zy*xx;
+    return new Float32Array([
+      xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0,
+      -(xx*e[0]+xy*e[1]+xz*e[2]),
+      -(yx*e[0]+yy*e[1]+yz*e[2]),
+      -(zx*e[0]+zy*e[1]+zz*e[2]),1
+    ]);
+  }
+  function model(x,y,z,sx,sy,sz){
+    return new Float32Array([sx,0,0,0,0,sy,0,0,0,0,sz,0,x,y,z,1]);
+  }
+  function shader(gl,type,src){
+    const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  function sizeCanvas(c){
+    const d=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();
+    const w=Math.max(2,Math.round(r.width*d)),h=Math.max(2,Math.round(r.height*d));
+    if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+  }
+
+  function initGL(){
+    try{
+      const c=$('world3d');
+      const gl=c.getContext('webgl',{antialias:true,alpha:false}) || c.getContext('experimental-webgl');
+      if(!gl)throw new Error('WebGL nicht verfügbar');
+
+      const vs=shader(gl,gl.VERTEX_SHADER,
+        'attribute vec3 aPos;uniform mat4 uMVP;void main(){gl_Position=uMVP*vec4(aPos,1.0);}');
+      const fs=shader(gl,gl.FRAGMENT_SHADER,
+        'precision mediump float;uniform vec4 uColor;void main(){gl_FragColor=uColor;}');
+      const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));
+
+      const cube=new Float32Array([
+        -.5,-.5,-.5,.5,-.5,-.5,.5,.5,-.5,-.5,.5,-.5,
+        -.5,-.5,.5,.5,-.5,.5,.5,.5,.5,-.5,.5,.5
+      ]);
+      const idx=new Uint16Array([
+        0,1,2,0,2,3,4,6,5,4,7,6,0,4,5,0,5,1,
+        3,2,6,3,6,7,1,5,6,1,6,2,0,3,7,0,7,4
+      ]);
+      const cv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cv);gl.bufferData(gl.ARRAY_BUFFER,cube,gl.STATIC_DRAW);
+      const ci=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idx,gl.STATIC_DRAW);
+
+      const lines=[];
+      for(let i=-HALF;i<=HALF;i++){
+        lines.push(i,0,-HALF,i,0,HALF);
+        lines.push(-HALF,0,i,HALF,0,i);
+      }
+      const gv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,gv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(lines),gl.STATIC_DRAW);
+
+      S.gl={gl,pr,cv,ci,gv,gridCount:lines.length/3};
+      S.glReady=true;
+      log('Virtuelle WebGL-Welt initialisiert.');
+    }catch(e){
+      log('WebGL-Fehler: '+e.message);
+    }
+  }
+
+  function draw3D(){
+    if(!S.glReady)return;
+    const {gl,pr,cv,ci,gv,gridCount}=S.gl,c=$('world3d');
+    sizeCanvas(c);
+    gl.viewport(0,0,c.width,c.height);
+    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+    gl.clearColor(.035,.045,.055,1);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.useProgram(pr);
+
+    const ap=gl.getAttribLocation(pr,'aPos');
+    const um=gl.getUniformLocation(pr,'uMVP');
+    const uc=gl.getUniformLocation(pr,'uColor');
+    gl.enableVertexAttribArray(ap);
+
+    const eyeHeight=1.65;
+    const pos={x:S.localPos.x,y:eyeHeight+S.localPos.y,z:S.localPos.z};
+
+    const f=qRotate(S.localQ,{x:0,y:0,z:-1});
+    const up=qRotate(S.localQ,{x:0,y:1,z:0});
+    const P=perspective(rad(68),c.width/c.height,.04,80);
+    const V=lookAt(
+      [pos.x,pos.y,pos.z],
+      [pos.x+f.x,pos.y+f.y,pos.z+f.z],
+      [up.x,up.y,up.z]
+    );
+    const VP=matMul(P,V);
+
+    function cube(o){
+      gl.bindBuffer(gl.ARRAY_BUFFER,cv);gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci);
+      gl.uniformMatrix4fv(um,false,matMul(VP,model(o.x,o.y,o.z,o.w,o.h,o.d)));
+      gl.uniform4fv(uc,new Float32Array(o.c));
+      gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
+    }
+
+    // floor and perimeter
+    cube({x:0,y:-.06,z:0,w:HALF*2,h:.12,d:HALF*2,c:[.075,.09,.105,1]});
+    const H=2.8,T=.12,L=HALF*2;
+    cube({x:0,y:H/2,z:-HALF,w:L,h:H,d:T,c:[.16,.19,.22,1]});
+    cube({x:0,y:H/2,z: HALF,w:L,h:H,d:T,c:[.16,.19,.22,1]});
+    cube({x:-HALF,y:H/2,z:0,w:T,h:H,d:L,c:[.16,.19,.22,1]});
+    cube({x: HALF,y:H/2,z:0,w:T,h:H,d:L,c:[.16,.19,.22,1]});
+    BOXES.forEach(cube);
+
+    // 1m floor grid
+    gl.bindBuffer(gl.ARRAY_BUFFER,gv);gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
+    gl.uniformMatrix4fv(um,false,VP);
+    gl.uniform4fv(uc,new Float32Array([.22,.25,.29,1]));
+    gl.drawArrays(gl.LINES,0,gridCount);
+
+    $('hud').textContent=`x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m`;
+  }
+
+  function drawMap(){
+    const c=$('map');sizeCanvas(c);
+    const x=c.getContext('2d');
+    const d=Math.min(devicePixelRatio||1,2),w=c.width,h=c.height;
+    x.clearRect(0,0,w,h);x.fillStyle='#0a0e12';x.fillRect(0,0,w,h);
+
+    let extent=HALF;
+    for(const p of S.path)extent=Math.max(extent,Math.abs(p.x)+2,Math.abs(p.z)+2);
+    extent=Math.ceil(extent);
+    const margin=20*d;
+    const scale=Math.min((w-2*margin)/(extent*2),(h-2*margin)/(extent*2));
+    const cx=w/2,cy=h/2;
+    const sx=v=>cx+v*scale,sz=v=>cy+v*scale;
+
+    const step=extent<=15?1:extent<=30?2:5;
+    x.lineWidth=1*d;x.strokeStyle='#1b242d';
+    for(let i=-extent;i<=extent;i+=step){
+      x.beginPath();x.moveTo(sx(i),sz(-extent));x.lineTo(sx(i),sz(extent));x.stroke();
+      x.beginPath();x.moveTo(sx(-extent),sz(i));x.lineTo(sx(extent),sz(i));x.stroke();
+    }
+
+    x.strokeStyle='#52606e';x.lineWidth=1.5*d;
+    x.strokeRect(sx(-HALF),sz(-HALF),HALF*2*scale,HALF*2*scale);
+
+    x.fillStyle='#34404b';
+    for(const o of BOXES){
+      x.fillRect(sx(o.x-o.w/2),sz(o.z-o.d/2),o.w*scale,o.d*scale);
+    }
+
+    if(S.path.length>1){
+      x.strokeStyle='#b891ff';x.lineWidth=2.2*d;x.lineJoin='round';x.lineCap='round';
+      x.beginPath();
+      S.path.forEach((p,i)=>i?x.lineTo(sx(p.x),sz(p.z)):x.moveTo(sx(p.x),sz(p.z)));
+      x.stroke();
+    }
+
+    const p=S.localPos;
+    const f=qRotate(S.localQ,{x:0,y:0,z:-1});
+    const px=sx(p.x),pz=sz(p.z);
+    x.fillStyle='#ffd166';x.beginPath();x.arc(px,pz,5*d,0,Math.PI*2);x.fill();
+    x.strokeStyle='#ffd166';x.lineWidth=2*d;x.beginPath();x.moveTo(px,pz);
+    x.lineTo(px+f.x*22*d,pz+f.z*22*d);x.stroke();
+
+    x.fillStyle='#99a6b4';x.font=`${10*d}px system-ui`;
+    x.fillText(`${step} m Raster`,margin,14*d);
+    x.fillText('+X →',w-48*d,cy-5*d);
+    x.fillText('+Z ↓',cx+5*d,h-8*d);
+
+    $('distanceLabel').textContent=`Pfad ${fmt(S.pathLength,2)} m`;
+  }
+
+  function updateDebug(){
+    $('trackLabel').textContent=`${S.trackingStatus}${S.trackingReason && S.trackingReason!=='—'?' · '+S.trackingReason:''}`;
+    $('dbgStatus').textContent=S.trackingStatus;
+    $('dbgHz').textContent=fmt(S.poseHz,1);
+    $('dbgFps').textContent=fmt(S.fps,1);
+    $('dbgPoints').textContent=String(S.worldPoints);
+    $('dbgDisplacement').textContent=fmt(Math.hypot(S.localPos.x,S.localPos.y,S.localPos.z),3)+' m';
+    $('dbgPath').textContent=fmt(S.pathLength,3)+' m';
+    $('dbgSamples').textContent=String(S.path.length);
+
+    $('rawX').textContent=fmt(S.rawPos?.x);
+    $('rawY').textContent=fmt(S.rawPos?.y);
+    $('rawZ').textContent=fmt(S.rawPos?.z);
+    $('localX').textContent=fmt(S.localPos.x);
+    $('localY').textContent=fmt(S.localPos.y);
+    $('localZ').textContent=fmt(S.localPos.z);
+    $('qw').textContent=fmt(S.rawQ?.w,5);
+    $('qx').textContent=fmt(S.rawQ?.x,5);
+    $('qy').textContent=fmt(S.rawQ?.y,5);
+    $('qz').textContent=fmt(S.rawQ?.z,5);
+    $('trackReason').textContent=S.trackingReason;
+    $('secure').textContent=String(window.isSecureContext);
+  }
+
+  function frame(){
+    S.frameCount++;
+    const t=performance.now(),dt=(t-S.fpsT)/1000;
+    if(dt>=1){
+      S.fps=S.frameCount/dt;
+      S.frameCount=0;S.fpsT=t;
+    }
+    draw3D();
+    drawMap();
+    updateDebug();
+    requestAnimationFrame(frame);
+  }
+
+  $('startBtn').addEventListener('click',startWebAR);
+  $('recenterBtn').addEventListener('click',recenter);
+  $('clearBtn').addEventListener('click',()=>{
+    S.path=[];S.pathLength=0;S.lastPathPoint=null;addPathPoint(true);log('Pfad gelöscht.');
+  });
+  $('debugBtn').addEventListener('click',()=>$('debugView').classList.toggle('open'));
+  $('closeDebugBtn').addEventListener('click',()=>$('debugView').classList.remove('open'));
+
+  initGL();
+
+  if(window.XR8)onEngineLoaded();
+  else window.addEventListener('xrloaded',onEngineLoaded,{once:true});
+
+  if(!window.isSecureContext){
+    setStatus('HTTPS erforderlich','bad');
+    log('Secure Context = false. Kamera/WebAR wird in Safari so nicht funktionieren.');
+  }
+
+  log('User Agent: '+navigator.userAgent);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
