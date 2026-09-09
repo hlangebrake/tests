@@ -1,0 +1,26 @@
+{
+  "version": "3.0.0",
+  "quests": 37,
+  "tasks": 122,
+  "knowledgeCards": 83,
+  "modelFamilies": 38,
+  "nodeTests": 50,
+  "browserCards": 83,
+  "browserParameterChanges": 230,
+  "modelLayouts": 35,
+  "regressionLayouts": 20,
+  "fullRuns": 2,
+  "correctPerRun": 122,
+  "browser": "Chromium 144.0.7559.96 / Xvfb / SwiftShader",
+  "limitations": [
+    "No physical iPad or Safari",
+    "In-memory localStorage substitute in browser tests",
+    "No deployed HTTPS or offline restart test"
+  ],
+  "unchangedFromVersion2": [
+    "js/state.js",
+    "js/content.js",
+    "js/world.js",
+    "js/terrain.js"
+  ]
+}
