@@ -1,0 +1,434 @@
+
+> kommaland@4.0.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: Jeder Lerngedanke besitzt mindestens drei Aufgaben, mit Festigung und Transfer
+ok 1 - Jeder Lerngedanke besitzt mindestens drei Aufgaben, mit Festigung und Transfer
+  ---
+  duration_ms: 2.303772
+  type: 'test'
+  ...
+# Subtest: Alle 83 Themen erzeugen gültige Nah-, Transfer- und Testaufgaben in 30 Parameterständen
+ok 2 - Alle 83 Themen erzeugen gültige Nah-, Transfer- und Testaufgaben in 30 Parameterständen
+  ---
+  duration_ms: 55.953602
+  type: 'test'
+  ...
+# Subtest: Testkarten sind keine identischen Kopien der 393 Questaufgaben
+ok 3 - Testkarten sind keine identischen Kopien der 393 Questaufgaben
+  ---
+  duration_ms: 12.96927
+  type: 'test'
+  ...
+# Subtest: Acht Herausforderungen erscheinen ausschließlich nach allen regulären Gebietsquests
+ok 4 - Acht Herausforderungen erscheinen ausschließlich nach allen regulären Gebietsquests
+  ---
+  duration_ms: 6.954576
+  type: 'test'
+  ...
+# Subtest: Jeder gerichtete Wegtest umfasst das Ausgangsgebiet und sämtliches noch fehlendes Zielvorwissen
+ok 5 - Jeder gerichtete Wegtest umfasst das Ausgangsgebiet und sämtliches noch fehlendes Zielvorwissen
+  ---
+  duration_ms: 0.952685
+  type: 'test'
+  ...
+# Subtest: Gebietstest ist schon ohne abgeschlossene Quests vollständig versuchbar
+ok 6 - Gebietstest ist schon ohne abgeschlossene Quests vollständig versuchbar
+  ---
+  duration_ms: 4.629735
+  type: 'test'
+  ...
+# Subtest: Ein Gebietssiegel räumt Source-Sperren weg, bescheinigt aber kein ungeprüftes Zielvorwissen
+ok 7 - Ein Gebietssiegel räumt Source-Sperren weg, bescheinigt aber kein ungeprüftes Zielvorwissen
+  ---
+  duration_ms: 0.638035
+  type: 'test'
+  ...
+# Subtest: Falsche Testantworten sperren den Weg; nur fehlende Gedanken kommen erneut
+ok 8 - Falsche Testantworten sperren den Weg; nur fehlende Gedanken kommen erneut
+  ---
+  duration_ms: 1.33087
+  type: 'test'
+  ...
+# Subtest: Unterbrochene Tests behalten Position und reproduzierbare Aufgaben nach Export/Import
+ok 9 - Unterbrochene Tests behalten Position und reproduzierbare Aufgaben nach Export/Import
+  ---
+  duration_ms: 9.103978
+  type: 'test'
+  ...
+# Subtest: Version-2-Lernfortschritt wird auf die eingefügten Übungsschritte abgebildet
+ok 10 - Version-2-Lernfortschritt wird auf die eingefügten Übungsschritte abgebildet
+  ---
+  duration_ms: 0.860492
+  type: 'test'
+  ...
+# Subtest: Neue Aufgabentypen lehnen falsche Schritte, Argumente und Markierungen ab
+ok 11 - Neue Aufgabentypen lehnen falsche Schritte, Argumente und Markierungen ab
+  ---
+  duration_ms: 0.418303
+  type: 'test'
+  ...
+# Subtest: Zahlengeraden haben Striche, aber nur zwei Zahlenbeschriftungen; Marker verrät keinen Wert
+ok 12 - Zahlengeraden haben Striche, aber nur zwei Zahlenbeschriftungen; Marker verrät keinen Wert
+  ---
+  duration_ms: 63.301095
+  type: 'test'
+  ...
+# Subtest: Mischen ergibt über mehrere Sitzungen verschiedene vollständige Permutationen
+ok 13 - Mischen ergibt über mehrere Sitzungen verschiedene vollständige Permutationen
+  ---
+  duration_ms: 0.407723
+  type: 'test'
+  ...
+# Subtest: Meisteraufgaben: unabhängige Rechnungen zu Rückwärtsweg, Grenzwerten, Einheiten und Resten
+ok 14 - Meisteraufgaben: unabhängige Rechnungen zu Rückwärtsweg, Grenzwerten, Einheiten und Resten
+  ---
+  duration_ms: 0.499826
+  type: 'test'
+  ...
+# Subtest: Neue Zusatzprüfungen haben mindestens drei Aufgaben, auch wenn nur ein oder zwei Gedanken fehlen
+ok 15 - Neue Zusatzprüfungen haben mindestens drei Aufgaben, auch wenn nur ein oder zwei Gedanken fehlen
+  ---
+  duration_ms: 6.266506
+  type: 'test'
+  ...
+# Subtest: Jede Teilaufgabe hat einen kleinen Wissensschritt und ein vollständiges Lösungsbeispiel
+ok 16 - Jede Teilaufgabe hat einen kleinen Wissensschritt und ein vollständiges Lösungsbeispiel
+  ---
+  duration_ms: 3.879841
+  type: 'test'
+  ...
+# Subtest: Der Dorfeinstieg baut ganze Zahlen, Hälfte, Zehntel, Hundertstel und Brüche getrennt auf
+ok 17 - Der Dorfeinstieg baut ganze Zahlen, Hälfte, Zehntel, Hundertstel und Brüche getrennt auf
+  ---
+  duration_ms: 5.353136
+  type: 'test'
+  ...
+# Subtest: Voraussetzungen sind konkrete Aufgaben; es gibt keine unbekannten oder zyklischen Kanten
+ok 18 - Voraussetzungen sind konkrete Aufgaben; es gibt keine unbekannten oder zyklischen Kanten
+  ---
+  duration_ms: 0.894343
+  type: 'test'
+  ...
+# Subtest: Kernroute erreicht das Finale ohne die beiden gekennzeichneten Zusatzwege
+ok 19 - Kernroute erreicht das Finale ohne die beiden gekennzeichneten Zusatzwege
+  ---
+  duration_ms: 0.764489
+  type: 'test'
+  ...
+# Subtest: Erinnerungsrätsel verwenden ausschließlich wirklich bearbeitete Aufgaben
+ok 20 - Erinnerungsrätsel verwenden ausschließlich wirklich bearbeitete Aufgaben
+  ---
+  duration_ms: 4.151749
+  type: 'test'
+  ...
+# Subtest: Ausgewählte neue Ergebnisse werden unabhängig vom Antwortprüfer nachgerechnet
+ok 21 - Ausgewählte neue Ergebnisse werden unabhängig vom Antwortprüfer nachgerechnet
+  ---
+  duration_ms: 6.221972
+  type: 'test'
+  ...
+# Subtest: Traglasten im Hafen setzen das Vergleichen im Wald voraus
+ok 22 - Traglasten im Hafen setzen das Vergleichen im Wald voraus
+  ---
+  duration_ms: 0.256837
+  type: 'test'
+  ...
+# Subtest: Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+ok 23 - Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+  ---
+  duration_ms: 4.509511
+  type: 'test'
+  ...
+# Subtest: Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+ok 24 - Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+  ---
+  duration_ms: 0.215757
+  type: 'test'
+  ...
+# Subtest: Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+ok 25 - Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+  ---
+  duration_ms: 0.312598
+  type: 'test'
+  ...
+# Subtest: 45 eindeutige Quests, 393 vollständige Aufgaben und 83 Wissensschritte
+ok 26 - 45 eindeutige Quests, 393 vollständige Aufgaben und 83 Wissensschritte
+  ---
+  duration_ms: 3.158033
+  type: 'test'
+  ...
+# Subtest: Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+ok 27 - Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+  ---
+  duration_ms: 0.555228
+  type: 'test'
+  ...
+# Subtest: Waldbegegnungen beziehen sich nur auf tatsächlich abgeschlossene Aufgaben
+ok 28 - Waldbegegnungen beziehen sich nur auf tatsächlich abgeschlossene Aufgaben
+  ---
+  duration_ms: 0.48677
+  type: 'test'
+  ...
+# Subtest: Offline-Installation enthält alle existierenden App-Dateien
+ok 29 - Offline-Installation enthält alle existierenden App-Dateien
+  ---
+  duration_ms: 13.965976
+  type: 'test'
+  ...
+# Subtest: Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+ok 30 - Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+  ---
+  duration_ms: 10.986149
+  type: 'test'
+  ...
+# Subtest: Fremde Domains und Schreibanfragen werden nicht abgefangen
+ok 31 - Fremde Domains und Schreibanfragen werden nicht abgefangen
+  ---
+  duration_ms: 0.986921
+  type: 'test'
+  ...
+# Subtest: Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+ok 32 - Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+  ---
+  duration_ms: 2.993733
+  type: 'test'
+  ...
+# Subtest: Ungültige Daten werden vor einer Übernahme abgelehnt
+ok 33 - Ungültige Daten werden vor einer Übernahme abgelehnt
+  ---
+  duration_ms: 0.573797
+  type: 'test'
+  ...
+# Subtest: Import übernimmt weder HTML noch fremde Felder
+ok 34 - Import übernimmt weder HTML noch fremde Felder
+  ---
+  duration_ms: 0.194943
+  type: 'test'
+  ...
+# Subtest: Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+ok 35 - Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+  ---
+  duration_ms: 1.164877
+  type: 'test'
+  ...
+# Subtest: Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+ok 36 - Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+  ---
+  duration_ms: 0.31264
+  type: 'test'
+  ...
+# Subtest: Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+ok 37 - Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+  ---
+  duration_ms: 0.389039
+  type: 'test'
+  ...
+# Subtest: Version-1-Migration erhält Bauwerke, startet alte Teilaufgaben neu und öffnet neue Einstiegsquests
+ok 38 - Version-1-Migration erhält Bauwerke, startet alte Teilaufgaben neu und öffnet neue Einstiegsquests
+  ---
+  duration_ms: 0.523206
+  type: 'test'
+  ...
+# Subtest: Fertige Antworten bleiben bis zum ausdrücklichen Bauabschluss als ready erhalten
+ok 39 - Fertige Antworten bleiben bis zum ausdrücklichen Bauabschluss als ready erhalten
+  ---
+  duration_ms: 0.4874
+  type: 'test'
+  ...
+# Subtest: Automatische Migration findet den bisherigen installationsbezogenen Speicher
+ok 40 - Automatische Migration findet den bisherigen installationsbezogenen Speicher
+  ---
+  duration_ms: 0.379496
+  type: 'test'
+  ...
+# Subtest: Alle 83 Wissenskarten haben ein eigenes konfiguriertes, bedienbares Schaubild
+ok 41 - Alle 83 Wissenskarten haben ein eigenes konfiguriertes, bedienbares Schaubild
+  ---
+  duration_ms: 71.43178
+  type: 'test'
+  ...
+# Subtest: Alle Regler-Grenzen und Auswahlwerte ergeben endliche, vollständige Darstellungen
+ok 42 - Alle Regler-Grenzen und Auswahlwerte ergeben endliche, vollständige Darstellungen
+  ---
+  duration_ms: 156.850299
+  type: 'test'
+  ...
+# Subtest: Bündeln und Entbündeln erhalten in jedem Zwischenschritt den passenden Wert
+ok 43 - Bündeln und Entbündeln erhalten in jedem Zwischenschritt den passenden Wert
+  ---
+  duration_ms: 1.783785
+  type: 'test'
+  ...
+# Subtest: Entbündeln über mehrere Nullstellen ist auch außerhalb der Beispiele korrekt
+ok 44 - Entbündeln über mehrere Nullstellen ist auch außerhalb der Beispiele korrekt
+  ---
+  duration_ms: 90.037922
+  type: 'test'
+  ...
+# Subtest: Kaufmännisches Runden: Nachbarn, exakte Mitte und Übertrag werden ganzzahlig gerechnet
+ok 45 - Kaufmännisches Runden: Nachbarn, exakte Mitte und Übertrag werden ganzzahlig gerechnet
+  ---
+  duration_ms: 15.108696
+  type: 'test'
+  ...
+# Subtest: Viertel sind räumlich zusammenhängende 5-mal-5-Quadrate mit exakt 25 Zellen
+ok 46 - Viertel sind räumlich zusammenhängende 5-mal-5-Quadrate mit exakt 25 Zellen
+  ---
+  duration_ms: 2.009372
+  type: 'test'
+  ...
+# Subtest: Rechtecksmodell zeigt für alle 400 Seitenkombinationen die korrekte Fläche
+ok 47 - Rechtecksmodell zeigt für alle 400 Seitenkombinationen die korrekte Fläche
+  ---
+  duration_ms: 213.930282
+  type: 'test'
+  ...
+# Subtest: Tausendstel-Lupe: volle Hundertstel plus Rest statt 1000 gleich großer Zehntel
+ok 48 - Tausendstel-Lupe: volle Hundertstel plus Rest statt 1000 gleich großer Zehntel
+  ---
+  duration_ms: 1.850218
+  type: 'test'
+  ...
+# Subtest: Portionieren zählt nur volle Portionen; der Rest bleibt kleiner als die Portion
+ok 49 - Portionieren zählt nur volle Portionen; der Rest bleibt kleiner als die Portion
+  ---
+  duration_ms: 0.700342
+  type: 'test'
+  ...
+# Subtest: Verteilen: jede zugelassene Empfängerzahl ist exakt darstellbar und passt in die Becher
+ok 50 - Verteilen: jede zugelassene Empfängerzahl ist exakt darstellbar und passt in die Becher
+  ---
+  duration_ms: 9.534885
+  type: 'test'
+  ...
+# Subtest: Zeitmodell hält Stunden und Minuten auseinander
+ok 51 - Zeitmodell hält Stunden und Minuten auseinander
+  ---
+  duration_ms: 3.959584
+  type: 'test'
+  ...
+# Subtest: Potenzen verschieben Stellen, nicht das Komma; alle vier Lernfälle bleiben korrekt
+ok 52 - Potenzen verschieben Stellen, nicht das Komma; alle vier Lernfälle bleiben korrekt
+  ---
+  duration_ms: 0.873717
+  type: 'test'
+  ...
+# Subtest: Szenarien zeigen keine negativen Fehlbeträge oder halbe fertige Gegenstände
+ok 53 - Szenarien zeigen keine negativen Fehlbeträge oder halbe fertige Gegenstände
+  ---
+  duration_ms: 1.205228
+  type: 'test'
+  ...
+# Subtest: Fachlich korrigierte Darstellungen tragen vollständige Einheiten und passende Anzahlen
+ok 54 - Fachlich korrigierte Darstellungen tragen vollständige Einheiten und passende Anzahlen
+  ---
+  duration_ms: 0.425475
+  type: 'test'
+  ...
+# Subtest: Brüche zeigen Zähler und Nenner getrennt; wechselnde Nenner behalten gleich große Teile
+ok 55 - Brüche zeigen Zähler und Nenner getrennt; wechselnde Nenner behalten gleich große Teile
+  ---
+  duration_ms: 2.65911
+  type: 'test'
+  ...
+# Subtest: Sachmodell-Notation vermischt keine dimensionslose Gleichung mit einer Flächeneinheit
+ok 56 - Sachmodell-Notation vermischt keine dimensionslose Gleichung mit einer Flächeneinheit
+  ---
+  duration_ms: 0.96714
+  type: 'test'
+  ...
+# Subtest: Gleichwertige Unterteilungen erhalten die gefärbte Fläche exakt
+ok 57 - Gleichwertige Unterteilungen erhalten die gefärbte Fläche exakt
+  ---
+  duration_ms: 2.922307
+  type: 'test'
+  ...
+# Subtest: 83 interaktive Objekte und endliche 3D-Geometrie
+ok 58 - 83 interaktive Objekte und endliche 3D-Geometrie
+  ---
+  duration_ms: 1.457557
+  type: 'test'
+  ...
+# Subtest: Jeder Lernort liegt auf seinem begehbaren Gelände
+ok 59 - Jeder Lernort liegt auf seinem begehbaren Gelände
+  ---
+  duration_ms: 0.445874
+  type: 'test'
+  ...
+# Subtest: Alle 83 interaktiven Ziele haben einen Weg vom Dorf aus
+ok 60 - Alle 83 interaktiven Ziele haben einen Weg vom Dorf aus
+  ---
+  duration_ms: 7516.385012
+  type: 'test'
+  ...
+# Subtest: Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+ok 61 - Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+  ---
+  duration_ms: 7963.399698
+  type: 'test'
+  ...
+# Subtest: Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+ok 62 - Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+  ---
+  duration_ms: 12983.147499
+  type: 'test'
+  ...
+# Subtest: Zusammenhängendes Festland statt Inseln: alle Pfade verlaufen über Land
+ok 63 - Zusammenhängendes Festland statt Inseln: alle Pfade verlaufen über Land
+  ---
+  duration_ms: 2.215561
+  type: 'test'
+  ...
+# Subtest: Bauabschluss enthüllt das echte neue Objekt und beendet den Aufbau genau einmal
+ok 64 - Bauabschluss enthüllt das echte neue Objekt und beendet den Aufbau genau einmal
+  ---
+  duration_ms: 519.237739
+  type: 'test'
+  ...
+# Subtest: Reduzierte Bewegung verkürzt den Aufbau ohne Verlust der Fertigstellung
+ok 65 - Reduzierte Bewegung verkürzt den Aufbau ohne Verlust der Fertigstellung
+  ---
+  duration_ms: 0.625993
+  type: 'test'
+  ...
+# Subtest: Alle 22 gerichteten Wege stoppen die Figur an der richtigen geschlossenen Blockade
+ok 66 - Alle 22 gerichteten Wege stoppen die Figur an der richtigen geschlossenen Blockade
+  ---
+  duration_ms: 2449.866228
+  type: 'test'
+  ...
+# Subtest: Die blockierten Wegquerschnitte können nicht seitlich über begehbares Gras umgangen werden
+ok 67 - Die blockierten Wegquerschnitte können nicht seitlich über begehbares Gras umgangen werden
+  ---
+  duration_ms: 29.129667
+  type: 'test'
+  ...
+# Subtest: Ein Gebietssiegel öffnet alle Source-Gitter; zusätzliche Vorwissenszeichen bleiben separat
+ok 68 - Ein Gebietssiegel öffnet alle Source-Gitter; zusätzliche Vorwissenszeichen bleiben separat
+  ---
+  duration_ms: 1.248944
+  type: 'test'
+  ...
+# Subtest: Gate animation hinges and fades before terminating exactly once
+ok 69 - Gate animation hinges and fades before terminating exactly once
+  ---
+  duration_ms: 1.24107
+  type: 'test'
+  ...
+# Subtest: Meisterkristalle sind vorher unsichtbar und nicht kollidierend; Erfolg verwandelt das Gebiet dauerhaft
+ok 70 - Meisterkristalle sind vorher unsichtbar und nicht kollidierend; Erfolg verwandelt das Gebiet dauerhaft
+  ---
+  duration_ms: 537.165023
+  type: 'test'
+  ...
+1..70
+# tests 70
+# suites 0
+# pass 70
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 34394.014456
