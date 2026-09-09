@@ -66,6 +66,24 @@ video{width:100%;max-height:230px;background:#000;border-radius:12px;object-fit:
 .small{font-size:11px;color:var(--muted)}
 hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;line-height:1.5}
+.worldLayout{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:12px}
+@media(max-width:760px){.worldLayout{grid-template-columns:1fr}}
+.worldPane{min-width:0}
+.worldViewport{position:relative;background:#07090c;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#world3d{display:block;width:100%;height:430px;border:0;border-radius:0;touch-action:none}
+#worldMap{display:block;width:100%;height:430px;border:0;border-radius:0;background:#0b0f13}
+.worldHud{position:absolute;left:10px;top:10px;max-width:calc(100% - 20px);padding:7px 9px;border-radius:9px;background:#080b0ecc;border:1px solid #ffffff1a;font-size:11px;font-variant-numeric:tabular-nums;pointer-events:none}
+.worldCrosshair{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);pointer-events:none}
+.worldCrosshair:before,.worldCrosshair:after{content:"";position:absolute;background:#ffffffaa}
+.worldCrosshair:before{left:8px;top:1px;width:1px;height:16px}
+.worldCrosshair:after{left:1px;top:8px;width:16px;height:1px}
+.worldControls{display:grid;grid-template-columns:repeat(3,52px);gap:6px;justify-content:center;align-items:center}
+.worldControls button{padding:8px;min-height:48px;min-width:48px;font-size:17px;user-select:none;-webkit-user-select:none}
+.worldControls .wide{grid-column:span 1}
+.worldLegend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.legendSwatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+#worldGLStatus{font-size:11px}
+
 </style>
 </head>
 <body>
@@ -185,6 +203,67 @@ footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;
     <div class="small">Automatisch skaliert. Nur sinnvoll, wenn die Orientierungsdaten plausibel sind und das iPad während des Tests wenig gedreht wird.</div>
   </section>
 
+  <section class="card">
+    <h2>5 · Metrische 3D-Welt · First Person + Weltkarte</h2>
+    <div class="row" style="margin-bottom:10px">
+      <label>Bewegungsquelle
+        <select id="worldMode">
+          <option value="sensor">Sensorposition + iPad-Blick</option>
+          <option value="manual">Manuelle Vergleichssteuerung</option>
+        </select>
+      </label>
+      <label>Maßstab virtuell / real
+        <input id="worldScale" type="number" value="1.000" min="0.01" max="20" step="0.01" style="width:130px">
+      </label>
+      <label>Augenhöhe [m]
+        <input id="eyeHeight" type="number" value="1.65" min="0.2" max="3" step="0.05" style="width:110px">
+      </label>
+      <label>Manuell [m/s]
+        <input id="manualSpeed" type="number" value="1.5" min="0.1" max="10" step="0.1" style="width:100px">
+      </label>
+      <button id="worldZeroBtn" class="good">Ursprung + Blick nullen</button>
+      <button id="worldClearPathBtn">Weltpfad löschen</button>
+      <span class="status"><i id="worldDot" class="dot"></i><span id="worldGLStatus">WebGL wird initialisiert…</span></span>
+    </div>
+
+    <div class="worldLayout">
+      <div class="worldPane">
+        <div class="worldViewport">
+          <canvas id="world3d" aria-label="First-Person-Ansicht der virtuellen 3D-Welt"></canvas>
+          <div class="worldCrosshair"></div>
+          <div id="worldHud" class="worldHud">Position: 0.00 / 1.65 / 0.00 m</div>
+        </div>
+        <div class="small" style="margin-top:6px">Sensor-Modus: Translation = stabilisierte IMU-Schätzung × Maßstab. Blickrichtung relativ zur Orientierung beim Nullen. 1 virtuelle Einheit entspricht 1 m.</div>
+      </div>
+
+      <div class="worldPane">
+        <div class="worldViewport">
+          <canvas id="worldMap" aria-label="Top-Down-Karte der virtuellen Welt und des zurückgelegten Pfads"></canvas>
+        </div>
+        <div class="worldLegend" style="margin-top:7px">
+          <span><i class="legendSwatch" style="background:#27313c"></i>Wände/Objekte</span>
+          <span><i class="legendSwatch" style="background:#b891ff"></i>Pfad</span>
+          <span><i class="legendSwatch" style="background:#ffd166"></i>Position/Blick</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="testBox" style="margin-top:12px">
+      <div class="small" style="margin-bottom:7px"><b>Manueller Vergleichsmodus:</b> Damit kannst du prüfen, wie sich exakt definierte virtuelle Bewegung anfühlt, unabhängig vom Sensor-Drift. Tastatur: W/A/S/D, Q/E hoch/runter, ←/→ drehen, ↑/↓ schauen.</div>
+      <div class="worldControls">
+        <button type="button" data-world-action="turnLeft" aria-label="Nach links drehen">↶</button>
+        <button type="button" data-world-action="forward" aria-label="Vorwärts">▲</button>
+        <button type="button" data-world-action="turnRight" aria-label="Nach rechts drehen">↷</button>
+        <button type="button" data-world-action="left" aria-label="Nach links bewegen">◀</button>
+        <button type="button" data-world-action="back" aria-label="Rückwärts">▼</button>
+        <button type="button" data-world-action="right" aria-label="Nach rechts bewegen">▶</button>
+        <button type="button" data-world-action="down" aria-label="Nach unten">−Y</button>
+        <button type="button" data-world-action="up" aria-label="Nach oben">+Y</button>
+        <button type="button" data-world-action="lookCenter" aria-label="Blick zentrieren">⊙</button>
+      </div>
+    </div>
+  </section>
+
   <section class="card half">
     <h2>Optionale Kamera-Bewegungsdiagnose</h2>
     <div class="row">
@@ -242,7 +321,15 @@ footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;
     originRaw:zero(), originStable:zero(), filtered:zero(),
     stillSince:null, isStationary:false,
     test:null, graph:[], path:[], logs:[],
-    wakeLock:null, stream:null, prevCam:null, lastCamT:0, camFrames:0, camFpsStart:now()
+    wakeLock:null, stream:null, prevCam:null, lastCamT:0, camFrames:0, camFpsStart:now(),
+    world:{
+      gl:null, program:null, cubeVbo:null, cubeIbo:null, gridVbo:null, gridCount:0,
+      sensorOrigin:zero(), alpha0:0, beta0:0, orientationZeroCaptured:false,
+      pos:{x:0,y:1.65,z:0}, manualPos:{x:0,y:1.65,z:0},
+      yaw:0, pitch:0, manualYaw:0, manualPitch:0,
+      trail:[], lastTrail:null, lastFrameT:now(), keys:new Set(),
+      actions:new Set(), ready:false
+    }
   };
 
   function debug(msg){
@@ -347,6 +434,12 @@ footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;
         gamma:Number.isFinite(e.gamma)?e.gamma:0,
         absolute:!!e.absolute, valid:true
       };
+      if(S.world && !S.world.orientationZeroCaptured && $('worldMode')?.value==='sensor'){
+        S.world.alpha0=S.orientation.alpha;
+        S.world.beta0=S.orientation.beta;
+        S.world.orientationZeroCaptured=true;
+        debug(`3D-Blickreferenz automatisch gesetzt: alpha=${S.world.alpha0.toFixed(1)}, beta=${S.world.beta0.toFixed(1)}`);
+      }
       setDot('orientDot','ok');
       $('orientStatus').textContent='Orientation: Daten empfangen';
     }
@@ -483,6 +576,10 @@ footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;
     S.test=null; $('testStop').disabled=true; $('testStart').disabled=false;
     $('testState').textContent='Position und Teststatus zurückgesetzt.';
     $('testResults').innerHTML='';
+    if($('worldMode')?.value==='sensor'){
+      S.world.sensorOrigin=copy(S.stablePos);
+      S.world.trail=[];S.world.lastTrail=null;
+    }
     debug('Positionen/Velocities zurückgesetzt.');
   }
 
@@ -676,6 +773,282 @@ footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;
     x.fillStyle='#9ca8b7';x.font=`${11*dpr}px system-ui`;x.fillText(`±${maxAbs.toFixed(2)} m`,7*dpr,15*dpr);
   }
 
+
+  const WORLD_SIZE=20;
+  const WORLD_OBJECTS=[
+    {x:-4.0,y:0.60,z:-3.0,w:1.6,h:1.2,d:1.6,c:[0.28,0.48,0.72,1]},
+    {x: 3.5,y:0.90,z:-4.5,w:2.0,h:1.8,d:1.0,c:[0.68,0.38,0.28,1]},
+    {x: 4.0,y:0.45,z: 3.0,w:1.2,h:0.9,d:2.4,c:[0.35,0.64,0.42,1]},
+    {x:-3.0,y:1.25,z: 4.5,w:1.0,h:2.5,d:1.0,c:[0.58,0.42,0.68,1]},
+    {x: 0.0,y:0.35,z: 0.0,w:1.0,h:0.7,d:1.0,c:[0.72,0.62,0.30,1]}
+  ];
+
+  function angleDeltaDeg(a,b){
+    let d=(a-b)%360;
+    if(d>180)d-=360;
+    if(d<-180)d+=360;
+    return d;
+  }
+
+  function mat4Mul(a,b){
+    const o=new Float32Array(16);
+    for(let c=0;c<4;c++) for(let r=0;r<4;r++)
+      o[c*4+r]=a[0*4+r]*b[c*4+0]+a[1*4+r]*b[c*4+1]+a[2*4+r]*b[c*4+2]+a[3*4+r]*b[c*4+3];
+    return o;
+  }
+  function mat4Perspective(fovy,aspect,near,far){
+    const f=1/Math.tan(fovy/2), nf=1/(near-far);
+    return new Float32Array([f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0]);
+  }
+  function mat4LookAt(eye,center,up){
+    let zx=eye[0]-center[0], zy=eye[1]-center[1], zz=eye[2]-center[2];
+    let l=Math.hypot(zx,zy,zz)||1; zx/=l;zy/=l;zz/=l;
+    let xx=up[1]*zz-up[2]*zy, xy=up[2]*zx-up[0]*zz, xz=up[0]*zy-up[1]*zx;
+    l=Math.hypot(xx,xy,xz)||1;xx/=l;xy/=l;xz/=l;
+    const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+    return new Float32Array([
+      xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0,
+      -(xx*eye[0]+xy*eye[1]+xz*eye[2]),
+      -(yx*eye[0]+yy*eye[1]+yz*eye[2]),
+      -(zx*eye[0]+zy*eye[1]+zz*eye[2]),1
+    ]);
+  }
+  function mat4Model(x,y,z,sx,sy,sz){
+    return new Float32Array([sx,0,0,0, 0,sy,0,0, 0,0,sz,0, x,y,z,1]);
+  }
+
+  function compileShader(gl,type,src){
+    const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)||'Shader compile error');
+    return s;
+  }
+
+  function initWorldGL(){
+    try{
+      const canvas=$('world3d');
+      const gl=canvas.getContext('webgl',{antialias:true,alpha:false,depth:true}) ||
+               canvas.getContext('experimental-webgl');
+      if(!gl) throw new Error('WebGL nicht verfügbar');
+      const vs=compileShader(gl,gl.VERTEX_SHADER,
+        'attribute vec3 aPos; uniform mat4 uMVP; void main(){gl_Position=uMVP*vec4(aPos,1.0);}');
+      const fs=compileShader(gl,gl.FRAGMENT_SHADER,
+        'precision mediump float; uniform vec4 uColor; void main(){gl_FragColor=uColor;}');
+      const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr)||'Program link error');
+
+      const cube=new Float32Array([
+        -.5,-.5,-.5, .5,-.5,-.5, .5,.5,-.5, -.5,.5,-.5,
+        -.5,-.5,.5,  .5,-.5,.5,  .5,.5,.5,  -.5,.5,.5
+      ]);
+      const idx=new Uint16Array([
+        0,1,2,0,2,3, 4,6,5,4,7,6, 0,4,5,0,5,1,
+        3,2,6,3,6,7, 1,5,6,1,6,2, 0,3,7,0,7,4
+      ]);
+      const cv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cv);gl.bufferData(gl.ARRAY_BUFFER,cube,gl.STATIC_DRAW);
+      const ci=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idx,gl.STATIC_DRAW);
+
+      const lines=[];
+      for(let i=-WORLD_SIZE/2;i<=WORLD_SIZE/2;i++){
+        lines.push(i,0,-WORLD_SIZE/2, i,0,WORLD_SIZE/2);
+        lines.push(-WORLD_SIZE/2,0,i, WORLD_SIZE/2,0,i);
+      }
+      const gv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,gv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(lines),gl.STATIC_DRAW);
+
+      Object.assign(S.world,{gl,program:pr,cubeVbo:cv,cubeIbo:ci,gridVbo:gv,gridCount:lines.length/3,ready:true});
+      $('worldGLStatus').textContent='WebGL aktiv';
+      setDot('worldDot','ok');
+      debug('3D-Welt: WebGL initialisiert.');
+      zeroWorld();
+    }catch(e){
+      $('worldGLStatus').textContent='WebGL Fehler';
+      setDot('worldDot','bad');
+      debug('3D-Welt FEHLER: '+e.message);
+    }
+  }
+
+  function zeroWorld(){
+    const w=S.world;
+    w.sensorOrigin=copy(S.stablePos);
+    w.alpha0=S.orientation.valid?S.orientation.alpha:0;
+    w.beta0=S.orientation.valid?S.orientation.beta:0;
+    w.orientationZeroCaptured=S.orientation.valid;
+    const eye=clamp(Number($('eyeHeight').value)||1.65,0.2,3);
+    w.manualPos={x:0,y:eye,z:0}; w.pos={x:0,y:eye,z:0};
+    w.manualYaw=0;w.manualPitch=0;w.yaw=0;w.pitch=0;
+    w.trail=[{x:0,z:0}];w.lastTrail={x:0,z:0};
+    debug(`3D-Welt genullt: sensorOrigin=${JSON.stringify(w.sensorOrigin)}, alpha0=${w.alpha0.toFixed(1)}, beta0=${w.beta0.toFixed(1)}`);
+  }
+
+  function clearWorldTrail(){
+    const p=S.world.pos;
+    S.world.trail=[{x:p.x,z:p.z}];
+    S.world.lastTrail={x:p.x,z:p.z};
+  }
+
+  function worldModeChanged(){
+    const eye=clamp(Number($('eyeHeight').value)||1.65,0.2,3);
+    if($('worldMode').value==='sensor'){
+      S.world.sensorOrigin=copy(S.stablePos);
+      S.world.alpha0=S.orientation.valid?S.orientation.alpha:0;
+      S.world.beta0=S.orientation.valid?S.orientation.beta:0;
+      S.world.orientationZeroCaptured=S.orientation.valid;
+      S.world.trail=[];S.world.lastTrail=null;
+    }else{
+      S.world.manualPos={x:S.world.pos.x,y:Math.max(.2,S.world.pos.y||eye),z:S.world.pos.z};
+      S.world.manualYaw=S.world.yaw; S.world.manualPitch=S.world.pitch;
+      S.world.trail=[];S.world.lastTrail=null;
+    }
+  }
+
+  function updateWorld(){
+    const w=S.world, t=now(), dt=clamp(t-w.lastFrameT,0,0.05); w.lastFrameT=t;
+    const mode=$('worldMode').value;
+    const scale=clamp(Number($('worldScale').value)||1,0.01,20);
+    const eye=clamp(Number($('eyeHeight').value)||1.65,0.2,3);
+
+    if(mode==='sensor'){
+      const r=sub(S.stablePos,w.sensorOrigin);
+      w.pos={x:r.x*scale,y:eye+r.y*scale,z:-r.z*scale};
+      if(S.orientation.valid){
+        w.yaw=rad(-angleDeltaDeg(S.orientation.alpha,w.alpha0));
+        w.pitch=rad(clamp(-(S.orientation.beta-w.beta0),-80,80));
+      }
+    }else{
+      const speed=clamp(Number($('manualSpeed').value)||1.5,0.1,10);
+      const act=w.actions, keys=w.keys;
+      const f=(act.has('forward')||keys.has('KeyW')?1:0)-(act.has('back')||keys.has('KeyS')?1:0);
+      const str=(act.has('right')||keys.has('KeyD')?1:0)-(act.has('left')||keys.has('KeyA')?1:0);
+      const vert=(act.has('up')||keys.has('KeyE')?1:0)-(act.has('down')||keys.has('KeyQ')?1:0);
+      const turn=(act.has('turnRight')||keys.has('ArrowRight')?1:0)-(act.has('turnLeft')||keys.has('ArrowLeft')?1:0);
+      const look=(keys.has('ArrowUp')?1:0)-(keys.has('ArrowDown')?1:0);
+      w.manualYaw+=turn*rad(75)*dt;
+      w.manualPitch=clamp(w.manualPitch+look*rad(55)*dt,rad(-80),rad(80));
+      if(act.has('lookCenter'))w.manualPitch=0;
+      const sy=Math.sin(w.manualYaw), cy=Math.cos(w.manualYaw);
+      w.manualPos.x+=(f*sy+str*cy)*speed*dt;
+      w.manualPos.z+=(-f*cy+str*sy)*speed*dt;
+      w.manualPos.y=clamp(w.manualPos.y+vert*speed*dt,.2,5);
+      w.pos=copy(w.manualPos);w.yaw=w.manualYaw;w.pitch=w.manualPitch;
+    }
+
+    const lp=w.lastTrail;
+    if(!lp || Math.hypot(w.pos.x-lp.x,w.pos.z-lp.z)>=0.025){
+      w.trail.push({x:w.pos.x,z:w.pos.z});
+      if(w.trail.length>8000)w.trail.splice(0,w.trail.length-8000);
+      w.lastTrail={x:w.pos.x,z:w.pos.z};
+    }
+  }
+
+  function resizeCanvasToDisplaySize(c){
+    const dpr=Math.min(devicePixelRatio||1,2);
+    const r=c.getBoundingClientRect(), w=Math.max(2,Math.floor(r.width*dpr)), h=Math.max(2,Math.floor(r.height*dpr));
+    if(c.width!==w||c.height!==h){c.width=w;c.height=h;return true}
+    return false;
+  }
+
+  function drawWorld3D(){
+    const w=S.world;if(!w.ready)return;
+    const gl=w.gl,c=$('world3d');resizeCanvasToDisplaySize(c);
+    gl.viewport(0,0,c.width,c.height);gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);
+    gl.clearColor(.035,.045,.055,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.useProgram(w.program);
+    const aPos=gl.getAttribLocation(w.program,'aPos'), uMVP=gl.getUniformLocation(w.program,'uMVP'), uColor=gl.getUniformLocation(w.program,'uColor');
+    gl.enableVertexAttribArray(aPos);
+
+    const yaw=w.yaw,pitch=w.pitch,cp=Math.cos(pitch);
+    const dir=[Math.sin(yaw)*cp,Math.sin(pitch),-Math.cos(yaw)*cp];
+    const eye=[w.pos.x,w.pos.y,w.pos.z], center=[eye[0]+dir[0],eye[1]+dir[1],eye[2]+dir[2]];
+    const P=mat4Perspective(rad(68),c.width/c.height,.04,80), V=mat4LookAt(eye,center,[0,1,0]), VP=mat4Mul(P,V);
+
+    function cube(x,y,z,sx,sy,sz,color){
+      gl.bindBuffer(gl.ARRAY_BUFFER,w.cubeVbo);gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,0,0);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,w.cubeIbo);
+      gl.uniformMatrix4fv(uMVP,false,mat4Mul(VP,mat4Model(x,y,z,sx,sy,sz)));
+      gl.uniform4fv(uColor,color);gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
+    }
+
+    // Ground slab, perimeter walls and landmarks.
+    cube(0,-.08,0,WORLD_SIZE,.15,WORLD_SIZE,[.09,.11,.13,1]);
+    const H=2.7,T=.12,L=WORLD_SIZE;
+    cube(0,H/2,-L/2,L,H,T,[.17,.20,.23,1]); cube(0,H/2,L/2,L,H,T,[.17,.20,.23,1]);
+    cube(-L/2,H/2,0,T,H,L,[.17,.20,.23,1]); cube(L/2,H/2,0,T,H,L,[.17,.20,.23,1]);
+    for(const o of WORLD_OBJECTS)cube(o.x,o.y,o.z,o.w,o.h,o.d,o.c);
+
+    // 1 m floor grid.
+    gl.bindBuffer(gl.ARRAY_BUFFER,w.gridVbo);gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,0,0);
+    gl.uniformMatrix4fv(uMVP,false,VP);gl.uniform4fv(uColor,new Float32Array([.22,.25,.28,1]));
+    gl.drawArrays(gl.LINES,0,w.gridCount);
+
+    $('worldHud').textContent=
+      `x ${w.pos.x.toFixed(2)} · y ${w.pos.y.toFixed(2)} · z ${w.pos.z.toFixed(2)} m   |   `+
+      `Yaw ${(w.yaw*180/Math.PI).toFixed(0)}° · Pitch ${(w.pitch*180/Math.PI).toFixed(0)}°   |   `+
+      `${$('worldMode').value==='sensor'?'SENSOR':'MANUELL'} ×${(Number($('worldScale').value)||1).toFixed(2)}`;
+  }
+
+  function drawWorldMap(){
+    const c=$('worldMap');resizeCanvasToDisplaySize(c);
+    const x=c.getContext('2d'),w=c.width,h=c.height,dpr=Math.min(devicePixelRatio||1,2);
+    x.clearRect(0,0,w,h);x.fillStyle='#0b0f13';x.fillRect(0,0,w,h);
+    const margin=18*dpr, scale=Math.min((w-2*margin)/WORLD_SIZE,(h-2*margin)/WORLD_SIZE),cx=w/2,cy=h/2;
+    const sx=X=>cx+X*scale, sy=Z=>cy+Z*scale;
+
+    // meter grid
+    x.lineWidth=1*dpr;x.strokeStyle='#1c242c';
+    for(let i=-WORLD_SIZE/2;i<=WORLD_SIZE/2;i++){
+      x.beginPath();x.moveTo(sx(i),sy(-WORLD_SIZE/2));x.lineTo(sx(i),sy(WORLD_SIZE/2));x.stroke();
+      x.beginPath();x.moveTo(sx(-WORLD_SIZE/2),sy(i));x.lineTo(sx(WORLD_SIZE/2),sy(i));x.stroke();
+    }
+    // room boundary
+    x.strokeStyle='#6b7785';x.lineWidth=2*dpr;
+    x.strokeRect(sx(-WORLD_SIZE/2),sy(-WORLD_SIZE/2),WORLD_SIZE*scale,WORLD_SIZE*scale);
+
+    // objects
+    x.fillStyle='#27313c';
+    for(const o of WORLD_OBJECTS)x.fillRect(sx(o.x-o.w/2),sy(o.z-o.d/2),o.w*scale,o.d*scale);
+
+    // axes
+    x.strokeStyle='#38434e';x.lineWidth=1*dpr;
+    x.beginPath();x.moveTo(sx(-WORLD_SIZE/2),sy(0));x.lineTo(sx(WORLD_SIZE/2),sy(0));x.stroke();
+    x.beginPath();x.moveTo(sx(0),sy(-WORLD_SIZE/2));x.lineTo(sx(0),sy(WORLD_SIZE/2));x.stroke();
+
+    const tr=S.world.trail;
+    if(tr.length>1){
+      x.strokeStyle='#b891ff';x.lineWidth=2.2*dpr;x.lineJoin='round';x.lineCap='round';x.beginPath();
+      tr.forEach((p,i)=>{i?x.lineTo(sx(p.x),sy(p.z)):x.moveTo(sx(p.x),sy(p.z))});x.stroke();
+    }
+
+    const p=S.world.pos,px=sx(p.x),py=sy(p.z),a=S.world.yaw;
+    x.fillStyle='#ffd166';x.beginPath();x.arc(px,py,5*dpr,0,Math.PI*2);x.fill();
+    x.strokeStyle='#ffd166';x.lineWidth=2*dpr;x.beginPath();x.moveTo(px,py);
+    x.lineTo(px+Math.sin(a)*18*dpr,py-Math.cos(a)*18*dpr);x.stroke();
+
+    x.fillStyle='#95a2b1';x.font=`${10*dpr}px system-ui`;
+    x.fillText('1 m Raster',margin,14*dpr);
+    x.fillText('+X →',sx(WORLD_SIZE/2)-36*dpr,sy(0)-5*dpr);
+    x.fillText('−Z ↑',sx(0)+5*dpr,sy(-WORLD_SIZE/2)+12*dpr);
+  }
+
+  function bindWorldControls(){
+    $('worldZeroBtn').addEventListener('click',zeroWorld);
+    $('worldClearPathBtn').addEventListener('click',clearWorldTrail);
+    $('worldMode').addEventListener('change',worldModeChanged);
+
+    document.querySelectorAll('[data-world-action]').forEach(btn=>{
+      const a=btn.dataset.worldAction;
+      const on=e=>{e.preventDefault();S.world.actions.add(a)};
+      const off=e=>{e.preventDefault();S.world.actions.delete(a)};
+      btn.addEventListener('pointerdown',on);btn.addEventListener('pointerup',off);
+      btn.addEventListener('pointercancel',off);btn.addEventListener('pointerleave',off);
+    });
+    window.addEventListener('keydown',e=>{
+      if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName))return;
+      if(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code)){
+        S.world.keys.add(e.code); if(e.code.startsWith('Arrow'))e.preventDefault();
+      }
+    },{passive:false});
+    window.addEventListener('keyup',e=>S.world.keys.delete(e.code));
+  }
+
   function render(){
     $('hz').textContent=S.hz.toFixed(1);
     $('accMag').textContent=fmt(mag(S.accFiltered));
@@ -700,7 +1073,8 @@ footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;
     $('stableVel').textContent=fmt(mag(S.stableVel));
     $('logCount').textContent=S.logs.length.toLocaleString('de-DE');
 
-    drawGraph();drawPath();
+    updateWorld();
+    drawGraph();drawPath();drawWorld3D();drawWorldMap();
     requestAnimationFrame(render);
   }
 
@@ -718,6 +1092,8 @@ footer{max-width:1200px;margin:16px auto 30px;color:var(--muted);font-size:11px;
     if(document.visibilityState==='visible' && S.wakeLock===null && $('wakeBtn').textContent==='Wake Lock aktiv') toggleWake();
   });
 
+  bindWorldControls();
+  initWorldGL();
   systemCheck();
   requestAnimationFrame(render);
 })();
