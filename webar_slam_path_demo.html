@@ -5,27 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>WebAR SLAM 1:1 Path Test · Heading Lock</title>
+<title>WebAR Forest Path Demo</title>
 
-<script
-  src="https://cdn.jsdelivr.net/npm/@8thwall/coaching-overlay@1/dist/coaching-overlay.js"
-  crossorigin="anonymous"></script>
-
-<script
-  src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js"
-  async
-  crossorigin="anonymous"
-  data-preload-chunks="slam"></script>
+<script src="https://cdn.jsdelivr.net/npm/@8thwall/coaching-overlay@1/dist/coaching-overlay.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
 
 <style>
 :root{
   color-scheme:dark;
-  --bg:#090b0e;--panel:#12161b;--panel2:#181e25;--line:#2a323c;
-  --text:#eef3f7;--muted:#96a2af;--ok:#5bd68b;--warn:#ffd166;--bad:#ff6b6b;
+  --bg:#091017; --panel:#111923; --panel2:#172230; --line:#2a3948;
+  --text:#eef5fb; --muted:#9eb0bf; --ok:#58d68a; --warn:#ffd166; --bad:#ff6b6b;
 }
 *{box-sizing:border-box}
 html,body{
-  margin:0;background:var(--bg);color:var(--text);
+  margin:0; background:var(--bg); color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif
 }
 body{
@@ -33,90 +26,90 @@ body{
   padding:max(12px,env(safe-area-inset-top))
           max(12px,env(safe-area-inset-right))
           max(18px,env(safe-area-inset-bottom))
-          max(12px,env(safe-area-inset-left))
+          max(12px,env(safe-area-inset-left));
 }
-.shell{max-width:1420px;margin:auto}
+.shell{max-width:1450px;margin:auto}
 .top{
-  display:flex;gap:10px;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;margin-bottom:12px
+  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:12px
 }
-h1{font-size:21px;letter-spacing:-.02em;margin:0 0 4px}
-.sub{font-size:12px;color:var(--muted);margin:0}
-.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h1{font-size:22px;letter-spacing:-.02em;margin:0 0 4px}
+.sub{margin:0;color:var(--muted);font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 button{
-  appearance:none;border:1px solid #3b4654;background:var(--panel2);color:var(--text);
+  appearance:none;border:1px solid #425264;background:var(--panel2);color:var(--text);
   border-radius:11px;min-height:44px;padding:10px 13px;font:600 14px inherit;
   touch-action:manipulation
 }
-button.primary{background:#285cad;border-color:#4777c5}
+button.primary{background:#2a5ea9;border-color:#4a79c4}
+button.good{background:#245f46;border-color:#377d5d}
 button:disabled{opacity:.45}
 .status{
-  display:inline-flex;gap:7px;align-items:center;padding:7px 10px;
-  border:1px solid var(--line);background:var(--panel);border-radius:999px;
-  color:var(--muted);font-size:12px
+  display:inline-flex;align-items:center;gap:7px;padding:7px 10px;font-size:12px;color:var(--muted);
+  background:var(--panel);border:1px solid var(--line);border-radius:999px
 }
-.dot{width:9px;height:9px;border-radius:50%;background:#606872}
+.dot{width:9px;height:9px;border-radius:50%;background:#67717d}
 .dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
-.layout{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(310px,1fr);gap:12px}
-@media(max-width:850px){.layout{grid-template-columns:1fr}}
-.panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px}
+
+.layout{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(320px,1fr);gap:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px;min-width:0}
 .panelTitle{
-  display:flex;gap:8px;justify-content:space-between;align-items:center;
-  margin:1px 3px 9px;color:var(--muted);font-size:12px
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  margin:1px 3px 9px;font-size:12px;color:var(--muted)
 }
 .viewport{
   position:relative;overflow:hidden;border:1px solid var(--line);
-  border-radius:12px;background:#080b0f
+  border-radius:13px;background:#0a1017
 }
-#world3d,#map{display:block;width:100%;height:min(64vw,610px);min-height:390px;border:0}
-@media(max-width:850px){
-  #world3d{height:62vw;min-height:360px}
-  #map{height:52vw;min-height:330px}
+#world3d,#map{
+  display:block;width:100%;height:min(64vw,630px);min-height:400px;border:0
 }
-@media(max-width:520px){
-  #world3d{height:72vw;min-height:330px}
-  #map{height:70vw;min-height:310px}
+@media(max-width:900px){
+  #world3d{height:66vw;min-height:360px}
+  #map{height:54vw;min-height:320px}
+}
+@media(max-width:560px){
+  #world3d{height:76vw;min-height:330px}
+  #map{height:74vw;min-height:300px}
 }
 .hud{
-  position:absolute;left:9px;top:9px;z-index:3;padding:7px 9px;
-  border:1px solid #ffffff20;border-radius:9px;background:#070a0dcc;
-  font-size:11px;font-variant-numeric:tabular-nums;pointer-events:none
+  position:absolute;left:10px;top:10px;z-index:3;max-width:calc(100% - 20px);
+  padding:8px 10px;border-radius:10px;background:#071019dd;border:1px solid #ffffff1c;
+  font-size:11px;line-height:1.45;font-variant-numeric:tabular-nums;pointer-events:none
 }
 .hint{
-  position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
-  padding:28px;text-align:center;background:#080b0ed9;color:#d8e0e7;
-  font-size:14px;line-height:1.5
+  position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:28px;background:#081018d8;color:#d8e3ec;font-size:14px;line-height:1.5
 }
 .hint.hidden{display:none}
 .cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);pointer-events:none}
-.cross:before,.cross:after{content:"";position:absolute;background:#ffffffa8}
+.cross:before,.cross:after{content:"";position:absolute;background:#ffffffb0}
 .cross:before{left:8px;top:1px;width:1px;height:16px}
 .cross:after{top:8px;left:1px;width:16px;height:1px}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
-.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:8px 3px 1px;font-size:10px;color:var(--muted)}
+.sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 
 .debug{
-  display:none;margin-top:12px;padding:13px;background:var(--panel);
-  border:1px solid var(--line);border-radius:16px
+  display:none;margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:13px
 }
 .debug.open{display:block}
-.debugHead{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:11px}
+.debugHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px}
 .debug h2{font-size:16px;margin:0}
-.note{font-size:11px;color:var(--muted);line-height:1.45}
+.note{font-size:11px;color:var(--muted);line-height:1.5}
 .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-@media(max-width:850px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.card{min-width:0;padding:9px;background:#0d1116;border:1px solid var(--line);border-radius:11px}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{background:#0c131a;border:1px solid var(--line);border-radius:11px;padding:9px;min-width:0}
 .card .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.card .l{margin-top:3px;font-size:10px;color:var(--muted)}
+.card .l{font-size:10px;color:var(--muted);margin-top:3px}
 .debugGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 @media(max-width:760px){.debugGrid{grid-template-columns:1fr}}
 table{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
 td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}
 td:first-child{text-align:left;color:var(--muted)}
 pre{
-  margin:0;padding:9px;max-height:260px;overflow:auto;
-  white-space:pre-wrap;word-break:break-word;background:#0b0f13;
-  border:1px solid var(--line);border-radius:10px;color:#c6d0da;font-size:10px
+  margin:0; padding:9px; max-height:260px; overflow:auto; white-space:pre-wrap; word-break:break-word;
+  background:#0b0f13; border:1px solid var(--line); border-radius:10px; color:#c7d2db; font-size:10px
 }
 #xrCanvas{
   position:absolute;left:-10000px;top:0;width:640px;height:480px;
@@ -128,13 +121,13 @@ pre{
 <div class="shell">
   <div class="top">
     <div>
-      <h1>WebAR SLAM · 1:1 Meter-Test</h1>
-      <p class="sub">Absolute Scale · Heading-Lock · Roll-freie First-Person-Kamera · Top-Down-Pfad</p>
+      <h1>WebAR Waldlichtung · Path Test</h1>
+      <p class="sub">3D-Waldszene + Karte von oben · Tracking-Reset nur per Knopfdruck</p>
     </div>
     <div class="actions">
       <span class="status"><i id="statusDot" class="dot"></i><span id="statusText">Engine lädt …</span></span>
       <button id="startBtn" class="primary" disabled>WebAR starten</button>
-      <button id="recenterBtn" disabled>Nullpunkt setzen</button>
+      <button id="recenterBtn" class="good" disabled>Nullpunkt setzen / Reset</button>
       <button id="clearBtn" disabled>Pfad löschen</button>
       <button id="debugBtn">Debug</button>
     </div>
@@ -143,18 +136,19 @@ pre{
   <div class="layout">
     <section class="panel">
       <div class="panelTitle">
-        <span>3D-UMGEBUNG · 1 KACHEL = 1 m</span>
+        <span>3D-UMGEBUNG · WALDLICHTUNG</span>
         <span id="trackLabel">kein Tracking</span>
       </div>
       <div class="viewport">
         <canvas id="world3d"></canvas>
         <div class="cross"></div>
-        <div id="hud" class="hud">x 0.00 · y 1.65 · z 0.00 m</div>
+        <div id="hud" class="hud">Warte auf Tracking …</div>
         <div id="hint" class="hint">
           <div>
             <b>WebAR starten</b><br>
-            Danach das iPad wie angezeigt <b>vor und zurück bewegen</b>,<br>
-            damit 8th Wall die absolute Meter-Skala bestimmt.
+            Kamera erlauben und dem Coaching folgen.<br>
+            Danach <b>„Nullpunkt setzen / Reset“</b> drücken.<br>
+            Ein späterer Tracking-Verlust setzt nichts automatisch zurück.
           </div>
         </div>
       </div>
@@ -162,16 +156,17 @@ pre{
 
     <section class="panel">
       <div class="panelTitle">
-        <span>PFAD VON OBEN</span>
+        <span>KARTE VON OBEN</span>
         <span id="distanceLabel">0.00 m</span>
       </div>
       <div class="viewport">
         <canvas id="map"></canvas>
       </div>
-      <div class="legend" style="margin:8px 3px 1px">
-        <span><i class="swatch" style="background:#34404b"></i>Objekte</span>
-        <span><i class="swatch" style="background:#b891ff"></i>Pfad</span>
-        <span><i class="swatch" style="background:#ffd166"></i>Position/Blick</span>
+      <div class="legend">
+        <span><i class="sw" style="background:#33414f"></i>Szene</span>
+        <span><i class="sw" style="background:#b891ff"></i>Pfad</span>
+        <span><i class="sw" style="background:#ffd166"></i>Position / Blick</span>
+        <span><i class="sw" style="background:#7df5c9"></i>entdeckte Geheimnisse</span>
       </div>
     </section>
   </div>
@@ -180,20 +175,20 @@ pre{
     <div class="debugHead">
       <div>
         <h2>Debug View</h2>
-        <div class="note">Raw XR8 → gemeinsame Kamera-Basis → Nullpunkt → 1:1 Meter → 12-mm-Jitter-Deadzone.</div>
+        <div class="note">Tracking-Verlust friert die letzte gute Pose ein. Recenter passiert nur per Button.</div>
       </div>
       <button id="closeDebugBtn">Schließen</button>
     </div>
 
     <div class="cards">
       <div class="card"><div id="dbgStatus" class="v">—</div><div class="l">Tracking</div></div>
-      <div class="card"><div id="dbgScaleReady" class="v">NEIN</div><div class="l">Absolute Scale bereit</div></div>
+      <div class="card"><div id="dbgScale" class="v">NEIN</div><div class="l">Absolute Scale bereit</div></div>
+      <div class="card"><div id="dbgOrigin" class="v">NEIN</div><div class="l">Origin gesetzt</div></div>
       <div class="card"><div id="dbgHz" class="v">0.0</div><div class="l">Pose Updates/s</div></div>
       <div class="card"><div id="dbgFps" class="v">0.0</div><div class="l">Render FPS</div></div>
-      <div class="card"><div id="dbgDisplacement" class="v">0.000 m</div><div class="l">Horiz. Distanz vom Nullpunkt</div></div>
-      <div class="card"><div id="dbgRawDisplacement" class="v">0.000 m</div><div class="l">Raw 3D-Δ in XR8-Metern</div></div>
-      <div class="card"><div id="dbgPath" class="v">0.000 m</div><div class="l">Top-Down-Pfadlänge</div></div>
-      <div class="card"><div id="dbgJitter" class="v">0</div><div class="l">Deadzone verworfen</div></div>
+      <div class="card"><div id="dbgPath" class="v">0.000 m</div><div class="l">Pfadlänge</div></div>
+      <div class="card"><div id="dbgLost" class="v">0</div><div class="l">Tracking-Verluste</div></div>
+      <div class="card"><div id="dbgSecrets" class="v">0 / 4</div><div class="l">Geheimnisse entdeckt</div></div>
     </div>
 
     <div class="debugGrid">
@@ -203,36 +198,21 @@ pre{
             <tr><td>Raw XR8 X</td><td id="rawX">—</td></tr>
             <tr><td>Raw XR8 Y</td><td id="rawY">—</td></tr>
             <tr><td>Raw XR8 Z</td><td id="rawZ">—</td></tr>
-            <tr><td>Mapped Δ X [m]</td><td id="mappedX">—</td></tr>
-            <tr><td>Mapped Δ Y [m]</td><td id="mappedY">—</td></tr>
-            <tr><td>Mapped Δ Z [m]</td><td id="mappedZ">—</td></tr>
-            <tr><td>Origin Forward X/Z</td><td id="basisForward">—</td></tr>
-            <tr><td>Origin Right X/Z</td><td id="basisRight">—</td></tr>
-            <tr><td>Move/View alignment</td><td id="moveAlignment">—</td></tr>
-            <tr><td>Final X [m]</td><td id="localX">—</td></tr>
-            <tr><td>Final Y [m]</td><td id="localY">—</td></tr>
-            <tr><td>Final Z [m]</td><td id="localZ">—</td></tr>
-            <tr><td>Yaw raw</td><td id="yawRaw">—</td></tr>
+            <tr><td>Local X [m]</td><td id="localX">—</td></tr>
+            <tr><td>Local Y [m]</td><td id="localY">—</td></tr>
+            <tr><td>Local Z [m]</td><td id="localZ">—</td></tr>
             <tr><td>Yaw relativ</td><td id="yawLocal">—</td></tr>
-            <tr><td>Pitch raw</td><td id="pitchRaw">—</td></tr>
             <tr><td>Pitch relativ</td><td id="pitchLocal">—</td></tr>
             <tr><td>Roll raw</td><td id="rollRaw">—</td></tr>
-            <tr><td>Roll Render</td><td id="rollRender">0.00° (verworfen)</td></tr>
             <tr><td>World Points</td><td id="worldPoints">0</td></tr>
             <tr><td>Tracking Reason</td><td id="trackReason">—</td></tr>
+            <tr><td>Geheimplatz</td><td id="secretName">—</td></tr>
             <tr><td>Secure Context</td><td id="secure">—</td></tr>
           </tbody>
         </table>
       </div>
       <div><pre id="log"></pre></div>
     </div>
-
-    <p class="note">
-      XR8 läuft mit <b>scale: "absolute"</b>. Beim Nullsetzen werden die horizontale
-      Kameravorwärts- und Rechtsachse gespeichert. Sowohl Translation als auch Yaw werden anschließend
-      aus genau dieser Basis berechnet. Dadurch bleibt Vorwärtsbewegung auch nach Drehungen an die
-      iPad-Blickrichtung gekoppelt. Es gibt <b>keinen Skalierungsfaktor</b>; Roll wird nicht gerendert.
-    </p>
   </section>
 </div>
 
@@ -242,43 +222,90 @@ pre{
 'use strict';
 (() => {
   const $ = id => document.getElementById(id);
-  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const fmt=(v,n=3)=>Number.isFinite(v)?v.toFixed(n):'—';
-  const rad=d=>d*Math.PI/180;
-  const deg=r=>r*180/Math.PI;
-  const wrapPi=a=>{
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const fmt = (v,n=3)=>Number.isFinite(v)?v.toFixed(n):'—';
+  const rad = d=>d*Math.PI/180;
+  const deg = r=>r*180/Math.PI;
+  const wrapPi = a=>{
     a=(a+Math.PI)%(2*Math.PI);
     if(a<0)a+=2*Math.PI;
     return a-Math.PI;
   };
 
-  const POSITION_DEADZONE=0.012; // 12 mm, absolute-position deadzone; no accumulated scale error.
+  const POSITION_DEADZONE = 0.012;   // 12 mm jitter suppression
+  const WORLD_HALF = 14;
+  const EYE_HEIGHT = 1.62;
 
-  const S={
-    engineReady:false,started:false,running:false,
-    trackingStatus:'—',trackingReason:'—',
-    scaleReady:false,coachAvailable:false,autoCentered:false,
-    rawPos:null,rawQ:null,
-    originRawPos:null,originForward:null,originRight:null,originUp:{x:0,y:1,z:0},
-    mappedDelta:{x:0,y:0,z:0},
+  const SECRETS = [
+    {id:'fairy',  name:'Glühwürmchen-Reigen', x: 7.2, z:-5.7, radius:2.0, found:false},
+    {id:'pond',   name:'Versteckter Herzteich', x:-7.8, z:6.4, radius:2.2, found:false},
+    {id:'fox',    name:'Schlauer Fuchs im Gebüsch', x:8.8, z:7.6, radius:2.0, found:false},
+    {id:'chest',  name:'Kleine Schatzkiste', x:-8.7, z:-7.8, radius:1.9, found:false},
+  ];
+
+  const S = {
+    engineReady:false,
+    started:false,
+    running:false,
+
+    trackingStatus:'—',
+    trackingReason:'—',
+    trackingLostCount:0,
+    wasTrackingGood:false,
+    freezePose:true,
+
+    scaleReady:false,
+    coachAvailable:false,
+
+    rawPos:null,
+    rawQ:null,
+
+    originSet:false,
+    originRawPos:null,
+    originForward:null,
+    originRight:null,
+
     localPos:{x:0,y:0,z:0},
-    rawYaw:0,rawPitch:0,rawRoll:0,
-    yaw:0,pitch:0,
-    path:[],pathLength:0,lastPathPoint:null,
-    rejectedJitter:0,worldPoints:0,
-    poseCount:0,poseHz:0,poseHzT:performance.now(),
-    frameCount:0,fps:0,fpsT:performance.now(),
-    gl:null,glReady:false,errors:[]
+    rawRoll:0,
+    yaw:0,
+    pitch:0,
+
+    path:[],
+    pathLength:0,
+    lastPathPoint:null,
+
+    worldPoints:0,
+
+    activeSecret:'—',
+    discoveredCount:0,
+
+    poseCount:0,
+    poseHz:0,
+    poseHzT:performance.now(),
+
+    frameCount:0,
+    fps:0,
+    fpsT:performance.now(),
+
+    logLines:[],
+    gl:null,
+    glReady:false,
   };
 
   function log(msg){
-    S.errors.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
-    S.errors=S.errors.slice(0,80);
-    $('log').textContent=S.errors.join('\n');
+    S.logLines.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
+    S.logLines = S.logLines.slice(0,100);
+    $('log').textContent = S.logLines.join('\n');
   }
-  function setStatus(text,kind=''){
-    $('statusText').textContent=text;
-    $('statusDot').className='dot '+kind;
+
+  function setStatus(text, kind=''){
+    $('statusText').textContent = text;
+    $('statusDot').className = 'dot ' + kind;
+  }
+
+  function updateHint(html, show=true){
+    $('hint').innerHTML = `<div>${html}</div>`;
+    $('hint').classList.toggle('hidden', !show);
   }
 
   function qNorm(q){
@@ -287,245 +314,195 @@ pre{
   }
   function qRotate(q,v){
     q=qNorm(q);
-    const u={x:q.x,y:q.y,z:q.z},s=q.w;
-    const dot=u.x*v.x+u.y*v.y+u.z*v.z;
-    const cross={
-      x:u.y*v.z-u.z*v.y,
-      y:u.z*v.x-u.x*v.z,
-      z:u.x*v.y-u.y*v.x
-    };
+    const u={x:q.x,y:q.y,z:q.z}, s=q.w;
+    const dotUV=u.x*v.x+u.y*v.y+u.z*v.z;
+    const crossUV={x:u.y*v.z-u.z*v.y, y:u.z*v.x-u.x*v.z, z:u.x*v.y-u.y*v.x};
     const uu=u.x*u.x+u.y*u.y+u.z*u.z;
     return {
-      x:2*dot*u.x+(s*s-uu)*v.x+2*s*cross.x,
-      y:2*dot*u.y+(s*s-uu)*v.y+2*s*cross.y,
-      z:2*dot*u.z+(s*s-uu)*v.z+2*s*cross.z
+      x:2*dotUV*u.x+(s*s-uu)*v.x+2*s*crossUV.x,
+      y:2*dotUV*u.y+(s*s-uu)*v.y+2*s*crossUV.y,
+      z:2*dotUV*u.z+(s*s-uu)*v.z+2*s*crossUV.z
     };
   }
   function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
-  function cross(a,b){
-    return {x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x};
-  }
+  function cross(a,b){return {x:a.y*b.z-a.z*b.y, y:a.z*b.x-a.x*b.z, z:a.x*b.y-a.y*b.x}}
   function norm(v){
     const m=Math.hypot(v.x,v.y,v.z)||1;
     return {x:v.x/m,y:v.y/m,z:v.z/m};
   }
-  function rotateY(v,a){
-    const c=Math.cos(a),s=Math.sin(a);
-    return {x:c*v.x+s*v.z,y:v.y,z:-s*v.x+c*v.z};
+  function horiz(v){
+    const m=Math.hypot(v.x,v.z);
+    return m>1e-6 ? {x:v.x/m,y:0,z:v.z/m} : null;
   }
 
-  // ----- Unified pose basis -----
-  // We do NOT guess XR8 world-axis signs anymore.
-  // At recenter we capture the actual XR camera optical-forward direction and build
-  // an orthonormal horizontal basis from it. Translation and yaw are then computed
-  // from this SAME basis. This guarantees that "walk where the iPad looks" remains
-  // aligned after arbitrary left/right turns.
-  //
-  // Camera optical forward uses local -Z (standard camera convention). If XR8's
-  // camera quaternion changes, qRotate() places that forward vector in the XR scene.
-  function xrCameraForward(q){
-    return norm(qRotate(q,{x:0,y:0,z:-1}));
-  }
-  function xrCameraUp(q){
-    return norm(qRotate(q,{x:0,y:1,z:0}));
-  }
-  function horizontal(v){
-    const h={x:v.x,y:0,z:v.z};
-    const m=Math.hypot(h.x,h.z);
-    return m>1e-6 ? {x:h.x/m,y:0,z:h.z/m} : null;
-  }
+  function xrCameraForward(q){ return norm(qRotate(q,{x:0,y:0,z:-1})); }
+  function xrCameraUp(q){ return norm(qRotate(q,{x:0,y:1,z:0})); }
 
   function basisFromCamera(q){
-    const forward3=xrCameraForward(q);
-    const forwardH=horizontal(forward3);
-    if(!forwardH)return null;
-
-    // Right-handed camera basis: right = forward × worldUp.
-    let right=cross(forwardH,{x:0,y:1,z:0});
-    right=norm(right);
-
-    return {
-      forward3,
-      forwardH,
-      right,
-      up:xrCameraUp(q)
-    };
+    const forward3 = xrCameraForward(q);
+    const forwardH = horiz(forward3);
+    if(!forwardH) return null;
+    let right = cross(forwardH,{x:0,y:1,z:0});
+    right = norm(right);
+    return {forward3, forwardH, right, up:xrCameraUp(q)};
   }
 
   function anglesRelativeToOrigin(q){
-    const b=basisFromCamera(q);
+    const b = basisFromCamera(q);
     if(!b || !S.originForward || !S.originRight){
-      return {yaw:0,pitch:0,roll:0,rawYaw:0,rawPitch:0,rawRoll:0};
+      return {yaw:0,pitch:0,roll:0};
     }
 
-    // Yaw is the signed horizontal angle from the initial camera-forward vector
-    // to the current camera-forward vector. Positive yaw = turn right.
-    const fDot=clamp(dot(b.forwardH,S.originForward),-1,1);
-    const rDot=clamp(dot(b.forwardH,S.originRight),-1,1);
-    const yaw=Math.atan2(rDot,fDot);
+    const fDot = clamp(dot(b.forwardH, S.originForward), -1, 1);
+    const rDot = clamp(dot(b.forwardH, S.originRight), -1, 1);
+    const yaw = Math.atan2(rDot, fDot);
+    const pitch = Math.asin(clamp(b.forward3.y, -1, 1));
 
-    // Pitch is derived directly from optical forward. Looking up => positive.
-    const pitch=Math.asin(clamp(b.forward3.y,-1,1));
+    let horizonRight = cross(b.forward3,{x:0,y:1,z:0});
+    if(Math.hypot(horizonRight.x,horizonRight.y,horizonRight.z) < 1e-5) horizonRight = {...b.right};
+    else horizonRight = norm(horizonRight);
+    const horizonUp = norm(cross(horizonRight,b.forward3));
+    const roll = Math.atan2(dot(cross(horizonUp,b.up),b.forward3), clamp(dot(horizonUp,b.up), -1, 1));
 
-    // Roll only for diagnostics; rendering always uses world-up.
-    let horizonRight=cross(b.forward3,{x:0,y:1,z:0});
-    if(Math.hypot(horizonRight.x,horizonRight.y,horizonRight.z)<1e-5){
-      horizonRight={...b.right};
-    }else{
-      horizonRight=norm(horizonRight);
-    }
-    const horizonUp=norm(cross(horizonRight,b.forward3));
-    const roll=Math.atan2(
-      dot(cross(horizonUp,b.up),b.forward3),
-      clamp(dot(horizonUp,b.up),-1,1)
-    );
-
-    // Raw angles are expressed in the same origin basis for useful debug output.
-    const rawYaw=Math.atan2(rDot,fDot);
-    const rawPitch=pitch;
-    const rawRoll=roll;
-    return {yaw,pitch,roll,rawYaw,rawPitch,rawRoll};
+    return {yaw, pitch, roll};
   }
 
   function mappedDeltaFromOrigin(){
-    if(!S.rawPos||!S.originRawPos||!S.originForward||!S.originRight){
-      return {x:0,y:0,z:0};
+    if(!S.rawPos || !S.originRawPos || !S.originForward || !S.originRight) return {x:0,y:0,z:0};
+    const d = {
+      x:S.rawPos.x - S.originRawPos.x,
+      y:S.rawPos.y - S.originRawPos.y,
+      z:S.rawPos.z - S.originRawPos.z
+    };
+    const rightMeters = dot(d,S.originRight);
+    const forwardMeters = dot(d,S.originForward);
+    return {x:rightMeters, y:d.y, z:-forwardMeters};
+  }
+
+  function updateSecrets(){
+    let nearest = '—';
+    let nearestDist = Infinity;
+    S.discoveredCount = 0;
+    for(const s of SECRETS){
+      const d = Math.hypot(S.localPos.x - s.x, S.localPos.z - s.z);
+      if(d < nearestDist){ nearestDist = d; nearest = s.name; }
+      if(d <= s.radius){
+        if(!s.found){
+          s.found = true;
+          log(`Geheimnis entdeckt: ${s.name}`);
+        }
+      }
+      if(s.found) S.discoveredCount++;
     }
-
-    const d={
-      x:S.rawPos.x-S.originRawPos.x,
-      y:S.rawPos.y-S.originRawPos.y,
-      z:S.rawPos.z-S.originRawPos.z
-    };
-
-    // Project the ABSOLUTE SLAM displacement onto the camera basis captured
-    // at the null point. No integration and no scale factor are applied.
-    //
-    // +X virtual = physical right at the start.
-    // -Z virtual = physical forward at the start.
-    const rightMeters=dot(d,S.originRight);
-    const forwardMeters=dot(d,S.originForward);
-
-    return {
-      x:rightMeters,
-      y:d.y,
-      z:-forwardMeters
-    };
+    S.activeSecret = nearestDist < 3.4 ? nearest : '—';
   }
 
   function recenter(force=false){
-    if(!S.rawPos||!S.rawQ){
-      log('Nullpunkt nicht möglich: noch keine SLAM-Pose.');
+    if(!S.rawPos || !S.rawQ){
+      log('Reset/Nullpunkt nicht möglich: noch keine Pose.');
       return;
     }
     if(!force && S.coachAvailable && !S.scaleReady){
-      log('Nullpunkt blockiert: Absolute-Scale-Kalibrierung noch nicht abgeschlossen.');
+      log('Reset blockiert: Absolute Scale noch nicht bereit.');
       setStatus('Erst Meter-Skala kalibrieren','warn');
+      updateHint('<b>Bitte erst kurz vor/zurück bewegen</b><br>damit 8th Wall die Meter-Skala bestimmt.', true);
       return;
     }
 
-    const b=basisFromCamera(S.rawQ);
+    const b = basisFromCamera(S.rawQ);
     if(!b){
-      log('Nullpunkt nicht möglich: Kameravorwärtsachse nicht bestimmbar.');
+      log('Reset nicht möglich: Vorwärtsachse unbestimmbar.');
       return;
     }
 
-    S.originRawPos={...S.rawPos};
-    S.originForward={...b.forwardH};
-    S.originRight={...b.right};
+    S.originRawPos = {...S.rawPos};
+    S.originForward = {...b.forwardH};
+    S.originRight = {...b.right};
+    S.originSet = true;
+    S.freezePose = false;
 
-    const a=anglesRelativeToOrigin(S.rawQ);
-    S.rawYaw=a.rawYaw;S.rawPitch=a.rawPitch;S.rawRoll=a.rawRoll;
-    S.yaw=0;S.pitch=0;
-    S.mappedDelta={x:0,y:0,z:0};
-    S.localPos={x:0,y:0,z:0};
-    S.path=[];S.pathLength=0;S.lastPathPoint=null;
-    S.rejectedJitter=0;S.autoCentered=true;
+    S.localPos = {x:0,y:0,z:0};
+    S.yaw = 0;
+    S.pitch = 0;
+    S.rawRoll = 0;
+    S.path = [];
+    S.pathLength = 0;
+    S.lastPathPoint = null;
     addPathPoint(true);
 
-    $('hint').classList.add('hidden');
-    log(`Nullpunkt gesetzt. absolute=${S.scaleReady}; origin raw=${fmt(S.rawPos.x)}, ${fmt(S.rawPos.y)}, ${fmt(S.rawPos.z)}`);
+    updateSecrets();
+    updateHint('Du bist in einer <b>romantischen Waldlichtung</b>.<br>Lauf ein wenig herum – vielleicht entdeckst du ein paar kleine Geheimnisse …', false);
+    log('Nullpunkt manuell gesetzt / Szene zurückgesetzt.');
+  }
+
+  function addPathPoint(force=false){
+    const p = S.localPos;
+    if(!S.lastPathPoint){
+      S.lastPathPoint = {...p};
+      S.path.push({...p});
+      return;
+    }
+    const dx = p.x - S.lastPathPoint.x;
+    const dz = p.z - S.lastPathPoint.z;
+    const d = Math.hypot(dx,dz);
+    if(force || d >= 0.01){
+      S.pathLength += d;
+      S.path.push({...p});
+      S.lastPathPoint = {...p};
+      if(S.path.length > 12000) S.path.splice(0, S.path.length - 12000);
+    }
   }
 
   function updateLocalPose(){
-    if(!S.rawPos||!S.rawQ)return;
+    if(!S.originSet || !S.rawPos || !S.rawQ) return;
+    const a = anglesRelativeToOrigin(S.rawQ);
+    const candidate = mappedDeltaFromOrigin();
 
-    if(!S.originRawPos){
-      if(S.trackingStatus==='NORMAL' && (S.scaleReady || !S.coachAvailable))recenter(true);
-      return;
-    }
+    S.yaw = wrapPi(a.yaw);
+    S.pitch = clamp(a.pitch, rad(-80), rad(80));
+    S.rawRoll = a.roll;
 
-    // Orientation and translation now use the SAME camera basis.
-    const a=anglesRelativeToOrigin(S.rawQ);
-    S.rawYaw=a.rawYaw;S.rawPitch=a.rawPitch;S.rawRoll=a.rawRoll;
-
-    // Correct first-person orientation: Yaw + Pitch only, NO roll.
-    S.yaw=wrapPi(a.yaw);
-    S.pitch=clamp(a.pitch,rad(-80),rad(80));
-
-    // Absolute XR8 meter position projected into the initial camera basis.
-    const candidate=mappedDeltaFromOrigin();
-    S.mappedDelta={...candidate};
-
-    // Suppress only sub-centimeter SLAM jitter. Because candidate is an absolute pose,
-    // this does NOT integrate or rescale movement and cannot accumulate distance error.
-    const d=Math.hypot(
-      candidate.x-S.localPos.x,
-      candidate.y-S.localPos.y,
-      candidate.z-S.localPos.z
-    );
-    if(d>=POSITION_DEADZONE){
-      S.localPos={...candidate};
+    const d = Math.hypot(candidate.x - S.localPos.x, candidate.y - S.localPos.y, candidate.z - S.localPos.z);
+    if(d >= POSITION_DEADZONE){
+      S.localPos = {...candidate};
       addPathPoint(false);
-    }else{
-      S.rejectedJitter++;
-    }
-  }
-
-  function addPathPoint(force){
-    const p=S.localPos;
-    if(!S.lastPathPoint){
-      S.lastPathPoint={...p};S.path.push({...p});return;
-    }
-    const dx=p.x-S.lastPathPoint.x,dz=p.z-S.lastPathPoint.z;
-    const horizontal=Math.hypot(dx,dz);
-    if(force||horizontal>=0.01){
-      S.pathLength+=horizontal;
-      S.path.push({...p});
-      S.lastPathPoint={...p};
-      if(S.path.length>12000)S.path.splice(0,S.path.length-12000);
+      updateSecrets();
     }
   }
 
   function coachApi(){
-    const c=window.CoachingOverlay;
-    if(!c)return null;
-    if(typeof c.pipelineModule==='function')return c;
-    if(c.AbsoluteScale&&typeof c.AbsoluteScale.pipelineModule==='function')return c.AbsoluteScale;
+    const c = window.CoachingOverlay;
+    if(!c) return null;
+    if(typeof c.pipelineModule === 'function') return c;
+    if(c.AbsoluteScale && typeof c.AbsoluteScale.pipelineModule === 'function') return c.AbsoluteScale;
     return null;
   }
 
   function coachingEventsModule(){
     return {
-      name:'meter-coaching-events',
+      name:'coach-events',
       listeners:[
         {
           event:'coaching-overlay.show',
           process:()=>{
-            S.scaleReady=false;
-            $('hint').classList.remove('hidden');
-            $('hint').innerHTML='<div><b>Meter-Skala wird kalibriert</b><br>iPad langsam etwa 30–60 cm vor und zurück bewegen.<br>Nicht nur auf der Stelle drehen.</div>';
+            S.scaleReady = false;
             setStatus('Absolute Scale kalibrieren','warn');
-            log('Absolute-Scale-Coaching: SHOW');
+            updateHint('<b>Bitte das iPad vor und zurück bewegen</b><br>damit die absolute Meter-Skala stabil wird.<br><small>Wichtig: Das setzt die Position nicht automatisch zurück.</small>', true);
+            log('Coaching SHOW');
           }
         },
         {
           event:'coaching-overlay.hide',
           process:()=>{
-            S.scaleReady=true;
-            setStatus('Meter-Skala bereit','ok');
-            log('Absolute-Scale-Coaching: HIDE → Skala bereit.');
-            if(S.trackingStatus==='NORMAL')recenter(true);
+            S.scaleReady = true;
+            if(S.originSet){
+              setStatus('Tracking bereit · Origin bleibt erhalten','ok');
+              updateHint('Tracking wieder da.<br><b>Die Position wurde nicht zurückgesetzt.</b><br>Nur der Reset-Knopf setzt den Nullpunkt neu.', true);
+            }else{
+              setStatus('Tracking bereit · Bitte Nullpunkt setzen','ok');
+              updateHint('Tracking und Meter-Skala sind bereit.<br><b>Bitte „Nullpunkt setzen / Reset“ drücken</b>, um die Szene zu starten.', true);
+            }
+            log('Coaching HIDE → Scale bereit.');
           }
         }
       ]
@@ -534,62 +511,96 @@ pre{
 
   function posePipelineModule(){
     return {
-      name:'meter-pose-reader',
+      name:'pose-reader',
       onCameraStatusChange:({status})=>{
-        log('Kamera: '+status);
-        if(status==='requesting')setStatus('Kamerazugriff …','warn');
-        else if(status==='hasStream')setStatus('Kamera aktiv · SLAM startet','warn');
-        else if(status==='hasVideo')setStatus('SLAM initialisiert …','warn');
-        else if(status==='failed')setStatus('Kamera fehlgeschlagen','bad');
+        log('Kamera: ' + status);
+        if(status==='requesting') setStatus('Kamerazugriff …','warn');
+        else if(status==='hasStream') setStatus('Kamera aktiv · SLAM startet','warn');
+        else if(status==='hasVideo') setStatus('SLAM initialisiert …','warn');
+        else if(status==='failed') setStatus('Kamera fehlgeschlagen','bad');
       },
       onUpdate:({processCpuResult})=>{
-        const r=processCpuResult&&processCpuResult.reality;
-        if(!r||!r.position||!r.rotation)return;
+        const r = processCpuResult && processCpuResult.reality;
+        if(!r || !r.position || !r.rotation) return;
 
-        S.rawPos={x:r.position.x,y:r.position.y,z:r.position.z};
-        S.rawQ={w:r.rotation.w,x:r.rotation.x,y:r.rotation.y,z:r.rotation.z};
-        S.trackingStatus=r.trackingStatus||'—';
-        S.trackingReason=r.trackingReason||'—';
-        S.worldPoints=Array.isArray(r.worldPoints)?r.worldPoints.length:0;
+        S.rawPos = {x:r.position.x, y:r.position.y, z:r.position.z};
+        S.rawQ   = {w:r.rotation.w, x:r.rotation.x, y:r.rotation.y, z:r.rotation.z};
+        S.trackingStatus = r.trackingStatus || '—';
+        S.trackingReason = r.trackingReason || '—';
+        S.worldPoints = Array.isArray(r.worldPoints) ? r.worldPoints.length : 0;
 
+        const now = performance.now();
         S.poseCount++;
-        const t=performance.now(),dt=(t-S.poseHzT)/1000;
-        if(dt>=1){
-          S.poseHz=S.poseCount/dt;S.poseCount=0;S.poseHzT=t;
+        const dt = (now - S.poseHzT) / 1000;
+        if(dt >= 1){
+          S.poseHz = S.poseCount / dt;
+          S.poseCount = 0;
+          S.poseHzT = now;
         }
 
-        updateLocalPose();
+        const trackingGood = S.trackingStatus === 'NORMAL';
 
-        if(S.trackingStatus==='NORMAL'){
-          if(S.scaleReady || !S.coachAvailable)setStatus('SLAM NORMAL · 1:1','ok');
-          else setStatus('SLAM NORMAL · Skala kalibrieren','warn');
+        if(!trackingGood && S.wasTrackingGood){
+          S.trackingLostCount++;
+          log('Tracking verloren → letzte gute Pose eingefroren.');
+          setStatus('Tracking verloren / eingeschränkt','warn');
+          updateHint('<b>Tracking verloren oder eingeschränkt.</b><br>Die letzte gute Position bleibt erhalten.<br><b>Es wird nichts automatisch zurückgesetzt.</b>', true);
+        }
+
+        if(trackingGood && !S.wasTrackingGood){
+          log('Tracking wiedergefunden.');
+          if(S.originSet){
+            setStatus('Tracking wiedergefunden · Origin bleibt','ok');
+            updateHint('Tracking wiedergefunden.<br><b>Position blieb erhalten.</b><br>Weiterlaufen oder per Knopf neu zentrieren.', true);
+          }else if(S.scaleReady || !S.coachAvailable){
+            setStatus('Tracking bereit · Bitte Nullpunkt setzen','ok');
+            updateHint('Tracking ist bereit.<br><b>Bitte „Nullpunkt setzen / Reset“ drücken</b>, um zu starten.', true);
+          }
+        }
+
+        S.wasTrackingGood = trackingGood;
+
+        if(trackingGood){
+          if(S.originSet){
+            updateLocalPose();
+            setStatus('SLAM NORMAL','ok');
+            S.freezePose = false;
+          }else if(S.scaleReady || !S.coachAvailable){
+            setStatus('SLAM NORMAL · Bitte Nullpunkt setzen','ok');
+          }
         }else{
-          setStatus(`SLAM ${S.trackingStatus}`,'warn');
+          S.freezePose = true;
         }
       },
       onException:e=>{
-        const m=e&&e.message?e.message:String(e);
-        log('XR Exception: '+m);setStatus('XR Fehler','bad');
+        const m = e && e.message ? e.message : String(e);
+        setStatus('XR Fehler','bad');
+        log('XR Exception: ' + m);
       }
     };
   }
 
   async function startWebAR(){
-    if(S.started)return;
+    if(S.started) return;
     if(!window.isSecureContext){
       setStatus('HTTPS erforderlich','bad');
       alert('Diese Demo muss über HTTPS geöffnet werden.');
       return;
     }
     if(!window.XR8){
-      setStatus('XR8 nicht geladen','bad');log('XR8 nicht verfügbar.');return;
+      setStatus('XR8 nicht geladen','bad');
+      log('XR8 nicht verfügbar.');
+      return;
     }
 
     try{
-      S.started=true;$('startBtn').disabled=true;
+      S.started = true;
+      $('startBtn').disabled = true;
+      $('recenterBtn').disabled = false;
+      $('clearBtn').disabled = false;
       setStatus('SLAM wird geladen …','warn');
 
-      if(typeof XR8.loadChunk==='function')await XR8.loadChunk('slam');
+      if(typeof XR8.loadChunk === 'function') await XR8.loadChunk('slam');
 
       XR8.XrController.configure({
         disableWorldTracking:false,
@@ -600,15 +611,15 @@ pre{
         scale:'absolute'
       });
 
-      const modules=[XR8.XrController.pipelineModule()];
+      const modules = [XR8.XrController.pipelineModule()];
 
-      const coach=coachApi();
-      S.coachAvailable=!!coach;
+      const coach = coachApi();
+      S.coachAvailable = !!coach;
       if(coach){
         try{
-          if(typeof coach.configure==='function'){
+          if(typeof coach.configure === 'function'){
             coach.configure({
-              promptText:'iPad vor und zurück bewegen, um den 1:1-Maßstab zu bestimmen',
+              promptText:'Bewege das iPad kurz vor und zurück, um die Meter-Skala zu bestimmen',
               promptColor:'#ffffff',
               animationColor:'#ffffff'
             });
@@ -617,15 +628,16 @@ pre{
           modules.push(coachingEventsModule());
           log('Absolute-Scale-Coaching aktiviert.');
         }catch(e){
-          S.coachAvailable=false;
-          log('Coaching Overlay konnte nicht aktiviert werden: '+e.message);
+          S.coachAvailable = false;
+          log('Coaching Overlay konnte nicht aktiviert werden: ' + e.message);
         }
       }else{
-        log('Coaching Overlay nicht gefunden; absolute Skala kann nicht explizit bestätigt werden.');
+        log('Coaching Overlay nicht gefunden.');
       }
 
       modules.push(posePipelineModule());
-      if(typeof XR8.addCameraPipelineModules==='function')XR8.addCameraPipelineModules(modules);
+
+      if(typeof XR8.addCameraPipelineModules === 'function') XR8.addCameraPipelineModules(modules);
       else modules.forEach(m=>XR8.addCameraPipelineModule(m));
 
       XR8.run({
@@ -634,268 +646,445 @@ pre{
         allowedDevices:XR8.XrConfig.device().MOBILE_AND_HEADSETS
       });
 
-      S.running=true;
-      $('recenterBtn').disabled=false;$('clearBtn').disabled=false;
       setStatus('Kamera wird angefordert …','warn');
-      log('XR8 gestartet: scale=absolute; keine virtuelle Positionsskalierung.');
+      updateHint('<b>Kamerazugriff erlauben</b><br>und dann kurz das iPad vor und zurück bewegen.<br>Erst danach den <b>Reset-/Nullpunkt-Knopf</b> drücken.', true);
+      log('XR8 gestartet.');
     }catch(e){
-      S.started=false;$('startBtn').disabled=false;
-      const m=e&&e.message?e.message:String(e);
-      setStatus('Start fehlgeschlagen','bad');log('Startfehler: '+m);
+      S.started = false;
+      $('startBtn').disabled = false;
+      const m = e && e.message ? e.message : String(e);
+      setStatus('Start fehlgeschlagen','bad');
+      log('Startfehler: ' + m);
     }
   }
 
   function onEngineLoaded(){
-    if(S.engineReady)return;
-    S.engineReady=true;$('startBtn').disabled=false;
-    setStatus('Engine bereit','');log('8th Wall Engine geladen.');
+    if(S.engineReady) return;
+    S.engineReady = true;
+    $('startBtn').disabled = false;
+    setStatus('Engine bereit','');
+    log('8th Wall Engine geladen.');
   }
 
-  // ---------- WebGL test world ----------
-  const HALF=12;
-  const BOXES=[
-    {x:-4.0,y:.60,z:-3.2,w:1.6,h:1.2,d:1.6,c:[.28,.48,.72,1]},
-    {x: 3.6,y:.90,z:-4.8,w:2.0,h:1.8,d:1.0,c:[.68,.38,.28,1]},
-    {x: 4.2,y:.45,z: 3.1,w:1.2,h:.9,d:2.4,c:[.35,.64,.42,1]},
-    {x:-3.2,y:1.25,z:4.8,w:1.0,h:2.5,d:1.0,c:[.58,.42,.68,1]},
-    {x: 0.0,y:.35,z:-1.8,w:1.0,h:.7,d:1.0,c:[.72,.62,.30,1]},
-    {x: 0.0,y:1.00,z:-7.0,w:4.0,h:2.0,d:.25,c:[.25,.30,.36,1]}
-  ];
-
+  // ---------- WebGL ----------
   function matMul(a,b){
     const o=new Float32Array(16);
-    for(let c=0;c<4;c++)for(let r=0;r<4;r++)
+    for(let c=0;c<4;c++) for(let r=0;r<4;r++)
       o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];
     return o;
   }
   function perspective(fovy,aspect,near,far){
-    const f=1/Math.tan(fovy/2),nf=1/(near-far);
+    const f=1/Math.tan(fovy/2), nf=1/(near-far);
     return new Float32Array([
-      f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0
+      f/aspect,0,0,0,
+      0,f,0,0,
+      0,0,(far+near)*nf,-1,
+      0,0,2*far*near*nf,0
     ]);
   }
   function lookAt(e,c,u){
-    let zx=e[0]-c[0],zy=e[1]-c[1],zz=e[2]-c[2];
-    let l=Math.hypot(zx,zy,zz)||1;zx/=l;zy/=l;zz/=l;
-    let xx=u[1]*zz-u[2]*zy,xy=u[2]*zx-u[0]*zz,xz=u[0]*zy-u[1]*zx;
-    l=Math.hypot(xx,xy,xz)||1;xx/=l;xy/=l;xz/=l;
-    const yx=zy*xz-zz*xy,yy=zz*xx-zx*xz,yz=zx*xy-zy*xx;
+    let zx=e[0]-c[0], zy=e[1]-c[1], zz=e[2]-c[2];
+    let l=Math.hypot(zx,zy,zz)||1; zx/=l; zy/=l; zz/=l;
+    let xx=u[1]*zz-u[2]*zy, xy=u[2]*zx-u[0]*zz, xz=u[0]*zy-u[1]*zx;
+    l=Math.hypot(xx,xy,xz)||1; xx/=l; xy/=l; xz/=l;
+    const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
     return new Float32Array([
-      xx,yx,zx,0,xy,yy,zy,0,xz,yz,zz,0,
+      xx,yx,zx,0,
+      xy,yy,zy,0,
+      xz,yz,zz,0,
       -(xx*e[0]+xy*e[1]+xz*e[2]),
       -(yx*e[0]+yy*e[1]+yz*e[2]),
-      -(zx*e[0]+zy*e[1]+zz*e[2]),1
+      -(zx*e[0]+zy*e[1]+zz*e[2]),
+      1
     ]);
   }
-  function model(x,y,z,sx,sy,sz){
-    return new Float32Array([sx,0,0,0,0,sy,0,0,0,0,sz,0,x,y,z,1]);
-  }
-  function shader(gl,type,src){
-    const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
-    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));
-    return s;
+  function T(x,y,z){ return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1]); }
+  function Sc(x,y,z){ return new Float32Array([x,0,0,0, 0,y,0,0, 0,0,z,0, 0,0,0,1]); }
+  function Rx(a){ const c=Math.cos(a),s=Math.sin(a); return new Float32Array([1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]); }
+  function Ry(a){ const c=Math.cos(a),s=Math.sin(a); return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]); }
+  function Rz(a){ const c=Math.cos(a),s=Math.sin(a); return new Float32Array([c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1]); }
+  function modelTRS(x,y,z,sx,sy,sz,rx=0,ry=0,rz=0){
+    return matMul(T(x,y,z), matMul(Ry(ry), matMul(Rz(rz), matMul(Rx(rx), Sc(sx,sy,sz)))));
   }
   function sizeCanvas(c){
-    const d=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();
-    const w=Math.max(2,Math.round(r.width*d)),h=Math.max(2,Math.round(r.height*d));
-    if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+    const d=Math.min(devicePixelRatio||1,2), r=c.getBoundingClientRect();
+    const w=Math.max(2,Math.round(r.width*d)), h=Math.max(2,Math.round(r.height*d));
+    if(c.width!==w || c.height!==h){ c.width=w; c.height=h; }
+  }
+  function shader(gl,type,src){
+    const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
   }
 
   function initGL(){
     try{
-      const c=$('world3d');
-      const gl=c.getContext('webgl',{antialias:true,alpha:false})||c.getContext('experimental-webgl');
-      if(!gl)throw new Error('WebGL nicht verfügbar');
-      const vs=shader(gl,gl.VERTEX_SHADER,'attribute vec3 aPos;uniform mat4 uMVP;void main(){gl_Position=uMVP*vec4(aPos,1.0);}');
-      const fs=shader(gl,gl.FRAGMENT_SHADER,'precision mediump float;uniform vec4 uColor;void main(){gl_FragColor=uColor;}');
-      const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);
-      if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));
+      const c = $('world3d');
+      const gl = c.getContext('webgl',{antialias:true,alpha:false}) || c.getContext('experimental-webgl');
+      if(!gl) throw new Error('WebGL nicht verfügbar');
 
-      const cube=new Float32Array([
-        -.5,-.5,-.5,.5,-.5,-.5,.5,.5,-.5,-.5,.5,-.5,
-        -.5,-.5,.5,.5,-.5,.5,.5,.5,.5,-.5,.5,.5
-      ]);
-      const idx=new Uint16Array([
-        0,1,2,0,2,3,4,6,5,4,7,6,0,4,5,0,5,1,
-        3,2,6,3,6,7,1,5,6,1,6,2,0,3,7,0,7,4
-      ]);
-      const cv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cv);gl.bufferData(gl.ARRAY_BUFFER,cube,gl.STATIC_DRAW);
-      const ci=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idx,gl.STATIC_DRAW);
+      const vs = shader(gl,gl.VERTEX_SHADER, 'attribute vec3 aPos; uniform mat4 uMVP; void main(){ gl_Position = uMVP * vec4(aPos,1.0); }');
+      const fs = shader(gl,gl.FRAGMENT_SHADER, 'precision mediump float; uniform vec4 uColor; void main(){ gl_FragColor = uColor; }');
+      const pr = gl.createProgram();
+      gl.attachShader(pr,vs); gl.attachShader(pr,fs); gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
 
-      const lines=[];
-      for(let i=-HALF;i<=HALF;i++){
-        lines.push(i,0,-HALF,i,0,HALF);
-        lines.push(-HALF,0,i,HALF,0,i);
+      const cube = new Float32Array([
+        -.5,-.5,-.5, .5,-.5,-.5, .5,.5,-.5, -.5,.5,-.5,
+        -.5,-.5,.5,  .5,-.5,.5,  .5,.5,.5,  -.5,.5,.5
+      ]);
+      const idx = new Uint16Array([
+        0,1,2,0,2,3, 4,6,5,4,7,6, 0,4,5,0,5,1,
+        3,2,6,3,6,7, 1,5,6,1,6,2, 0,3,7,0,7,4
+      ]);
+      const cv = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,cv); gl.bufferData(gl.ARRAY_BUFFER,cube,gl.STATIC_DRAW);
+      const ci = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idx,gl.STATIC_DRAW);
+
+      const grid=[];
+      for(let i=-WORLD_HALF;i<=WORLD_HALF;i++){
+        grid.push(i,0,-WORLD_HALF, i,0,WORLD_HALF);
+        grid.push(-WORLD_HALF,0,i, WORLD_HALF,0,i);
       }
-      const gv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,gv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(lines),gl.STATIC_DRAW);
+      const gv = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,gv); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(grid),gl.STATIC_DRAW);
 
-      S.gl={gl,pr,cv,ci,gv,gridCount:lines.length/3};S.glReady=true;
-      log('Virtuelle WebGL-Welt initialisiert.');
-    }catch(e){log('WebGL-Fehler: '+e.message)}
+      S.gl = {gl,pr,cv,ci,gv,gridCount:grid.length/3};
+      S.glReady = true;
+      log('WebGL-Szene initialisiert.');
+    }catch(e){
+      log('WebGL-Fehler: ' + e.message);
+    }
+  }
+
+  function discovered(id){ return SECRETS.find(s=>s.id===id)?.found; }
+
+  function drawCube(ctx,o){
+    const {gl,cv,ci,ap,um,uc,VP} = ctx;
+    gl.bindBuffer(gl.ARRAY_BUFFER,cv);
+    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci);
+    gl.uniformMatrix4fv(um,false, matMul(VP, modelTRS(o.x,o.y,o.z,o.w,o.h,o.d,o.rx||0,o.ry||0,o.rz||0)));
+    gl.uniform4fv(uc, new Float32Array(o.c));
+    gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
+  }
+
+  function drawTree(ctx,x,z,variant,t){
+    const sway = Math.sin(t*1.35 + x*0.32 + z*0.27)*0.06;
+    drawCube(ctx,{x,y:0.85,z,w:0.34,h:1.7,d:0.34,c:[0.44,0.28,0.16,1]});
+    drawCube(ctx,{x:x-0.18,y:1.85,z:z+0.02,w:1.35,h:0.95,d:1.35,ry:sway,c:variant===0?[0.35,0.68,0.40,1]:[0.30,0.60,0.36,1]});
+    drawCube(ctx,{x:x+0.38,y:2.15,z:z-0.12,w:1.00,h:0.75,d:1.00,ry:-sway*1.2,c:variant===0?[0.42,0.76,0.45,1]:[0.36,0.68,0.42,1]});
+    drawCube(ctx,{x:x-0.32,y:2.28,z:z-0.22,w:0.85,h:0.62,d:0.85,ry:sway*0.9,c:variant===0?[0.48,0.80,0.50,1]:[0.42,0.72,0.46,1]});
+  }
+
+  function drawFlowerCluster(ctx,x,z,c1,c2){
+    drawCube(ctx,{x,y:0.09,z,w:0.10,h:0.18,d:0.10,c:[0.26,0.64,0.33,1]});
+    drawCube(ctx,{x:x-0.12,y:0.08,z:z+0.06,w:0.09,h:0.16,d:0.09,c:[0.26,0.64,0.33,1]});
+    drawCube(ctx,{x:x+0.11,y:0.08,z:z-0.05,w:0.09,h:0.16,d:0.09,c:[0.26,0.64,0.33,1]});
+    drawCube(ctx,{x,y:0.20,z,w:0.16,h:0.10,d:0.16,c:c1});
+    drawCube(ctx,{x:x-0.12,y:0.18,z:z+0.06,w:0.13,h:0.09,d:0.13,c:c2});
+    drawCube(ctx,{x:x+0.11,y:0.18,z:z-0.05,w:0.13,h:0.09,d:0.13,c:c2});
+  }
+
+  function drawLantern(ctx,x,z,t){
+    const glow = 0.85 + 0.15*Math.sin(t*3 + x + z);
+    drawCube(ctx,{x,y:0.55,z,w:0.08,h:1.10,d:0.08,c:[0.34,0.24,0.15,1]});
+    drawCube(ctx,{x,y:1.18,z,w:0.20,h:0.24,d:0.20,c:[0.99*glow,0.82*glow,0.45*glow,1]});
+    drawCube(ctx,{x,y:1.38,z,w:0.28,h:0.06,d:0.28,c:[0.42,0.28,0.18,1]});
+  }
+
+  function drawRabbit(ctx,x,z,t,dir=1){
+    const bob = Math.sin(t*2.1 + x)*0.03;
+    drawCube(ctx,{x,y:0.25+bob,z,w:0.44,h:0.28,d:0.28,ry:dir*0.35,c:[0.95,0.93,0.96,1]});
+    drawCube(ctx,{x:x+0.24*dir,y:0.33+bob,z:z+0.02,w:0.22,h:0.22,d:0.22,ry:dir*0.35,c:[0.97,0.95,0.98,1]});
+    drawCube(ctx,{x:x+0.30*dir,y:0.52+bob,z:z-0.05,w:0.07,h:0.24,d:0.07,ry:dir*0.25,c:[0.98,0.86,0.92,1]});
+    drawCube(ctx,{x:x+0.30*dir,y:0.52+bob,z:z+0.05,w:0.07,h:0.24,d:0.07,ry:dir*0.25,c:[0.98,0.86,0.92,1]});
+    drawCube(ctx,{x:x-0.25*dir,y:0.24+bob,z,w:0.10,h:0.10,d:0.10,c:[0.99,0.98,1,1]});
+  }
+
+  function drawFox(ctx,x,z,t,dir=-1){
+    const bob = Math.sin(t*1.7 + z)*0.02;
+    drawCube(ctx,{x,y:0.28+bob,z,w:0.55,h:0.25,d:0.25,ry:dir*-0.25,c:[0.90,0.46,0.22,1]});
+    drawCube(ctx,{x:x+0.31*dir,y:0.34+bob,z,w:0.24,h:0.20,d:0.20,ry:dir*-0.25,c:[0.96,0.58,0.28,1]});
+    drawCube(ctx,{x:x+0.43*dir,y:0.34+bob,z,w:0.12,h:0.10,d:0.12,c:[0.96,0.92,0.82,1]});
+    drawCube(ctx,{x:x-0.34*dir,y:0.35+bob,z,w:0.24,h:0.12,d:0.12,ry:dir*0.35,c:[0.96,0.92,0.85,1]});
+  }
+
+  function drawDeer(ctx,x,z,t,dir=1){
+    const bob = Math.sin(t*1.4 + x+z)*0.02;
+    drawCube(ctx,{x,y:0.52+bob,z,w:0.85,h:0.48,d:0.30,ry:dir*0.2,c:[0.73,0.56,0.38,1]});
+    drawCube(ctx,{x:x+0.48*dir,y:0.82+bob,z:w=0?0:0,w:0.22,h:0.52,d:0.22,ry:dir*0.2,c:[0.73,0.56,0.38,1]});
+    drawCube(ctx,{x:x+0.54*dir,y:1.11+bob,z,w:0.26,h:0.20,d:0.18,ry:dir*0.2,c:[0.78,0.61,0.42,1]});
+    drawCube(ctx,{x:x+0.62*dir,y:1.29+bob,z:z-0.07,w:0.05,h:0.18,d:0.05,c:[0.85,0.78,0.52,1]});
+    drawCube(ctx,{x:x+0.62*dir,y:1.29+bob,z:z+0.07,w:0.05,h:0.18,d:0.05,c:[0.85,0.78,0.52,1]});
+  }
+
+  function drawButterfly(ctx,x,z,t){
+    const y = 1.1 + Math.sin(t*2.7 + x)*0.18;
+    const flap = Math.sin(t*8 + z)*0.55;
+    drawCube(ctx,{x,y,z,w:0.04,h:0.12,d:0.04,c:[0.15,0.13,0.12,1]});
+    drawCube(ctx,{x:x-0.10,y,z,w:0.16,h:0.10,d:0.03,rz:flap,c:[1.0,0.55,0.70,1]});
+    drawCube(ctx,{x:x+0.10,y,z,w:0.16,h:0.10,d:0.03,rz:-flap,c:[1.0,0.78,0.30,1]});
+  }
+
+  function drawFirefly(ctx,x,z,t,phase,color){
+    const y = 0.85 + Math.sin(t*2.5 + phase)*0.18;
+    const ox = Math.cos(t*0.8 + phase)*0.35;
+    const oz = Math.sin(t*1.1 + phase)*0.35;
+    const glow = 0.75 + 0.25*Math.sin(t*4 + phase);
+    drawCube(ctx,{x:x+ox,y,z:z+oz,w:0.08,h:0.08,d:0.08,c:[color[0]*glow,color[1]*glow,color[2]*glow,1]});
+  }
+
+  function drawChest(ctx,x,z,open=0){
+    drawCube(ctx,{x,y:0.17,z,w:0.42,h:0.22,d:0.30,c:[0.46,0.28,0.14,1]});
+    drawCube(ctx,{x,y:0.31,z,w:0.44,h:0.10,d:0.32,rx:-0.55*open,c:[0.65,0.42,0.18,1]});
+    drawCube(ctx,{x,y:0.18,z,w:0.06,h:0.22,d:0.34,c:[0.80,0.66,0.28,1]});
+  }
+
+  function drawScene(ctx, t){
+    // sky / ground
+    drawCube(ctx,{x:0,y:-0.08,z:0,w:36,h:0.14,d:36,c:[0.18,0.31,0.22,1]});
+
+    // central clearing patches
+    const clearPatches = [
+      [0,0,6.6,0.03,6.4],[1.8,0.4,2.2,0.03,1.8],[-1.9,-1.1,1.9,0.03,1.7],
+      [2.4,-1.8,1.6,0.03,1.6],[-2.4,1.6,1.8,0.03,1.5]
+    ];
+    for(const p of clearPatches){
+      drawCube(ctx,{x:p[0],y:-0.045,z:p[1],w:p[2],h:p[3],d:p[4],c:[0.53,0.43,0.29,1]});
+    }
+
+    // perimeter trees
+    const ring = [
+      [-11,-8,0],[-9,-11,1],[-5,-12,0],[0,-12,1],[5,-12,0],[9,-10,1],[12,-7,0],
+      [12,-1,1],[11,5,0],[10,10,1],[5,12,0],[-1,12,1],[-7,11,0],[-11,8,1],[-12,2,0],[-12,-4,1],
+      [-8,4,0],[-6,-7,1],[7,7,0],[-3,9,1],[8,-4,0]
+    ];
+    for(const tr of ring) drawTree(ctx,tr[0],tr[1],tr[2],t);
+
+    // shrubs / flowers
+    const flowers = [
+      [-1.8,1.2],[2.8,0.8],[-2.6,-0.8],[1.5,-2.0],[0.6,2.5],[-4.2,2.0],[4.6,-1.2],[6.0,4.8]
+    ];
+    flowers.forEach((f,i)=>drawFlowerCluster(ctx,f[0],f[1], i%2?[0.98,0.56,0.80,1]:[0.90,0.90,0.40,1], [0.74,0.63,1.0,1]));
+
+    // romantic center: blanket and lanterns
+    drawCube(ctx,{x:0.4,y:0.01,z:0.2,w:1.55,h:0.03,d:1.15,c:[0.76,0.35,0.45,1]});
+    drawCube(ctx,{x:0.4,y:0.04,z:0.2,w:1.10,h:0.02,d:0.80,c:[0.99,0.80,0.85,1]});
+    drawLantern(ctx,-1.0,0.8,t);
+    drawLantern(ctx,1.7,-0.2,t);
+
+    // pond secret
+    drawCube(ctx,{x:-7.8,y:-0.02,z:6.4,w:2.7,h:0.04,d:2.1,c:[0.20,0.56,0.80,1]});
+    drawCube(ctx,{x:-7.8,y:0.02,z:6.4,w:1.9,h:0.02,d:1.3,c:[0.46,0.84,0.96,1]});
+    drawFlowerCluster(ctx,-6.9,5.3,[0.88,0.92,1.0,1],[0.94,0.78,0.94,1]);
+    drawFlowerCluster(ctx,-8.8,7.4,[0.88,0.92,1.0,1],[0.94,0.78,0.94,1]);
+
+    // animals
+    drawRabbit(ctx,-2.1,1.9,t,1);
+    drawRabbit(ctx,-1.1,2.4,t,-1);
+    drawDeer(ctx,4.9,-3.7,t,1);
+    drawFox(ctx,8.8,7.6,t,-1);
+
+    // butterflies and fireflies
+    drawButterfly(ctx,0.2,1.8,t);
+    drawButterfly(ctx,-1.4,-0.4,t+0.9);
+    for(let i=0;i<5;i++) drawFirefly(ctx,7.2,-5.7,t,i*1.7,[0.78,1.00,0.70]);
+    for(let i=0;i<4;i++) drawFirefly(ctx,0.8,0.0,t+1.3+i,i*2.1,[1.00,0.84,0.50]);
+
+    // secrets emphasized when found / near
+    const fairyGlow = discovered('fairy') ? [0.44,0.98,0.78,1] : [0.28,0.60,0.48,1];
+    drawCube(ctx,{x:7.2,y:0.04,z:-5.7,w:1.35,h:0.03,d:1.35,c:[0.40,0.45,0.24,1]});
+    drawCube(ctx,{x:7.2,y:0.12,z:-5.7,w:0.35,h:0.08,d:0.35,c:fairyGlow});
+
+    const chestOpen = discovered('chest') ? 1 : 0;
+    drawChest(ctx,-8.7,-7.8,chestOpen);
+
+    // hidden heart stone near pond
+    const heartC = discovered('pond') ? [1.00,0.54,0.68,1] : [0.72,0.46,0.52,1];
+    drawCube(ctx,{x:-6.3,y:0.16,z:7.9,w:0.28,h:0.28,d:0.18,c:heartC});
+
+    // fox secret bush
+    drawCube(ctx,{x:8.1,y:0.25,z:7.2,w:1.0,h:0.4,d:0.8,c:[0.26,0.50,0.28,1]});
+    drawCube(ctx,{x:9.5,y:0.23,z:8.1,w:0.9,h:0.36,d:0.7,c:[0.30,0.56,0.32,1]});
   }
 
   function draw3D(){
-    if(!S.glReady)return;
-    const {gl,pr,cv,ci,gv,gridCount}=S.gl,c=$('world3d');
-    sizeCanvas(c);gl.viewport(0,0,c.width,c.height);
-    gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);
-    gl.clearColor(.035,.045,.055,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    if(!S.glReady) return;
+    const {gl,pr,cv,ci,gv,gridCount} = S.gl;
+    const c = $('world3d');
+    sizeCanvas(c);
+
+    gl.viewport(0,0,c.width,c.height);
+    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+    gl.clearColor(0.52,0.72,0.90,1); // soft cartoon sky
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(pr);
 
-    const ap=gl.getAttribLocation(pr,'aPos'),um=gl.getUniformLocation(pr,'uMVP'),uc=gl.getUniformLocation(pr,'uColor');
+    const ap = gl.getAttribLocation(pr,'aPos');
+    const um = gl.getUniformLocation(pr,'uMVP');
+    const uc = gl.getUniformLocation(pr,'uColor');
     gl.enableVertexAttribArray(ap);
 
-    const eyeHeight=1.65;
-    const pos={x:S.localPos.x,y:eyeHeight+S.localPos.y,z:S.localPos.z};
+    const pos = {x:S.localPos.x, y:EYE_HEIGHT + S.localPos.y, z:S.localPos.z};
+    const cp = Math.cos(S.pitch);
+    const forward = {x:Math.sin(S.yaw)*cp, y:Math.sin(S.pitch), z:-Math.cos(S.yaw)*cp};
 
-    // Roll-free first-person orientation.
-    const cp=Math.cos(S.pitch);
-    const forward={x:Math.sin(S.yaw)*cp,y:Math.sin(S.pitch),z:-Math.cos(S.yaw)*cp};
-    const P=perspective(rad(68),c.width/c.height,.04,80);
-    const V=lookAt(
-      [pos.x,pos.y,pos.z],
-      [pos.x+forward.x,pos.y+forward.y,pos.z+forward.z],
-      [0,1,0]
-    );
-    const VP=matMul(P,V);
+    const P = perspective(rad(68), c.width/c.height, 0.04, 90);
+    const V = lookAt([pos.x,pos.y,pos.z], [pos.x+forward.x,pos.y+forward.y,pos.z+forward.z], [0,1,0]);
+    const VP = matMul(P,V);
+    const ctx = {gl,pr,cv,ci,gv,gridCount,ap,um,uc,VP};
+    const t = performance.now()/1000;
 
-    function cube(o){
-      gl.bindBuffer(gl.ARRAY_BUFFER,cv);gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci);
-      gl.uniformMatrix4fv(um,false,matMul(VP,model(o.x,o.y,o.z,o.w,o.h,o.d)));
-      gl.uniform4fv(uc,new Float32Array(o.c));
-      gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
-    }
+    drawScene(ctx, t);
 
-    cube({x:0,y:-.06,z:0,w:HALF*2,h:.12,d:HALF*2,c:[.075,.09,.105,1]});
-    const H=2.8,T=.12,L=HALF*2;
-    cube({x:0,y:H/2,z:-HALF,w:L,h:H,d:T,c:[.16,.19,.22,1]});
-    cube({x:0,y:H/2,z: HALF,w:L,h:H,d:T,c:[.16,.19,.22,1]});
-    cube({x:-HALF,y:H/2,z:0,w:T,h:H,d:L,c:[.16,.19,.22,1]});
-    cube({x: HALF,y:H/2,z:0,w:T,h:H,d:L,c:[.16,.19,.22,1]});
-    BOXES.forEach(cube);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER,gv);gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
-    gl.uniformMatrix4fv(um,false,VP);gl.uniform4fv(uc,new Float32Array([.22,.25,.29,1]));
+    // soft 1 m grid near ground
+    gl.bindBuffer(gl.ARRAY_BUFFER,gv);
+    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
+    gl.uniformMatrix4fv(um,false,VP);
+    gl.uniform4fv(uc,new Float32Array([0.32,0.42,0.34,1]));
     gl.drawArrays(gl.LINES,0,gridCount);
 
-    $('hud').textContent=
-      `x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m · `+
-      `yaw ${fmt(deg(S.yaw),0)}° · pitch ${fmt(deg(S.pitch),0)}°`;
+    const secretText = S.activeSecret !== '—' ? `<br>Nahe bei: <b>${S.activeSecret}</b>` : '';
+    $('hud').innerHTML =
+      `x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m` +
+      `<br>Pfad ${fmt(S.pathLength,2)} m · Geheimnisse ${S.discoveredCount}/${SECRETS.length}` +
+      secretText;
   }
 
   function drawMap(){
-    const c=$('map');sizeCanvas(c);
-    const x=c.getContext('2d'),d=Math.min(devicePixelRatio||1,2),w=c.width,h=c.height;
-    x.clearRect(0,0,w,h);x.fillStyle='#0a0e12';x.fillRect(0,0,w,h);
+    const c = $('map');
+    sizeCanvas(c);
+    const x = c.getContext('2d');
+    const d = Math.min(devicePixelRatio||1,2), w=c.width, h=c.height;
+    x.clearRect(0,0,w,h);
+    x.fillStyle='#0e141c';
+    x.fillRect(0,0,w,h);
 
-    let extent=HALF;
-    for(const p of S.path)extent=Math.max(extent,Math.abs(p.x)+2,Math.abs(p.z)+2);
-    extent=Math.ceil(extent);
-    const margin=20*d,scale=Math.min((w-2*margin)/(extent*2),(h-2*margin)/(extent*2)),cx=w/2,cy=h/2;
-    const sx=v=>cx+v*scale,sz=v=>cy+v*scale;
-    const step=extent<=15?1:extent<=30?2:5;
+    const extent = 15;
+    const margin = 20*d;
+    const scale = Math.min((w-2*margin)/(extent*2), (h-2*margin)/(extent*2));
+    const cx = w/2, cy = h/2;
+    const sx = v => cx + v*scale;
+    const sz = v => cy + v*scale;
 
-    x.lineWidth=1*d;x.strokeStyle='#1b242d';
-    for(let i=-extent;i<=extent;i+=step){
-      x.beginPath();x.moveTo(sx(i),sz(-extent));x.lineTo(sx(i),sz(extent));x.stroke();
-      x.beginPath();x.moveTo(sx(-extent),sz(i));x.lineTo(sx(extent),sz(i));x.stroke();
+    // grid
+    x.strokeStyle='#1a2530'; x.lineWidth=1*d;
+    for(let i=-extent;i<=extent;i++){
+      x.beginPath(); x.moveTo(sx(i),sz(-extent)); x.lineTo(sx(i),sz(extent)); x.stroke();
+      x.beginPath(); x.moveTo(sx(-extent),sz(i)); x.lineTo(sx(extent),sz(i)); x.stroke();
     }
 
-    x.strokeStyle='#52606e';x.lineWidth=1.5*d;
-    x.strokeRect(sx(-HALF),sz(-HALF),HALF*2*scale,HALF*2*scale);
+    // clearing and pond
+    x.fillStyle='#3a4b33';
+    x.fillRect(sx(-WORLD_HALF), sz(-WORLD_HALF), WORLD_HALF*2*scale, WORLD_HALF*2*scale);
+    x.fillStyle='#705b3b';
+    x.beginPath(); x.ellipse(sx(0),sz(0),5.8*scale,5.4*scale,0,0,Math.PI*2); x.fill();
+    x.fillStyle='#257aa6';
+    x.beginPath(); x.ellipse(sx(-7.8),sz(6.4),1.35*scale,1.05*scale,0,0,Math.PI*2); x.fill();
 
-    x.fillStyle='#34404b';
-    for(const o of BOXES)x.fillRect(sx(o.x-o.w/2),sz(o.z-o.d/2),o.w*scale,o.d*scale);
+    // trees as small blobs
+    const ring = [
+      [-11,-8],[-9,-11],[-5,-12],[0,-12],[5,-12],[9,-10],[12,-7],[12,-1],[11,5],[10,10],[5,12],[-1,12],[-7,11],[-11,8],[-12,2],[-12,-4],[-8,4],[-6,-7],[7,7],[-3,9],[8,-4]
+    ];
+    x.fillStyle='#33414f';
+    for(const p of ring){
+      x.beginPath(); x.arc(sx(p[0]),sz(p[1]),0.45*scale,0,Math.PI*2); x.fill();
+    }
 
+    // discovered secrets
+    x.fillStyle='#7df5c9';
+    for(const s of SECRETS){
+      if(s.found){
+        x.beginPath(); x.arc(sx(s.x),sz(s.z),0.28*scale,0,Math.PI*2); x.fill();
+      }
+    }
+
+    // path
     if(S.path.length>1){
-      x.strokeStyle='#b891ff';x.lineWidth=2.2*d;x.lineJoin='round';x.lineCap='round';x.beginPath();
-      S.path.forEach((p,i)=>i?x.lineTo(sx(p.x),sz(p.z)):x.moveTo(sx(p.x),sz(p.z)));
+      x.strokeStyle='#b891ff';
+      x.lineWidth=2.3*d;
+      x.lineJoin='round';
+      x.lineCap='round';
+      x.beginPath();
+      S.path.forEach((p,i)=> i ? x.lineTo(sx(p.x), sz(p.z)) : x.moveTo(sx(p.x), sz(p.z)));
       x.stroke();
     }
 
-    const p=S.localPos,px=sx(p.x),pz=sz(p.z);
-    const fx=Math.sin(S.yaw),fz=-Math.cos(S.yaw);
-    x.fillStyle='#ffd166';x.beginPath();x.arc(px,pz,5*d,0,Math.PI*2);x.fill();
-    x.strokeStyle='#ffd166';x.lineWidth=2*d;x.beginPath();x.moveTo(px,pz);
-    x.lineTo(px+fx*22*d,pz+fz*22*d);x.stroke();
+    // camera marker
+    const px = sx(S.localPos.x), pz = sz(S.localPos.z);
+    const fx = Math.sin(S.yaw), fz = -Math.cos(S.yaw);
+    x.fillStyle='#ffd166';
+    x.beginPath(); x.arc(px,pz,5*d,0,Math.PI*2); x.fill();
+    x.strokeStyle='#ffd166'; x.lineWidth=2*d;
+    x.beginPath(); x.moveTo(px,pz); x.lineTo(px+fx*20*d,pz+fz*20*d); x.stroke();
 
-    x.fillStyle='#99a6b4';x.font=`${10*d}px system-ui`;
-    x.fillText(`${step} m Raster`,margin,14*d);
-    x.fillText('+X →',w-48*d,cy-5*d);x.fillText('+Z ↓',cx+5*d,h-8*d);
+    x.fillStyle='#96a8b7';
+    x.font=`${10*d}px system-ui`;
+    x.fillText('1 m Raster', margin, 14*d);
+    x.fillText('+X →', w-48*d, cy-5*d);
+    x.fillText('+Z ↓', cx+5*d, h-8*d);
 
-    $('distanceLabel').textContent=
-      `${fmt(Math.hypot(S.localPos.x,S.localPos.z),2)} m vom Start · Pfad ${fmt(S.pathLength,2)} m`;
+    $('distanceLabel').textContent = `${fmt(Math.hypot(S.localPos.x,S.localPos.z),2)} m vom Start · Pfad ${fmt(S.pathLength,2)} m`;
   }
 
   function updateDebug(){
-    $('trackLabel').textContent=
-      `${S.trackingStatus}${S.scaleReady?' · METER OK':''}${S.trackingReason&&S.trackingReason!=='—'?' · '+S.trackingReason:''}`;
+    $('trackLabel').textContent = `${S.trackingStatus}${S.originSet?' · ORIGIN FIXIERT':''}${S.scaleReady?' · METER OK':''}`;
+    $('dbgStatus').textContent = S.trackingStatus;
+    $('dbgScale').textContent = S.scaleReady ? 'JA' : 'NEIN';
+    $('dbgOrigin').textContent = S.originSet ? 'JA' : 'NEIN';
+    $('dbgHz').textContent = fmt(S.poseHz,1);
+    $('dbgFps').textContent = fmt(S.fps,1);
+    $('dbgPath').textContent = fmt(S.pathLength,3) + ' m';
+    $('dbgLost').textContent = String(S.trackingLostCount);
+    $('dbgSecrets').textContent = `${S.discoveredCount} / ${SECRETS.length}`;
 
-    $('dbgStatus').textContent=S.trackingStatus;
-    $('dbgScaleReady').textContent=S.scaleReady?'JA':'NEIN';
-    $('dbgHz').textContent=fmt(S.poseHz,1);$('dbgFps').textContent=fmt(S.fps,1);
-    $('dbgDisplacement').textContent=fmt(Math.hypot(S.localPos.x,S.localPos.z),3)+' m';
-
-    let rawD=0;
-    if(S.rawPos&&S.originRawPos){
-      rawD=Math.hypot(
-        S.rawPos.x-S.originRawPos.x,
-        S.rawPos.y-S.originRawPos.y,
-        S.rawPos.z-S.originRawPos.z
-      );
-    }
-    $('dbgRawDisplacement').textContent=fmt(rawD,3)+' m';
-    $('dbgPath').textContent=fmt(S.pathLength,3)+' m';
-    $('dbgJitter').textContent=String(S.rejectedJitter);
-
-    $('rawX').textContent=fmt(S.rawPos?.x);$('rawY').textContent=fmt(S.rawPos?.y);$('rawZ').textContent=fmt(S.rawPos?.z);
-    $('mappedX').textContent=fmt(S.mappedDelta.x);$('mappedY').textContent=fmt(S.mappedDelta.y);$('mappedZ').textContent=fmt(S.mappedDelta.z);
-    if($('basisForward'))$('basisForward').textContent=S.originForward?`${fmt(S.originForward.x,3)} / ${fmt(S.originForward.z,3)}`:'—';
-    if($('basisRight'))$('basisRight').textContent=S.originRight?`${fmt(S.originRight.x,3)} / ${fmt(S.originRight.z,3)}`:'—';
-
-    if($('moveAlignment')){
-      const f={x:Math.sin(S.yaw),z:-Math.cos(S.yaw)};
-      const lp=S.path.length;
-      if(lp>=2){
-        const a=S.path[lp-2],b=S.path[lp-1],dx=b.x-a.x,dz=b.z-a.z,m=Math.hypot(dx,dz);
-        const align=m>1e-4?(dx*f.x+dz*f.z)/m:0;
-        $('moveAlignment').textContent=m>1e-4?`${fmt(align,2)} (1.00 = vorwärts)`:'—';
-      }else $('moveAlignment').textContent='—';
-    }
-
-    $('localX').textContent=fmt(S.localPos.x);$('localY').textContent=fmt(S.localPos.y);$('localZ').textContent=fmt(S.localPos.z);
-    $('yawRaw').textContent=fmt(deg(S.rawYaw),2)+'°';$('yawLocal').textContent=fmt(deg(S.yaw),2)+'°';
-    $('pitchRaw').textContent=fmt(deg(S.rawPitch),2)+'°';$('pitchLocal').textContent=fmt(deg(S.pitch),2)+'°';
-    $('rollRaw').textContent=fmt(deg(S.rawRoll),2)+'°';
-    $('worldPoints').textContent=String(S.worldPoints);
-    $('trackReason').textContent=S.trackingReason;$('secure').textContent=String(window.isSecureContext);
+    $('rawX').textContent = fmt(S.rawPos?.x);
+    $('rawY').textContent = fmt(S.rawPos?.y);
+    $('rawZ').textContent = fmt(S.rawPos?.z);
+    $('localX').textContent = fmt(S.localPos.x);
+    $('localY').textContent = fmt(S.localPos.y);
+    $('localZ').textContent = fmt(S.localPos.z);
+    $('yawLocal').textContent = fmt(deg(S.yaw),2)+'°';
+    $('pitchLocal').textContent = fmt(deg(S.pitch),2)+'°';
+    $('rollRaw').textContent = fmt(deg(S.rawRoll),2)+'°';
+    $('worldPoints').textContent = String(S.worldPoints);
+    $('trackReason').textContent = S.trackingReason;
+    $('secretName').textContent = S.activeSecret;
+    $('secure').textContent = String(window.isSecureContext);
   }
 
   function frame(){
     S.frameCount++;
-    const t=performance.now(),dt=(t-S.fpsT)/1000;
-    if(dt>=1){S.fps=S.frameCount/dt;S.frameCount=0;S.fpsT=t}
-    draw3D();drawMap();updateDebug();requestAnimationFrame(frame);
+    const t = performance.now(), dt = (t-S.fpsT)/1000;
+    if(dt >= 1){
+      S.fps = S.frameCount/dt;
+      S.frameCount = 0;
+      S.fpsT = t;
+    }
+    draw3D();
+    drawMap();
+    updateDebug();
+    requestAnimationFrame(frame);
   }
 
   $('startBtn').addEventListener('click',startWebAR);
   $('recenterBtn').addEventListener('click',()=>recenter(false));
   $('clearBtn').addEventListener('click',()=>{
-    S.path=[];S.pathLength=0;S.lastPathPoint=null;addPathPoint(true);log('Pfad gelöscht.');
+    S.path=[]; S.pathLength=0; S.lastPathPoint=null; addPathPoint(true);
+    log('Pfad gelöscht.');
   });
   $('debugBtn').addEventListener('click',()=>$('debugView').classList.toggle('open'));
   $('closeDebugBtn').addEventListener('click',()=>$('debugView').classList.remove('open'));
 
   initGL();
-  if(window.XR8)onEngineLoaded();
-  else window.addEventListener('xrloaded',onEngineLoaded,{once:true});
+  if(window.XR8) onEngineLoaded();
+  else window.addEventListener('xrloaded', onEngineLoaded, {once:true});
 
   if(!window.isSecureContext){
     setStatus('HTTPS erforderlich','bad');
     log('Secure Context = false.');
   }
-  log('User Agent: '+navigator.userAgent);
+  log('User Agent: ' + navigator.userAgent);
   requestAnimationFrame(frame);
 })();
 </script>
