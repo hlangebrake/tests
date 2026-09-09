@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>WebAR SLAM Meter Test</title>
+<title>WebAR SLAM 1:1 Path Test</title>
 
-<!-- 8th Wall Distributed Engine Binary. SLAM chunk is preloaded for World Tracking. -->
+<script
+  src="https://cdn.jsdelivr.net/npm/@8thwall/coaching-overlay@1/dist/coaching-overlay.js"
+  crossorigin="anonymous"></script>
+
 <script
   src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js"
   async
@@ -17,36 +20,29 @@
 <style>
 :root{
   color-scheme:dark;
-  --bg:#090b0e;
-  --panel:#12161b;
-  --panel2:#181e25;
-  --line:#2a323c;
-  --text:#eef3f7;
-  --muted:#96a2af;
-  --accent:#79a9ff;
-  --ok:#5bd68b;
-  --warn:#ffd166;
-  --bad:#ff6b6b;
+  --bg:#090b0e;--panel:#12161b;--panel2:#181e25;--line:#2a323c;
+  --text:#eef3f7;--muted:#96a2af;--ok:#5bd68b;--warn:#ffd166;--bad:#ff6b6b;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
+html,body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif
+}
 body{
   min-height:100vh;
-  padding:
-    max(12px,env(safe-area-inset-top))
-    max(12px,env(safe-area-inset-right))
-    max(18px,env(safe-area-inset-bottom))
-    max(12px,env(safe-area-inset-left));
+  padding:max(12px,env(safe-area-inset-top))
+          max(12px,env(safe-area-inset-right))
+          max(18px,env(safe-area-inset-bottom))
+          max(12px,env(safe-area-inset-left))
 }
-.shell{max-width:1400px;margin:auto}
+.shell{max-width:1420px;margin:auto}
 .top{
-  display:flex;gap:10px;align-items:center;justify-content:space-between;
+  display:flex;gap:10px;justify-content:space-between;align-items:center;
   flex-wrap:wrap;margin-bottom:12px
 }
-.brand{min-width:0}
 h1{font-size:21px;letter-spacing:-.02em;margin:0 0 4px}
 .sub{font-size:12px;color:var(--muted);margin:0}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 button{
   appearance:none;border:1px solid #3b4654;background:var(--panel2);color:var(--text);
   border-radius:11px;min-height:44px;padding:10px 13px;font:600 14px inherit;
@@ -55,22 +51,24 @@ button{
 button.primary{background:#285cad;border-color:#4777c5}
 button:disabled{opacity:.45}
 .status{
-  display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--line);
-  background:var(--panel);border-radius:999px;font-size:12px;color:var(--muted)
+  display:inline-flex;gap:7px;align-items:center;padding:7px 10px;
+  border:1px solid var(--line);background:var(--panel);border-radius:999px;
+  color:var(--muted);font-size:12px
 }
 .dot{width:9px;height:9px;border-radius:50%;background:#606872}
-.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
-.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(310px,1fr);gap:12px}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
+.layout{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(310px,1fr);gap:12px}
 @media(max-width:850px){.layout{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px;min-width:0}
+.panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px}
 .panelTitle{
-  display:flex;justify-content:space-between;align-items:center;gap:8px;
-  margin:1px 3px 9px;font-size:12px;color:var(--muted)
+  display:flex;gap:8px;justify-content:space-between;align-items:center;
+  margin:1px 3px 9px;color:var(--muted);font-size:12px
 }
-.viewport{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#080b0f}
-#world3d,#map{
-  display:block;width:100%;height:min(64vw,610px);min-height:390px;border:0
+.viewport{
+  position:relative;overflow:hidden;border:1px solid var(--line);
+  border-radius:12px;background:#080b0f
 }
+#world3d,#map{display:block;width:100%;height:min(64vw,610px);min-height:390px;border:0}
 @media(max-width:850px){
   #world3d{height:62vw;min-height:360px}
   #map{height:52vw;min-height:330px}
@@ -85,8 +83,8 @@ button:disabled{opacity:.45}
   font-size:11px;font-variant-numeric:tabular-nums;pointer-events:none
 }
 .hint{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:28px;z-index:2;background:#080b0ec9;color:#d8e0e7;
+  position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
+  padding:28px;text-align:center;background:#080b0ed9;color:#d8e0e7;
   font-size:14px;line-height:1.5
 }
 .hint.hidden{display:none}
@@ -94,31 +92,32 @@ button:disabled{opacity:.45}
 .cross:before,.cross:after{content:"";position:absolute;background:#ffffffa8}
 .cross:before{left:8px;top:1px;width:1px;height:16px}
 .cross:after{top:8px;left:1px;width:16px;height:1px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+
 .debug{
-  margin-top:12px;background:var(--panel);border:1px solid var(--line);
-  border-radius:16px;padding:13px;display:none
+  display:none;margin-top:12px;padding:13px;background:var(--panel);
+  border:1px solid var(--line);border-radius:16px
 }
 .debug.open{display:block}
-.debugHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:11px}
-.debug h2{margin:0;font-size:16px}
+.debugHead{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:11px}
+.debug h2{font-size:16px;margin:0}
+.note{font-size:11px;color:var(--muted);line-height:1.45}
 .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 @media(max-width:850px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.card{background:#0d1116;border:1px solid var(--line);border-radius:11px;padding:9px;min-width:0}
+.card{min-width:0;padding:9px;background:#0d1116;border:1px solid var(--line);border-radius:11px}
 .card .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.card .l{font-size:10px;color:var(--muted);margin-top:3px}
+.card .l{margin-top:3px;font-size:10px;color:var(--muted)}
 .debugGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 @media(max-width:760px){.debugGrid{grid-template-columns:1fr}}
 table{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
 td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}
 td:first-child{text-align:left;color:var(--muted)}
 pre{
-  margin:0;background:#0b0f13;border:1px solid var(--line);border-radius:10px;
-  padding:9px;max-height:210px;overflow:auto;white-space:pre-wrap;word-break:break-word;
-  color:#c6d0da;font-size:10px
+  margin:0;padding:9px;max-height:260px;overflow:auto;
+  white-space:pre-wrap;word-break:break-word;background:#0b0f13;
+  border:1px solid var(--line);border-radius:10px;color:#c6d0da;font-size:10px
 }
-.note{font-size:11px;color:var(--muted);line-height:1.45}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
-.swatch{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:-1px}
 #xrCanvas{
   position:absolute;left:-10000px;top:0;width:640px;height:480px;
   opacity:.001;pointer-events:none
@@ -128,11 +127,10 @@ pre{
 <body>
 <div class="shell">
   <div class="top">
-    <div class="brand">
-      <h1>WebAR SLAM · Meter-Test</h1>
-      <p class="sub">8th Wall World Tracking · absolute scale · First Person + Top-Down-Pfad</p>
+    <div>
+      <h1>WebAR SLAM · 1:1 Meter-Test</h1>
+      <p class="sub">Absolute Scale · Roll-freie First-Person-Kamera · Top-Down-Pfad</p>
     </div>
-
     <div class="actions">
       <span class="status"><i id="statusDot" class="dot"></i><span id="statusText">Engine lädt …</span></span>
       <button id="startBtn" class="primary" disabled>WebAR starten</button>
@@ -155,8 +153,8 @@ pre{
         <div id="hint" class="hint">
           <div>
             <b>WebAR starten</b><br>
-            Kamera erlauben, dann das iPad einige Sekunden langsam bewegen,<br>
-            bis SLAM auf <b>NORMAL</b> wechselt.
+            Danach das iPad wie angezeigt <b>vor und zurück bewegen</b>,<br>
+            damit 8th Wall die absolute Meter-Skala bestimmt.
           </div>
         </div>
       </div>
@@ -182,50 +180,54 @@ pre{
     <div class="debugHead">
       <div>
         <h2>Debug View</h2>
-        <div class="note">Direkte SLAM-Ausgabe und daraus berechnete lokale Meterkoordinaten.</div>
+        <div class="note">Raw XR8 → Achsenabbildung → Nullpunkt → 1:1 Meter → 12-mm-Jitter-Deadzone.</div>
       </div>
       <button id="closeDebugBtn">Schließen</button>
     </div>
 
     <div class="cards">
       <div class="card"><div id="dbgStatus" class="v">—</div><div class="l">Tracking</div></div>
+      <div class="card"><div id="dbgScaleReady" class="v">NEIN</div><div class="l">Absolute Scale bereit</div></div>
       <div class="card"><div id="dbgHz" class="v">0.0</div><div class="l">Pose Updates/s</div></div>
       <div class="card"><div id="dbgFps" class="v">0.0</div><div class="l">Render FPS</div></div>
-      <div class="card"><div id="dbgPoints" class="v">0</div><div class="l">SLAM World Points</div></div>
-      <div class="card"><div id="dbgDisplacement" class="v">0.000 m</div><div class="l">Verschiebung vom Nullpunkt</div></div>
-      <div class="card"><div id="dbgPath" class="v">0.000 m</div><div class="l">Pfadlänge</div></div>
-      <div class="card"><div id="dbgSamples" class="v">0</div><div class="l">Pfad-Samples</div></div>
-      <div class="card"><div id="dbgScale" class="v">absolute</div><div class="l">XR8 Scale Mode</div></div>
+      <div class="card"><div id="dbgDisplacement" class="v">0.000 m</div><div class="l">Horiz. Distanz vom Nullpunkt</div></div>
+      <div class="card"><div id="dbgRawDisplacement" class="v">0.000 m</div><div class="l">Raw 3D-Δ in XR8-Metern</div></div>
+      <div class="card"><div id="dbgPath" class="v">0.000 m</div><div class="l">Top-Down-Pfadlänge</div></div>
+      <div class="card"><div id="dbgJitter" class="v">0</div><div class="l">Deadzone verworfen</div></div>
     </div>
 
     <div class="debugGrid">
       <div>
         <table>
           <tbody>
-            <tr><td>Raw Position X</td><td id="rawX">—</td></tr>
-            <tr><td>Raw Position Y</td><td id="rawY">—</td></tr>
-            <tr><td>Raw Position Z</td><td id="rawZ">—</td></tr>
-            <tr><td>Local X [m]</td><td id="localX">—</td></tr>
-            <tr><td>Local Y [m]</td><td id="localY">—</td></tr>
-            <tr><td>Local Z [m]</td><td id="localZ">—</td></tr>
-            <tr><td>Quaternion W</td><td id="qw">—</td></tr>
-            <tr><td>Quaternion X</td><td id="qx">—</td></tr>
-            <tr><td>Quaternion Y</td><td id="qy">—</td></tr>
-            <tr><td>Quaternion Z</td><td id="qz">—</td></tr>
+            <tr><td>Raw XR8 X</td><td id="rawX">—</td></tr>
+            <tr><td>Raw XR8 Y</td><td id="rawY">—</td></tr>
+            <tr><td>Raw XR8 Z</td><td id="rawZ">—</td></tr>
+            <tr><td>Mapped Δ X [m]</td><td id="mappedX">—</td></tr>
+            <tr><td>Mapped Δ Y [m]</td><td id="mappedY">—</td></tr>
+            <tr><td>Mapped Δ Z [m]</td><td id="mappedZ">—</td></tr>
+            <tr><td>Final X [m]</td><td id="localX">—</td></tr>
+            <tr><td>Final Y [m]</td><td id="localY">—</td></tr>
+            <tr><td>Final Z [m]</td><td id="localZ">—</td></tr>
+            <tr><td>Yaw raw</td><td id="yawRaw">—</td></tr>
+            <tr><td>Yaw relativ</td><td id="yawLocal">—</td></tr>
+            <tr><td>Pitch raw</td><td id="pitchRaw">—</td></tr>
+            <tr><td>Pitch relativ</td><td id="pitchLocal">—</td></tr>
+            <tr><td>Roll raw</td><td id="rollRaw">—</td></tr>
+            <tr><td>Roll Render</td><td id="rollRender">0.00° (verworfen)</td></tr>
+            <tr><td>World Points</td><td id="worldPoints">0</td></tr>
             <tr><td>Tracking Reason</td><td id="trackReason">—</td></tr>
             <tr><td>Secure Context</td><td id="secure">—</td></tr>
           </tbody>
         </table>
       </div>
-      <div>
-        <pre id="log"></pre>
-      </div>
+      <div><pre id="log"></pre></div>
     </div>
 
     <p class="note">
-      Der XR-Controller ist mit <b>scale: "absolute"</b> konfiguriert. Die rohe XR8-Pose wird beim
-      Nullsetzen in ein lokales Koordinatensystem transformiert. Die 3D-Welt und die Karte verwenden
-      anschließend exakt dieselben lokalen Meterkoordinaten.
+      XR8 läuft mit <b>scale: "absolute"</b>. 8th Walls Standardachsen sind X-links, Y-oben,
+      Z-vorne. Für die WebGL-Welt werden nur die Achsen gespiegelt; es gibt <b>keinen Skalierungsfaktor</b>.
+      Die Ausrichtung verwendet nur Yaw und Pitch. Roll wird absichtlich nicht gerendert.
     </p>
   </section>
 </div>
@@ -236,45 +238,40 @@ pre{
 'use strict';
 (() => {
   const $ = id => document.getElementById(id);
-  const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
-  const fmt = (v,n=3) => Number.isFinite(v) ? v.toFixed(n) : '—';
-  const rad = d => d*Math.PI/180;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const fmt=(v,n=3)=>Number.isFinite(v)?v.toFixed(n):'—';
+  const rad=d=>d*Math.PI/180;
+  const deg=r=>r*180/Math.PI;
+  const wrapPi=a=>{
+    a=(a+Math.PI)%(2*Math.PI);
+    if(a<0)a+=2*Math.PI;
+    return a-Math.PI;
+  };
 
-  const S = {
-    engineReady:false,
-    started:false,
-    running:false,
-    trackingStatus:'—',
-    trackingReason:'—',
-    rawPos:null,
-    rawQ:null,
-    originPos:null,
-    originQ:null,
-    originYaw:0,
+  const POSITION_DEADZONE=0.012; // 12 mm, absolute-position deadzone; no accumulated scale error.
+
+  const S={
+    engineReady:false,started:false,running:false,
+    trackingStatus:'—',trackingReason:'—',
+    scaleReady:false,coachAvailable:false,autoCentered:false,
+    rawPos:null,rawQ:null,
+    originRawPos:null,originYaw:0,originPitch:0,
+    mappedDelta:{x:0,y:0,z:0},
     localPos:{x:0,y:0,z:0},
-    localQ:{w:1,x:0,y:0,z:0},
-    path:[],
-    pathLength:0,
-    lastPathPoint:null,
-    worldPoints:0,
-    poseCount:0,
-    poseHz:0,
-    poseHzT:performance.now(),
-    frameCount:0,
-    fps:0,
-    fpsT:performance.now(),
-    gl:null,
-    glReady:false,
-    errors:[],
+    rawYaw:0,rawPitch:0,rawRoll:0,
+    yaw:0,pitch:0,
+    path:[],pathLength:0,lastPathPoint:null,
+    rejectedJitter:0,worldPoints:0,
+    poseCount:0,poseHz:0,poseHzT:performance.now(),
+    frameCount:0,fps:0,fpsT:performance.now(),
+    gl:null,glReady:false,errors:[]
   };
 
   function log(msg){
-    const line=`[${new Date().toLocaleTimeString()}] ${msg}`;
-    S.errors.unshift(line);
-    S.errors=S.errors.slice(0,70);
+    S.errors.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
+    S.errors=S.errors.slice(0,80);
     $('log').textContent=S.errors.join('\n');
   }
-
   function setStatus(text,kind=''){
     $('statusText').textContent=text;
     $('statusDot').className='dot '+kind;
@@ -284,21 +281,9 @@ pre{
     const m=Math.hypot(q.w,q.x,q.y,q.z)||1;
     return {w:q.w/m,x:q.x/m,y:q.y/m,z:q.z/m};
   }
-  function qInv(q){
-    q=qNorm(q);
-    return {w:q.w,x:-q.x,y:-q.y,z:-q.z};
-  }
-  function qMul(a,b){
-    return {
-      w:a.w*b.w-a.x*b.x-a.y*b.y-a.z*b.z,
-      x:a.w*b.x+a.x*b.w+a.y*b.z-a.z*b.y,
-      y:a.w*b.y-a.x*b.z+a.y*b.w+a.z*b.x,
-      z:a.w*b.z+a.x*b.y-a.y*b.x+a.z*b.w
-    };
-  }
   function qRotate(q,v){
     q=qNorm(q);
-    const u={x:q.x,y:q.y,z:q.z}, s=q.w;
+    const u={x:q.x,y:q.y,z:q.z},s=q.w;
     const dot=u.x*v.x+u.y*v.y+u.z*v.z;
     const cross={
       x:u.y*v.z-u.z*v.y,
@@ -312,115 +297,205 @@ pre{
       z:2*dot*u.z+(s*s-uu)*v.z+2*s*cross.z
     };
   }
+  function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
+  function cross(a,b){
+    return {x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x};
+  }
+  function norm(v){
+    const m=Math.hypot(v.x,v.y,v.z)||1;
+    return {x:v.x/m,y:v.y/m,z:v.z/m};
+  }
   function rotateY(v,a){
     const c=Math.cos(a),s=Math.sin(a);
     return {x:c*v.x+s*v.z,y:v.y,z:-s*v.x+c*v.z};
   }
-  function horizontalYaw(q){
-    const f=qRotate(q,{x:0,y:0,z:-1});
-    return Math.atan2(f.x,-f.z);
+
+  // XR8 default: X-left, Y-up, Z-forward.
+  // Our WebGL world: X-right, Y-up, camera forward = -Z.
+  // This rigid 180° Y-axis basis conversion preserves all distances exactly.
+  function xrVecToWeb(v){return {x:-v.x,y:v.y,z:-v.z}}
+
+  function cameraAnglesFromXR(q){
+    // XR8 camera forward is +Z in its documented scene axes.
+    const forward=norm(xrVecToWeb(qRotate(q,{x:0,y:0,z:1})));
+    const up=norm(xrVecToWeb(qRotate(q,{x:0,y:1,z:0})));
+
+    const yaw=Math.atan2(forward.x,-forward.z);
+    const pitch=Math.asin(clamp(forward.y,-1,1));
+
+    // Roll is measured only for diagnostics and deliberately discarded in rendering.
+    let right=cross(forward,{x:0,y:1,z:0});
+    if(Math.hypot(right.x,right.y,right.z)<1e-5)right={x:1,y:0,z:0};
+    right=norm(right);
+    const horizonUp=norm(cross(right,forward));
+    const roll=Math.atan2(dot(cross(horizonUp,up),forward),clamp(dot(horizonUp,up),-1,1));
+
+    return {yaw,pitch,roll};
   }
 
-  function recenter(){
-    if(!S.rawPos || !S.rawQ){
-      log('Nullpunkt noch nicht möglich: keine SLAM-Pose.');
+  function mappedDeltaFromOrigin(){
+    if(!S.rawPos||!S.originRawPos)return {x:0,y:0,z:0};
+    const rawDelta={
+      x:S.rawPos.x-S.originRawPos.x,
+      y:S.rawPos.y-S.originRawPos.y,
+      z:S.rawPos.z-S.originRawPos.z
+    };
+    const webDelta=xrVecToWeb(rawDelta);
+
+    // Align initial horizontal viewing direction with virtual -Z.
+    // Rotation is rigid: |Δ| remains exactly unchanged.
+    return rotateY(webDelta,S.originYaw);
+  }
+
+  function recenter(force=false){
+    if(!S.rawPos||!S.rawQ){
+      log('Nullpunkt nicht möglich: noch keine SLAM-Pose.');
       return;
     }
-    S.originPos={...S.rawPos};
-    S.originQ=qNorm(S.rawQ);
-    S.originYaw=horizontalYaw(S.originQ);
+    if(!force && S.coachAvailable && !S.scaleReady){
+      log('Nullpunkt blockiert: Absolute-Scale-Kalibrierung noch nicht abgeschlossen.');
+      setStatus('Erst Meter-Skala kalibrieren','warn');
+      return;
+    }
+
+    const a=cameraAnglesFromXR(S.rawQ);
+    S.originRawPos={...S.rawPos};
+    S.originYaw=a.yaw;
+    S.originPitch=a.pitch;
+    S.rawYaw=a.yaw;S.rawPitch=a.pitch;S.rawRoll=a.roll;
+    S.yaw=0;S.pitch=0;
+    S.mappedDelta={x:0,y:0,z:0};
     S.localPos={x:0,y:0,z:0};
-    S.localQ={w:1,x:0,y:0,z:0};
-    S.path=[];
-    S.pathLength=0;
-    S.lastPathPoint=null;
+    S.path=[];S.pathLength=0;S.lastPathPoint=null;
+    S.rejectedJitter=0;S.autoCentered=true;
     addPathPoint(true);
-    log(`Nullpunkt gesetzt. Raw origin = ${fmt(S.originPos.x)}, ${fmt(S.originPos.y)}, ${fmt(S.originPos.z)}`);
+
+    $('hint').classList.add('hidden');
+    log(`Nullpunkt gesetzt. absolute=${S.scaleReady}; origin raw=${fmt(S.rawPos.x)}, ${fmt(S.rawPos.y)}, ${fmt(S.rawPos.z)}`);
   }
 
   function updateLocalPose(){
-    if(!S.rawPos || !S.rawQ)return;
-    if(!S.originPos || !S.originQ){
-      if(S.trackingStatus==='NORMAL') recenter();
-      else return;
+    if(!S.rawPos||!S.rawQ)return;
+
+    const a=cameraAnglesFromXR(S.rawQ);
+    S.rawYaw=a.yaw;S.rawPitch=a.pitch;S.rawRoll=a.roll;
+
+    if(!S.originRawPos){
+      if(S.trackingStatus==='NORMAL' && (S.scaleReady || !S.coachAvailable))recenter(true);
+      return;
     }
 
-    const d={
-      x:S.rawPos.x-S.originPos.x,
-      y:S.rawPos.y-S.originPos.y,
-      z:S.rawPos.z-S.originPos.z
-    };
+    // Correct first-person orientation: Yaw + Pitch only, NO roll.
+    S.yaw=wrapPi(S.rawYaw-S.originYaw);
+    S.pitch=clamp(S.rawPitch-S.originPitch,rad(-80),rad(80));
 
-    // Keep gravity/Y vertical. Only remove the initial heading from translation.
-    S.localPos=rotateY(d,-S.originYaw);
+    // Absolute XR8 meter position, only rigid basis/heading transforms.
+    const candidate=mappedDeltaFromOrigin();
+    S.mappedDelta={...candidate};
 
-    // Full relative camera orientation, so the initial viewing direction becomes neutral.
-    S.localQ=qNorm(qMul(qInv(S.originQ),S.rawQ));
-
-    addPathPoint(false);
+    // Suppress only sub-centimeter SLAM jitter. Because candidate is an absolute pose,
+    // this does NOT integrate or rescale movement and cannot accumulate distance error.
+    const d=Math.hypot(
+      candidate.x-S.localPos.x,
+      candidate.y-S.localPos.y,
+      candidate.z-S.localPos.z
+    );
+    if(d>=POSITION_DEADZONE){
+      S.localPos={...candidate};
+      addPathPoint(false);
+    }else{
+      S.rejectedJitter++;
+    }
   }
 
   function addPathPoint(force){
     const p=S.localPos;
     if(!S.lastPathPoint){
-      S.lastPathPoint={...p};
-      S.path.push({...p});
-      return;
+      S.lastPathPoint={...p};S.path.push({...p});return;
     }
-    const dx=p.x-S.lastPathPoint.x,dy=p.y-S.lastPathPoint.y,dz=p.z-S.lastPathPoint.z;
-    const d=Math.hypot(dx,dy,dz);
-    if(force || d>=0.015){
-      S.pathLength+=d;
+    const dx=p.x-S.lastPathPoint.x,dz=p.z-S.lastPathPoint.z;
+    const horizontal=Math.hypot(dx,dz);
+    if(force||horizontal>=0.01){
+      S.pathLength+=horizontal;
       S.path.push({...p});
       S.lastPathPoint={...p};
       if(S.path.length>12000)S.path.splice(0,S.path.length-12000);
     }
   }
 
+  function coachApi(){
+    const c=window.CoachingOverlay;
+    if(!c)return null;
+    if(typeof c.pipelineModule==='function')return c;
+    if(c.AbsoluteScale&&typeof c.AbsoluteScale.pipelineModule==='function')return c.AbsoluteScale;
+    return null;
+  }
+
+  function coachingEventsModule(){
+    return {
+      name:'meter-coaching-events',
+      listeners:[
+        {
+          event:'coaching-overlay.show',
+          process:()=>{
+            S.scaleReady=false;
+            $('hint').classList.remove('hidden');
+            $('hint').innerHTML='<div><b>Meter-Skala wird kalibriert</b><br>iPad langsam etwa 30–60 cm vor und zurück bewegen.<br>Nicht nur auf der Stelle drehen.</div>';
+            setStatus('Absolute Scale kalibrieren','warn');
+            log('Absolute-Scale-Coaching: SHOW');
+          }
+        },
+        {
+          event:'coaching-overlay.hide',
+          process:()=>{
+            S.scaleReady=true;
+            setStatus('Meter-Skala bereit','ok');
+            log('Absolute-Scale-Coaching: HIDE → Skala bereit.');
+            if(S.trackingStatus==='NORMAL')recenter(true);
+          }
+        }
+      ]
+    };
+  }
+
   function posePipelineModule(){
     return {
       name:'meter-pose-reader',
-
       onCameraStatusChange:({status})=>{
         log('Kamera: '+status);
         if(status==='requesting')setStatus('Kamerazugriff …','warn');
-        if(status==='hasStream')setStatus('Kamera aktiv · SLAM startet','warn');
-        if(status==='hasVideo')setStatus('SLAM initialisiert …','warn');
-        if(status==='failed')setStatus('Kamera fehlgeschlagen','bad');
+        else if(status==='hasStream')setStatus('Kamera aktiv · SLAM startet','warn');
+        else if(status==='hasVideo')setStatus('SLAM initialisiert …','warn');
+        else if(status==='failed')setStatus('Kamera fehlgeschlagen','bad');
       },
-
       onUpdate:({processCpuResult})=>{
-        const r=processCpuResult && processCpuResult.reality;
-        if(!r || !r.position || !r.rotation)return;
+        const r=processCpuResult&&processCpuResult.reality;
+        if(!r||!r.position||!r.rotation)return;
 
         S.rawPos={x:r.position.x,y:r.position.y,z:r.position.z};
         S.rawQ={w:r.rotation.w,x:r.rotation.x,y:r.rotation.y,z:r.rotation.z};
-        S.trackingStatus=r.trackingStatus || '—';
-        S.trackingReason=r.trackingReason || '—';
+        S.trackingStatus=r.trackingStatus||'—';
+        S.trackingReason=r.trackingReason||'—';
         S.worldPoints=Array.isArray(r.worldPoints)?r.worldPoints.length:0;
 
         S.poseCount++;
         const t=performance.now(),dt=(t-S.poseHzT)/1000;
         if(dt>=1){
-          S.poseHz=S.poseCount/dt;
-          S.poseCount=0;
-          S.poseHzT=t;
+          S.poseHz=S.poseCount/dt;S.poseCount=0;S.poseHzT=t;
         }
 
         updateLocalPose();
 
         if(S.trackingStatus==='NORMAL'){
-          setStatus('SLAM NORMAL','ok');
-          $('hint').classList.add('hidden');
+          if(S.scaleReady || !S.coachAvailable)setStatus('SLAM NORMAL · 1:1','ok');
+          else setStatus('SLAM NORMAL · Skala kalibrieren','warn');
         }else{
           setStatus(`SLAM ${S.trackingStatus}`,'warn');
         }
       },
-
-      onException:(e)=>{
-        const m=e && e.message ? e.message : String(e);
-        log('XR Exception: '+m);
-        setStatus('XR Fehler','bad');
+      onException:e=>{
+        const m=e&&e.message?e.message:String(e);
+        log('XR Exception: '+m);setStatus('XR Fehler','bad');
       }
     };
   }
@@ -429,63 +504,80 @@ pre{
     if(S.started)return;
     if(!window.isSecureContext){
       setStatus('HTTPS erforderlich','bad');
-      log('WebAR benötigt HTTPS / secure context.');
-      alert('Diese Demo muss über HTTPS geöffnet werden, damit Safari die Kamera für WebAR freigibt.');
+      alert('Diese Demo muss über HTTPS geöffnet werden.');
       return;
     }
     if(!window.XR8){
-      setStatus('XR8 nicht geladen','bad');
-      log('XR8 Engine ist nicht verfügbar.');
-      return;
+      setStatus('XR8 nicht geladen','bad');log('XR8 nicht verfügbar.');return;
     }
 
     try{
-      S.started=true;
-      $('startBtn').disabled=true;
+      S.started=true;$('startBtn').disabled=true;
       setStatus('SLAM wird geladen …','warn');
 
-      if(typeof XR8.loadChunk==='function'){
-        await XR8.loadChunk('slam');
-      }
+      if(typeof XR8.loadChunk==='function')await XR8.loadChunk('slam');
 
       XR8.XrController.configure({
         disableWorldTracking:false,
         enableWorldPoints:true,
         enableLighting:false,
+        leftHandedAxes:false,
+        mirroredDisplay:false,
         scale:'absolute'
       });
 
-      XR8.addCameraPipelineModule(XR8.XrController.pipelineModule());
-      XR8.addCameraPipelineModule(posePipelineModule());
+      const modules=[XR8.XrController.pipelineModule()];
+
+      const coach=coachApi();
+      S.coachAvailable=!!coach;
+      if(coach){
+        try{
+          if(typeof coach.configure==='function'){
+            coach.configure({
+              promptText:'iPad vor und zurück bewegen, um den 1:1-Maßstab zu bestimmen',
+              promptColor:'#ffffff',
+              animationColor:'#ffffff'
+            });
+          }
+          modules.push(coach.pipelineModule());
+          modules.push(coachingEventsModule());
+          log('Absolute-Scale-Coaching aktiviert.');
+        }catch(e){
+          S.coachAvailable=false;
+          log('Coaching Overlay konnte nicht aktiviert werden: '+e.message);
+        }
+      }else{
+        log('Coaching Overlay nicht gefunden; absolute Skala kann nicht explizit bestätigt werden.');
+      }
+
+      modules.push(posePipelineModule());
+      if(typeof XR8.addCameraPipelineModules==='function')XR8.addCameraPipelineModules(modules);
+      else modules.forEach(m=>XR8.addCameraPipelineModule(m));
 
       XR8.run({
         canvas:$('xrCanvas'),
+        cameraConfig:{direction:XR8.XrConfig.camera().BACK},
         allowedDevices:XR8.XrConfig.device().MOBILE_AND_HEADSETS
       });
 
       S.running=true;
-      $('recenterBtn').disabled=false;
-      $('clearBtn').disabled=false;
+      $('recenterBtn').disabled=false;$('clearBtn').disabled=false;
       setStatus('Kamera wird angefordert …','warn');
-      log('XR8 gestartet: World Tracking, scale=absolute, worldPoints=true.');
+      log('XR8 gestartet: scale=absolute; keine virtuelle Positionsskalierung.');
     }catch(e){
-      S.started=false;
-      $('startBtn').disabled=false;
-      const m=e && e.message ? e.message : String(e);
-      setStatus('Start fehlgeschlagen','bad');
-      log('Startfehler: '+m);
+      S.started=false;$('startBtn').disabled=false;
+      const m=e&&e.message?e.message:String(e);
+      setStatus('Start fehlgeschlagen','bad');log('Startfehler: '+m);
     }
   }
 
   function onEngineLoaded(){
     if(S.engineReady)return;
-    S.engineReady=true;
-    $('startBtn').disabled=false;
-    setStatus('Engine bereit','');
-    log('8th Wall Engine geladen.');
+    S.engineReady=true;$('startBtn').disabled=false;
+    setStatus('Engine bereit','');log('8th Wall Engine geladen.');
   }
 
-  // ---------- WebGL virtual world ----------
+  // ---------- WebGL test world ----------
   const HALF=12;
   const BOXES=[
     {x:-4.0,y:.60,z:-3.2,w:1.6,h:1.2,d:1.6,c:[.28,.48,.72,1]},
@@ -505,10 +597,7 @@ pre{
   function perspective(fovy,aspect,near,far){
     const f=1/Math.tan(fovy/2),nf=1/(near-far);
     return new Float32Array([
-      f/aspect,0,0,0,
-      0,f,0,0,
-      0,0,(far+near)*nf,-1,
-      0,0,2*far*near*nf,0
+      f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0
     ]);
   }
   function lookAt(e,c,u){
@@ -518,7 +607,7 @@ pre{
     l=Math.hypot(xx,xy,xz)||1;xx/=l;xy/=l;xz/=l;
     const yx=zy*xz-zz*xy,yy=zz*xx-zx*xz,yz=zx*xy-zy*xx;
     return new Float32Array([
-      xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0,
+      xx,yx,zx,0,xy,yy,zy,0,xz,yz,zz,0,
       -(xx*e[0]+xy*e[1]+xz*e[2]),
       -(yx*e[0]+yy*e[1]+yz*e[2]),
       -(zx*e[0]+zy*e[1]+zz*e[2]),1
@@ -541,13 +630,10 @@ pre{
   function initGL(){
     try{
       const c=$('world3d');
-      const gl=c.getContext('webgl',{antialias:true,alpha:false}) || c.getContext('experimental-webgl');
+      const gl=c.getContext('webgl',{antialias:true,alpha:false})||c.getContext('experimental-webgl');
       if(!gl)throw new Error('WebGL nicht verfügbar');
-
-      const vs=shader(gl,gl.VERTEX_SHADER,
-        'attribute vec3 aPos;uniform mat4 uMVP;void main(){gl_Position=uMVP*vec4(aPos,1.0);}');
-      const fs=shader(gl,gl.FRAGMENT_SHADER,
-        'precision mediump float;uniform vec4 uColor;void main(){gl_FragColor=uColor;}');
+      const vs=shader(gl,gl.VERTEX_SHADER,'attribute vec3 aPos;uniform mat4 uMVP;void main(){gl_Position=uMVP*vec4(aPos,1.0);}');
+      const fs=shader(gl,gl.FRAGMENT_SHADER,'precision mediump float;uniform vec4 uColor;void main(){gl_FragColor=uColor;}');
       const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);
       if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));
 
@@ -569,40 +655,33 @@ pre{
       }
       const gv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,gv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(lines),gl.STATIC_DRAW);
 
-      S.gl={gl,pr,cv,ci,gv,gridCount:lines.length/3};
-      S.glReady=true;
+      S.gl={gl,pr,cv,ci,gv,gridCount:lines.length/3};S.glReady=true;
       log('Virtuelle WebGL-Welt initialisiert.');
-    }catch(e){
-      log('WebGL-Fehler: '+e.message);
-    }
+    }catch(e){log('WebGL-Fehler: '+e.message)}
   }
 
   function draw3D(){
     if(!S.glReady)return;
     const {gl,pr,cv,ci,gv,gridCount}=S.gl,c=$('world3d');
-    sizeCanvas(c);
-    gl.viewport(0,0,c.width,c.height);
-    gl.enable(gl.DEPTH_TEST);
-    gl.disable(gl.CULL_FACE);
-    gl.clearColor(.035,.045,.055,1);
-    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    sizeCanvas(c);gl.viewport(0,0,c.width,c.height);
+    gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);
+    gl.clearColor(.035,.045,.055,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     gl.useProgram(pr);
 
-    const ap=gl.getAttribLocation(pr,'aPos');
-    const um=gl.getUniformLocation(pr,'uMVP');
-    const uc=gl.getUniformLocation(pr,'uColor');
+    const ap=gl.getAttribLocation(pr,'aPos'),um=gl.getUniformLocation(pr,'uMVP'),uc=gl.getUniformLocation(pr,'uColor');
     gl.enableVertexAttribArray(ap);
 
     const eyeHeight=1.65;
     const pos={x:S.localPos.x,y:eyeHeight+S.localPos.y,z:S.localPos.z};
 
-    const f=qRotate(S.localQ,{x:0,y:0,z:-1});
-    const up=qRotate(S.localQ,{x:0,y:1,z:0});
+    // Roll-free first-person orientation.
+    const cp=Math.cos(S.pitch);
+    const forward={x:Math.sin(S.yaw)*cp,y:Math.sin(S.pitch),z:-Math.cos(S.yaw)*cp};
     const P=perspective(rad(68),c.width/c.height,.04,80);
     const V=lookAt(
       [pos.x,pos.y,pos.z],
-      [pos.x+f.x,pos.y+f.y,pos.z+f.z],
-      [up.x,up.y,up.z]
+      [pos.x+forward.x,pos.y+forward.y,pos.z+forward.z],
+      [0,1,0]
     );
     const VP=matMul(P,V);
 
@@ -614,7 +693,6 @@ pre{
       gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
     }
 
-    // floor and perimeter
     cube({x:0,y:-.06,z:0,w:HALF*2,h:.12,d:HALF*2,c:[.075,.09,.105,1]});
     const H=2.8,T=.12,L=HALF*2;
     cube({x:0,y:H/2,z:-HALF,w:L,h:H,d:T,c:[.16,.19,.22,1]});
@@ -623,30 +701,27 @@ pre{
     cube({x: HALF,y:H/2,z:0,w:T,h:H,d:L,c:[.16,.19,.22,1]});
     BOXES.forEach(cube);
 
-    // 1m floor grid
     gl.bindBuffer(gl.ARRAY_BUFFER,gv);gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
-    gl.uniformMatrix4fv(um,false,VP);
-    gl.uniform4fv(uc,new Float32Array([.22,.25,.29,1]));
+    gl.uniformMatrix4fv(um,false,VP);gl.uniform4fv(uc,new Float32Array([.22,.25,.29,1]));
     gl.drawArrays(gl.LINES,0,gridCount);
 
-    $('hud').textContent=`x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m`;
+    $('hud').textContent=
+      `x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m · `+
+      `yaw ${fmt(deg(S.yaw),0)}° · pitch ${fmt(deg(S.pitch),0)}°`;
   }
 
   function drawMap(){
     const c=$('map');sizeCanvas(c);
-    const x=c.getContext('2d');
-    const d=Math.min(devicePixelRatio||1,2),w=c.width,h=c.height;
+    const x=c.getContext('2d'),d=Math.min(devicePixelRatio||1,2),w=c.width,h=c.height;
     x.clearRect(0,0,w,h);x.fillStyle='#0a0e12';x.fillRect(0,0,w,h);
 
     let extent=HALF;
     for(const p of S.path)extent=Math.max(extent,Math.abs(p.x)+2,Math.abs(p.z)+2);
     extent=Math.ceil(extent);
-    const margin=20*d;
-    const scale=Math.min((w-2*margin)/(extent*2),(h-2*margin)/(extent*2));
-    const cx=w/2,cy=h/2;
+    const margin=20*d,scale=Math.min((w-2*margin)/(extent*2),(h-2*margin)/(extent*2)),cx=w/2,cy=h/2;
     const sx=v=>cx+v*scale,sz=v=>cy+v*scale;
-
     const step=extent<=15?1:extent<=30?2:5;
+
     x.lineWidth=1*d;x.strokeStyle='#1b242d';
     for(let i=-extent;i<=extent;i+=step){
       x.beginPath();x.moveTo(sx(i),sz(-extent));x.lineTo(sx(i),sz(extent));x.stroke();
@@ -657,71 +732,68 @@ pre{
     x.strokeRect(sx(-HALF),sz(-HALF),HALF*2*scale,HALF*2*scale);
 
     x.fillStyle='#34404b';
-    for(const o of BOXES){
-      x.fillRect(sx(o.x-o.w/2),sz(o.z-o.d/2),o.w*scale,o.d*scale);
-    }
+    for(const o of BOXES)x.fillRect(sx(o.x-o.w/2),sz(o.z-o.d/2),o.w*scale,o.d*scale);
 
     if(S.path.length>1){
-      x.strokeStyle='#b891ff';x.lineWidth=2.2*d;x.lineJoin='round';x.lineCap='round';
-      x.beginPath();
+      x.strokeStyle='#b891ff';x.lineWidth=2.2*d;x.lineJoin='round';x.lineCap='round';x.beginPath();
       S.path.forEach((p,i)=>i?x.lineTo(sx(p.x),sz(p.z)):x.moveTo(sx(p.x),sz(p.z)));
       x.stroke();
     }
 
-    const p=S.localPos;
-    const f=qRotate(S.localQ,{x:0,y:0,z:-1});
-    const px=sx(p.x),pz=sz(p.z);
+    const p=S.localPos,px=sx(p.x),pz=sz(p.z);
+    const fx=Math.sin(S.yaw),fz=-Math.cos(S.yaw);
     x.fillStyle='#ffd166';x.beginPath();x.arc(px,pz,5*d,0,Math.PI*2);x.fill();
     x.strokeStyle='#ffd166';x.lineWidth=2*d;x.beginPath();x.moveTo(px,pz);
-    x.lineTo(px+f.x*22*d,pz+f.z*22*d);x.stroke();
+    x.lineTo(px+fx*22*d,pz+fz*22*d);x.stroke();
 
     x.fillStyle='#99a6b4';x.font=`${10*d}px system-ui`;
     x.fillText(`${step} m Raster`,margin,14*d);
-    x.fillText('+X →',w-48*d,cy-5*d);
-    x.fillText('+Z ↓',cx+5*d,h-8*d);
+    x.fillText('+X →',w-48*d,cy-5*d);x.fillText('+Z ↓',cx+5*d,h-8*d);
 
-    $('distanceLabel').textContent=`Pfad ${fmt(S.pathLength,2)} m`;
+    $('distanceLabel').textContent=
+      `${fmt(Math.hypot(S.localPos.x,S.localPos.z),2)} m vom Start · Pfad ${fmt(S.pathLength,2)} m`;
   }
 
   function updateDebug(){
-    $('trackLabel').textContent=`${S.trackingStatus}${S.trackingReason && S.trackingReason!=='—'?' · '+S.trackingReason:''}`;
-    $('dbgStatus').textContent=S.trackingStatus;
-    $('dbgHz').textContent=fmt(S.poseHz,1);
-    $('dbgFps').textContent=fmt(S.fps,1);
-    $('dbgPoints').textContent=String(S.worldPoints);
-    $('dbgDisplacement').textContent=fmt(Math.hypot(S.localPos.x,S.localPos.y,S.localPos.z),3)+' m';
-    $('dbgPath').textContent=fmt(S.pathLength,3)+' m';
-    $('dbgSamples').textContent=String(S.path.length);
+    $('trackLabel').textContent=
+      `${S.trackingStatus}${S.scaleReady?' · METER OK':''}${S.trackingReason&&S.trackingReason!=='—'?' · '+S.trackingReason:''}`;
 
-    $('rawX').textContent=fmt(S.rawPos?.x);
-    $('rawY').textContent=fmt(S.rawPos?.y);
-    $('rawZ').textContent=fmt(S.rawPos?.z);
-    $('localX').textContent=fmt(S.localPos.x);
-    $('localY').textContent=fmt(S.localPos.y);
-    $('localZ').textContent=fmt(S.localPos.z);
-    $('qw').textContent=fmt(S.rawQ?.w,5);
-    $('qx').textContent=fmt(S.rawQ?.x,5);
-    $('qy').textContent=fmt(S.rawQ?.y,5);
-    $('qz').textContent=fmt(S.rawQ?.z,5);
-    $('trackReason').textContent=S.trackingReason;
-    $('secure').textContent=String(window.isSecureContext);
+    $('dbgStatus').textContent=S.trackingStatus;
+    $('dbgScaleReady').textContent=S.scaleReady?'JA':'NEIN';
+    $('dbgHz').textContent=fmt(S.poseHz,1);$('dbgFps').textContent=fmt(S.fps,1);
+    $('dbgDisplacement').textContent=fmt(Math.hypot(S.localPos.x,S.localPos.z),3)+' m';
+
+    let rawD=0;
+    if(S.rawPos&&S.originRawPos){
+      rawD=Math.hypot(
+        S.rawPos.x-S.originRawPos.x,
+        S.rawPos.y-S.originRawPos.y,
+        S.rawPos.z-S.originRawPos.z
+      );
+    }
+    $('dbgRawDisplacement').textContent=fmt(rawD,3)+' m';
+    $('dbgPath').textContent=fmt(S.pathLength,3)+' m';
+    $('dbgJitter').textContent=String(S.rejectedJitter);
+
+    $('rawX').textContent=fmt(S.rawPos?.x);$('rawY').textContent=fmt(S.rawPos?.y);$('rawZ').textContent=fmt(S.rawPos?.z);
+    $('mappedX').textContent=fmt(S.mappedDelta.x);$('mappedY').textContent=fmt(S.mappedDelta.y);$('mappedZ').textContent=fmt(S.mappedDelta.z);
+    $('localX').textContent=fmt(S.localPos.x);$('localY').textContent=fmt(S.localPos.y);$('localZ').textContent=fmt(S.localPos.z);
+    $('yawRaw').textContent=fmt(deg(S.rawYaw),2)+'°';$('yawLocal').textContent=fmt(deg(S.yaw),2)+'°';
+    $('pitchRaw').textContent=fmt(deg(S.rawPitch),2)+'°';$('pitchLocal').textContent=fmt(deg(S.pitch),2)+'°';
+    $('rollRaw').textContent=fmt(deg(S.rawRoll),2)+'°';
+    $('worldPoints').textContent=String(S.worldPoints);
+    $('trackReason').textContent=S.trackingReason;$('secure').textContent=String(window.isSecureContext);
   }
 
   function frame(){
     S.frameCount++;
     const t=performance.now(),dt=(t-S.fpsT)/1000;
-    if(dt>=1){
-      S.fps=S.frameCount/dt;
-      S.frameCount=0;S.fpsT=t;
-    }
-    draw3D();
-    drawMap();
-    updateDebug();
-    requestAnimationFrame(frame);
+    if(dt>=1){S.fps=S.frameCount/dt;S.frameCount=0;S.fpsT=t}
+    draw3D();drawMap();updateDebug();requestAnimationFrame(frame);
   }
 
   $('startBtn').addEventListener('click',startWebAR);
-  $('recenterBtn').addEventListener('click',recenter);
+  $('recenterBtn').addEventListener('click',()=>recenter(false));
   $('clearBtn').addEventListener('click',()=>{
     S.path=[];S.pathLength=0;S.lastPathPoint=null;addPathPoint(true);log('Pfad gelöscht.');
   });
@@ -729,15 +801,13 @@ pre{
   $('closeDebugBtn').addEventListener('click',()=>$('debugView').classList.remove('open'));
 
   initGL();
-
   if(window.XR8)onEngineLoaded();
   else window.addEventListener('xrloaded',onEngineLoaded,{once:true});
 
   if(!window.isSecureContext){
     setStatus('HTTPS erforderlich','bad');
-    log('Secure Context = false. Kamera/WebAR wird in Safari so nicht funktionieren.');
+    log('Secure Context = false.');
   }
-
   log('User Agent: '+navigator.userAgent);
   requestAnimationFrame(frame);
 })();
