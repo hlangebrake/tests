@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>WebAR Cozy Forest Path Demo</title>
+<title>WebAR 3D Model Inspector</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@8thwall/coaching-overlay@1/dist/coaching-overlay.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
@@ -111,6 +111,20 @@ pre{
   margin:0; padding:9px; max-height:260px; overflow:auto; white-space:pre-wrap; word-break:break-word;
   background:#0b0f13; border:1px solid var(--line); border-radius:10px; color:#c7d2db; font-size:10px
 }
+
+.modelbar{
+  display:flex;gap:10px;align-items:end;flex-wrap:wrap;
+  margin:0 0 12px;padding:10px 11px;background:var(--panel);
+  border:1px solid var(--line);border-radius:15px
+}
+.modelbar label{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:11px;min-width:150px}
+.modelbar select,.modelbar input[type="range"]{
+  min-height:42px;background:#0c141d;color:var(--text);border:1px solid #3b4b5b;border-radius:10px;
+  padding:7px;font-size:16px
+}
+.modelbar input[type="range"]{width:min(280px,70vw);padding:4px}
+.modelReadout{font-size:12px;color:var(--muted);padding:9px 2px;min-width:190px}
+
 #xrCanvas{
   position:absolute;left:-10000px;top:0;width:640px;height:480px;
   opacity:.001;pointer-events:none
@@ -121,22 +135,36 @@ pre{
 <div class="shell">
   <div class="top">
     <div>
-      <h1>WebAR Waldlichtung · Path Test</h1>
-      <p class="sub">Gemütliche Waldlichtung + Karte von oben · Reset nur per Knopfdruck</p>
+      <h1>WebAR 3D-Inspektor</h1>
+      <p class="sub">Mechanik · Medizin · Landschaft · physisch um das Modell herumlaufen</p>
     </div>
     <div class="actions">
       <span class="status"><i id="statusDot" class="dot"></i><span id="statusText">Engine lädt …</span></span>
       <button id="startBtn" class="primary" disabled>WebAR starten</button>
-      <button id="recenterBtn" class="good" disabled>Nullpunkt setzen / Reset</button>
+      <button id="recenterBtn" class="good" disabled>Tracking-Nullpunkt setzen</button>
       <button id="clearBtn" disabled>Pfad löschen</button>
       <button id="debugBtn">Debug</button>
     </div>
   </div>
 
+  <div class="modelbar">
+    <label>Modell
+      <select id="modelSelect">
+        <option value="mechanical">Mechanisch · Getriebe / Turbine</option>
+        <option value="medical">Medizinisch · Herz / Gefäße</option>
+        <option value="landscape">Landschaft · Diorama</option>
+      </select>
+    </label>
+    <label>Modell-Skalierung
+      <input id="modelScale" type="range" min="0.25" max="2.50" step="0.05" value="1.00">
+    </label>
+    <div id="modelReadout" class="modelReadout">1.00× · ca. 2.2 m breit</div>
+  </div>
+
   <div class="layout">
     <section class="panel">
       <div class="panelTitle">
-        <span>3D-UMGEBUNG · WALDLICHTUNG</span>
+        <span>3D-MODELL · PHYSISCH UMRUNDEN</span>
         <span id="trackLabel">kein Tracking</span>
       </div>
       <div class="viewport">
@@ -146,9 +174,9 @@ pre{
         <div id="hint" class="hint">
           <div>
             <b>WebAR starten</b><br>
-            Kamera erlauben und dem Coaching folgen.<br>
-            Danach <b>„Nullpunkt setzen / Reset“</b> drücken.<br>
-            Ein späterer Tracking-Verlust setzt nichts automatisch zurück.
+            Einmal die Meter-Skala kalibrieren und dann <b>„Tracking-Nullpunkt setzen“</b> drücken.<br>
+            Das Modell steht anschließend etwa 3 m vor dir.<br>
+            Lauf real darum herum, um es aus allen Richtungen zu inspizieren.
           </div>
         </div>
       </div>
@@ -163,10 +191,10 @@ pre{
         <canvas id="map"></canvas>
       </div>
       <div class="legend">
-        <span><i class="sw" style="background:#33414f"></i>Szene</span>
+        <span><i class="sw" style="background:#33414f"></i>Modell</span>
         <span><i class="sw" style="background:#b891ff"></i>Pfad</span>
         <span><i class="sw" style="background:#ffd166"></i>Position / Blick</span>
-        <span><i class="sw" style="background:#7df5c9"></i>entdeckte Geheimnisse</span>
+        <span><i class="sw" style="background:#7df5c9"></i>Modellzentrum</span>
       </div>
     </section>
   </div>
@@ -175,7 +203,7 @@ pre{
     <div class="debugHead">
       <div>
         <h2>Debug View</h2>
-        <div class="note">Tracking-Verlust friert die letzte gute Pose ein. Recenter passiert nur per Button.</div>
+        <div class="note">Tracking-Verlust friert die letzte gute Pose ein. Beim Wiederfinden wird die neue SLAM-Welt nahtlos an die alte virtuelle Pose angeheftet.</div>
       </div>
       <button id="closeDebugBtn">Schließen</button>
     </div>
@@ -188,7 +216,7 @@ pre{
       <div class="card"><div id="dbgFps" class="v">0.0</div><div class="l">Render FPS</div></div>
       <div class="card"><div id="dbgPath" class="v">0.000 m</div><div class="l">Pfadlänge</div></div>
       <div class="card"><div id="dbgLost" class="v">0</div><div class="l">Tracking-Verluste</div></div>
-      <div class="card"><div id="dbgSecrets" class="v">0 / 4</div><div class="l">Geheimnisse entdeckt</div></div>
+      <div class="card"><div id="dbgReanchors" class="v">0</div><div class="l">Kontinuitäts-Reanchors</div></div>
     </div>
 
     <div class="debugGrid">
@@ -206,7 +234,9 @@ pre{
             <tr><td>Roll raw</td><td id="rollRaw">—</td></tr>
             <tr><td>World Points</td><td id="worldPoints">0</td></tr>
             <tr><td>Tracking Reason</td><td id="trackReason">—</td></tr>
-            <tr><td>Geheimplatz</td><td id="secretName">—</td></tr>
+            <tr><td>Modell</td><td id="dbgModel">mechanical</td></tr>
+            <tr><td>Modell-Skala</td><td id="dbgModelScale">1.00×</td></tr>
+            <tr><td>Guard Frames</td><td id="dbgGuard">0</td></tr>
             <tr><td>Secure Context</td><td id="secure">—</td></tr>
           </tbody>
         </table>
@@ -236,12 +266,11 @@ pre{
   const WORLD_HALF = 14;
   const EYE_HEIGHT = 1.62;
 
-  const SECRETS = [
-    {id:'fairy',  name:'Glühwürmchen-Reigen', x: 7.2, z:-5.7, radius:2.0, found:false},
-    {id:'pond',   name:'Versteckter Herzteich', x:-7.8, z:6.4, radius:2.2, found:false},
-    {id:'fox',    name:'Schlauer Fuchs im Gebüsch', x:8.8, z:7.6, radius:2.0, found:false},
-    {id:'chest',  name:'Kleine Schatzkiste', x:-8.7, z:-7.8, radius:1.9, found:false},
-  ];
+  const MODEL_META = {
+    mechanical:{label:'Mechanisch', width:2.2, center:{x:0,y:0,z:-3.2}},
+    medical:{label:'Medizinisch', width:1.5, center:{x:0,y:0,z:-3.0}},
+    landscape:{label:'Landschaft', width:3.2, center:{x:0,y:0,z:-3.4}}
+  };
 
   const S = {
     engineReady:false,
@@ -265,6 +294,26 @@ pre{
     originForward:null,
     originRight:null,
 
+    // Tracking continuity segment: each recovered SLAM coordinate frame is
+    // bridged onto the last visible app pose instead of resetting the view.
+    segmentRawPos:null,
+    segmentRawForward:null,
+    segmentRawRight:null,
+    segmentRawPitch0:0,
+    segmentAppPos:{x:0,y:0,z:0},
+    segmentAppYaw:0,
+    segmentAppPitch:0,
+    reanchorCount:0,
+    recoveryGuardFrames:0,
+    lastRawGoodPos:null,
+    lastRawGoodForward:null,
+    lastRawGoodTime:0,
+
+    modelType:'mechanical',
+    modelScale:1.0,
+    coachModuleName:null,
+    initialCoachDone:false,
+
     localPos:{x:0,y:0,z:0},
     rawRoll:0,
     yaw:0,
@@ -275,9 +324,6 @@ pre{
     lastPathPoint:null,
 
     worldPoints:0,
-
-    activeSecret:'—',
-    discoveredCount:0,
 
     poseCount:0,
     poseHz:0,
@@ -368,72 +414,134 @@ pre{
     return {yaw, pitch, roll};
   }
 
-  function mappedDeltaFromOrigin(){
-    if(!S.rawPos || !S.originRawPos || !S.originForward || !S.originRight) return {x:0,y:0,z:0};
-    const d = {
-      x:S.rawPos.x - S.originRawPos.x,
-      y:S.rawPos.y - S.originRawPos.y,
-      z:S.rawPos.z - S.originRawPos.z
-    };
-    const rightMeters = dot(d,S.originRight);
-    const forwardMeters = dot(d,S.originForward);
-    return {x:rightMeters, y:d.y, z:-forwardMeters};
+  function rawPitchFromBasis(b){
+    return Math.asin(clamp(b.forward3.y,-1,1));
   }
 
-  function updateSecrets(){
-    let nearest = '—';
-    let nearestDist = Infinity;
-    S.discoveredCount = 0;
-    for(const s of SECRETS){
-      const d = Math.hypot(S.localPos.x - s.x, S.localPos.z - s.z);
-      if(d < nearestDist){ nearestDist = d; nearest = s.name; }
-      if(d <= s.radius){
-        if(!s.found){
-          s.found = true;
-          log(`Geheimnis entdeckt: ${s.name}`);
-        }
-      }
-      if(s.found) S.discoveredCount++;
+  function beginTrackingSegment(appPos, appYaw, appPitch, reason){
+    if(!S.rawPos || !S.rawQ) return false;
+    const b=basisFromCamera(S.rawQ);
+    if(!b) return false;
+
+    S.segmentRawPos={...S.rawPos};
+    S.segmentRawForward={...b.forwardH};
+    S.segmentRawRight={...b.right};
+    S.segmentRawPitch0=rawPitchFromBasis(b);
+
+    S.segmentAppPos={...appPos};
+    S.segmentAppYaw=appYaw;
+    S.segmentAppPitch=appPitch;
+
+    S.lastRawGoodPos={...S.rawPos};
+    S.lastRawGoodForward={...b.forwardH};
+    S.lastRawGoodTime=performance.now();
+    S.recoveryGuardFrames=8;
+
+    log(`Tracking-Segment gesetzt: ${reason}`);
+    return true;
+  }
+
+  function bridgeRecoveredTracking(reason){
+    if(!S.originSet) return;
+    if(beginTrackingSegment(S.localPos,S.yaw,S.pitch,reason)){
+      S.reanchorCount++;
+      log(`Pose-Kontinuität erhalten · Reanchor #${S.reanchorCount}`);
     }
-    S.activeSecret = nearestDist < 3.4 ? nearest : '—';
+  }
+
+  function segmentCandidate(){
+    if(!S.rawPos || !S.rawQ || !S.segmentRawPos || !S.segmentRawForward || !S.segmentRawRight){
+      return null;
+    }
+    const b=basisFromCamera(S.rawQ);
+    if(!b) return null;
+
+    const d={
+      x:S.rawPos.x-S.segmentRawPos.x,
+      y:S.rawPos.y-S.segmentRawPos.y,
+      z:S.rawPos.z-S.segmentRawPos.z
+    };
+
+    const rightMeters=dot(d,S.segmentRawRight);
+    const forwardMeters=dot(d,S.segmentRawForward);
+
+    // Segment-local physical displacement -> persistent app world.
+    const cy=Math.cos(S.segmentAppYaw), sy=Math.sin(S.segmentAppYaw);
+    const x=S.segmentAppPos.x + rightMeters*cy + forwardMeters*sy;
+    const z=S.segmentAppPos.z + rightMeters*sy - forwardMeters*cy;
+    const y=S.segmentAppPos.y + d.y;
+
+    const yawDelta=Math.atan2(
+      clamp(dot(b.forwardH,S.segmentRawRight),-1,1),
+      clamp(dot(b.forwardH,S.segmentRawForward),-1,1)
+    );
+    const pitchNow=rawPitchFromBasis(b);
+
+    return {
+      pos:{x,y,z},
+      yaw:wrapPi(S.segmentAppYaw+yawDelta),
+      pitch:clamp(S.segmentAppPitch+(pitchNow-S.segmentRawPitch0),rad(-80),rad(80)),
+      roll:anglesRelativeToOrigin(S.rawQ).roll,
+      rawForward:b.forwardH
+    };
+  }
+
+  function rawPoseDiscontinuity(){
+    if(!S.lastRawGoodPos || !S.lastRawGoodForward || !S.rawPos || !S.rawQ) return false;
+    const now=performance.now();
+    const dt=(now-S.lastRawGoodTime)/1000;
+    if(dt<=0 || dt>0.25) return false;
+
+    const dp=Math.hypot(
+      S.rawPos.x-S.lastRawGoodPos.x,
+      S.rawPos.y-S.lastRawGoodPos.y,
+      S.rawPos.z-S.lastRawGoodPos.z
+    );
+    const b=basisFromCamera(S.rawQ);
+    if(!b) return false;
+    const angle=Math.acos(clamp(dot(b.forwardH,S.lastRawGoodForward),-1,1));
+
+    // Human handheld motion cannot plausibly produce these frame-to-frame jumps.
+    const strict=S.recoveryGuardFrames>0;
+    return dp>(strict?0.22:0.55) || angle>rad(strict?18:48);
   }
 
   function recenter(force=false){
     if(!S.rawPos || !S.rawQ){
-      log('Reset/Nullpunkt nicht möglich: noch keine Pose.');
+      log('Tracking-Nullpunkt nicht möglich: noch keine Pose.');
       return;
     }
     if(!force && S.coachAvailable && !S.scaleReady){
-      log('Reset blockiert: Absolute Scale noch nicht bereit.');
+      log('Nullpunkt blockiert: Absolute Scale noch nicht bereit.');
       setStatus('Erst Meter-Skala kalibrieren','warn');
       updateHint('<b>Bitte erst kurz vor/zurück bewegen</b><br>damit 8th Wall die Meter-Skala bestimmt.', true);
       return;
     }
 
-    const b = basisFromCamera(S.rawQ);
+    const b=basisFromCamera(S.rawQ);
     if(!b){
-      log('Reset nicht möglich: Vorwärtsachse unbestimmbar.');
+      log('Nullpunkt nicht möglich: Vorwärtsachse unbestimmbar.');
       return;
     }
 
-    S.originRawPos = {...S.rawPos};
-    S.originForward = {...b.forwardH};
-    S.originRight = {...b.right};
-    S.originSet = true;
-    S.freezePose = false;
+    S.originRawPos={...S.rawPos};
+    S.originForward={...b.forwardH};
+    S.originRight={...b.right};
+    S.originSet=true;
+    S.freezePose=false;
 
-    S.localPos = {x:0,y:0,z:0};
-    S.yaw = 0;
-    S.pitch = 0;
-    S.rawRoll = 0;
-    S.path = [];
-    S.pathLength = 0;
-    S.lastPathPoint = null;
+    S.localPos={x:0,y:0,z:0};
+    S.yaw=0;
+    S.pitch=0;
+    S.rawRoll=0;
+    S.path=[];
+    S.pathLength=0;
+    S.lastPathPoint=null;
     addPathPoint(true);
 
-    updateSecrets();
-    updateHint('Du bist in einer <b>romantischen Waldlichtung</b>.<br>Lauf ein wenig herum – vielleicht entdeckst du ein paar kleine Geheimnisse …', false);
-    log('Nullpunkt manuell gesetzt / Szene zurückgesetzt.');
+    beginTrackingSegment(S.localPos,0,0,'manueller Nullpunkt');
+    updateHint('Inspektionsmodus aktiv.<br>Das Modell steht vor dir – lauf real darum herum.', false);
+    log('Tracking-Nullpunkt manuell gesetzt.');
   }
 
   function addPathPoint(force=false){
@@ -456,19 +564,29 @@ pre{
 
   function updateLocalPose(){
     if(!S.originSet || !S.rawPos || !S.rawQ) return;
-    const a = anglesRelativeToOrigin(S.rawQ);
-    const candidate = mappedDeltaFromOrigin();
 
-    S.yaw = wrapPi(a.yaw);
-    S.pitch = clamp(a.pitch, rad(-80), rad(80));
-    S.rawRoll = a.roll;
-
-    const d = Math.hypot(candidate.x - S.localPos.x, candidate.y - S.localPos.y, candidate.z - S.localPos.z);
-    if(d >= POSITION_DEADZONE){
-      S.localPos = {...candidate};
-      addPathPoint(false);
-      updateSecrets();
+    if(rawPoseDiscontinuity()){
+      bridgeRecoveredTracking('unplausibler Pose-Sprung erkannt');
+      return;
     }
+
+    const c=segmentCandidate();
+    if(!c) return;
+
+    S.yaw=c.yaw;
+    S.pitch=c.pitch;
+    S.rawRoll=c.roll;
+
+    const d=Math.hypot(c.pos.x-S.localPos.x,c.pos.y-S.localPos.y,c.pos.z-S.localPos.z);
+    if(d>=POSITION_DEADZONE){
+      S.localPos={...c.pos};
+      addPathPoint(false);
+    }
+
+    S.lastRawGoodPos={...S.rawPos};
+    S.lastRawGoodForward={...c.rawForward};
+    S.lastRawGoodTime=performance.now();
+    if(S.recoveryGuardFrames>0) S.recoveryGuardFrames--;
   }
 
   function coachApi(){
@@ -486,24 +604,45 @@ pre{
         {
           event:'coaching-overlay.show',
           process:()=>{
-            S.scaleReady = false;
-            setStatus('Absolute Scale kalibrieren','warn');
-            updateHint('<b>Bitte das iPad vor und zurück bewegen</b><br>damit die absolute Meter-Skala stabil wird.<br><small>Wichtig: Das setzt die Position nicht automatisch zurück.</small>', true);
-            log('Coaching SHOW');
+            if(!S.initialCoachDone){
+              S.scaleReady=false;
+              setStatus('Absolute Scale kalibrieren','warn');
+              updateHint('<b>Einmalige Meter-Kalibrierung</b><br>iPad langsam vor und zurück bewegen.', true);
+              log('Initiales Absolute-Scale-Coaching SHOW');
+            }
           }
         },
         {
           event:'coaching-overlay.hide',
           process:()=>{
-            S.scaleReady = true;
+            if(S.initialCoachDone) return;
+
+            S.scaleReady=true;
+            S.initialCoachDone=true;
+            setStatus(S.originSet?'Meter-Skala bereit':'Meter-Skala bereit · Nullpunkt setzen','ok');
+
             if(S.originSet){
-              setStatus('Tracking bereit · Origin bleibt erhalten','ok');
-              updateHint('Tracking wieder da.<br><b>Die Position wurde nicht zurückgesetzt.</b><br>Nur der Reset-Knopf setzt den Nullpunkt neu.', true);
+              bridgeRecoveredTracking('Absolute-Scale-Kalibrierung abgeschlossen');
+              updateHint('Meter-Skala ist bereit.<br>Die bestehende virtuelle Pose wurde beibehalten.', true);
             }else{
-              setStatus('Tracking bereit · Bitte Nullpunkt setzen','ok');
-              updateHint('Tracking und Meter-Skala sind bereit.<br><b>Bitte „Nullpunkt setzen / Reset“ drücken</b>, um die Szene zu starten.', true);
+              updateHint('Meter-Skala ist bereit.<br><b>Jetzt „Tracking-Nullpunkt setzen“ drücken.</b>', true);
             }
-            log('Coaching HIDE → Scale bereit.');
+
+            // Coaching is needed only once. Removing it prevents repeated
+            // forward/back prompts after later weak tracking.
+            setTimeout(()=>{
+              try{
+                if(S.coachModuleName && XR8.removeCameraPipelineModule){
+                  XR8.removeCameraPipelineModule(S.coachModuleName);
+                }
+                if(XR8.removeCameraPipelineModule){
+                  XR8.removeCameraPipelineModule('coach-events');
+                }
+                log('Absolute-Scale-Coaching nach Initialkalibrierung entfernt.');
+              }catch(e){
+                log('Coaching-Removal: '+e.message);
+              }
+            },120);
           }
         }
       ]
@@ -540,37 +679,44 @@ pre{
         }
 
         const trackingGood = S.trackingStatus === 'NORMAL';
+        let recoveredThisFrame=false;
 
         if(!trackingGood && S.wasTrackingGood){
           S.trackingLostCount++;
-          log('Tracking verloren → letzte gute Pose eingefroren.');
-          setStatus('Tracking verloren / eingeschränkt','warn');
-          updateHint('<b>Tracking verloren oder eingeschränkt.</b><br>Die letzte gute Position bleibt erhalten.<br><b>Es wird nichts automatisch zurückgesetzt.</b>', true);
+          S.freezePose=true;
+          log('Tracking verloren → letzte virtuelle Pose eingefroren.');
+          setStatus('Tracking eingeschränkt · Pose gehalten','warn');
+          updateHint('<b>Tracking eingeschränkt.</b><br>Die virtuelle Pose bleibt stehen.<br>Langsam auf eine strukturreiche, gut beleuchtete Fläche richten.', true);
         }
 
         if(trackingGood && !S.wasTrackingGood){
+          recoveredThisFrame=true;
           log('Tracking wiedergefunden.');
+
           if(S.originSet){
-            setStatus('Tracking wiedergefunden · Origin bleibt','ok');
-            updateHint('Tracking wiedergefunden.<br><b>Position blieb erhalten.</b><br>Weiterlaufen oder per Knopf neu zentrieren.', true);
+            // Critical continuity fix: never interpret the first recovered raw
+            // coordinate as if it belonged to the previous SLAM world.
+            bridgeRecoveredTracking('Tracking wiedergefunden');
+            setStatus('Tracking wiedergefunden · Pose kontinuierlich','ok');
+            updateHint('Tracking wieder da.<br><b>Position und Blick wurden nahtlos beibehalten.</b>', true);
           }else if(S.scaleReady || !S.coachAvailable){
-            setStatus('Tracking bereit · Bitte Nullpunkt setzen','ok');
-            updateHint('Tracking ist bereit.<br><b>Bitte „Nullpunkt setzen / Reset“ drücken</b>, um zu starten.', true);
+            setStatus('SLAM NORMAL · Nullpunkt setzen','ok');
+            updateHint('Tracking bereit.<br><b>„Tracking-Nullpunkt setzen“ drücken.</b>', true);
           }
         }
 
-        S.wasTrackingGood = trackingGood;
+        S.wasTrackingGood=trackingGood;
 
         if(trackingGood){
           if(S.originSet){
-            updateLocalPose();
-            setStatus('SLAM NORMAL','ok');
-            S.freezePose = false;
+            if(!recoveredThisFrame) updateLocalPose();
+            setStatus('SLAM NORMAL · kontinuierlich','ok');
+            S.freezePose=false;
           }else if(S.scaleReady || !S.coachAvailable){
-            setStatus('SLAM NORMAL · Bitte Nullpunkt setzen','ok');
+            setStatus('SLAM NORMAL · Nullpunkt setzen','ok');
           }
         }else{
-          S.freezePose = true;
+          S.freezePose=true;
         }
       },
       onException:e=>{
@@ -625,7 +771,9 @@ pre{
               animationColor:'#ffffff'
             });
           }
-          modules.push(coach.pipelineModule());
+          const coachModule=coach.pipelineModule();
+          S.coachModuleName=coachModule && coachModule.name ? coachModule.name : null;
+          modules.push(coachModule);
           modules.push(coachingEventsModule());
           log('Absolute-Scale-Coaching aktiviert.');
         }catch(e){
@@ -741,6 +889,50 @@ pre{
       const cv = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,cv); gl.bufferData(gl.ARRAY_BUFFER,cube,gl.STATIC_DRAW);
       const ci = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ci); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,idx,gl.STATIC_DRAW);
 
+      function makeSphere(lat=12,lon=18){
+        const v=[],ind=[];
+        for(let y=0;y<=lat;y++){
+          const th=y*Math.PI/lat, st=Math.sin(th), ct=Math.cos(th);
+          for(let x=0;x<=lon;x++){
+            const ph=x*2*Math.PI/lon;
+            v.push(.5*st*Math.cos(ph), .5*ct, .5*st*Math.sin(ph));
+          }
+        }
+        for(let y=0;y<lat;y++)for(let x=0;x<lon;x++){
+          const a=y*(lon+1)+x,b=a+lon+1;
+          ind.push(a,b,a+1,b,b+1,a+1);
+        }
+        return {v:new Float32Array(v),i:new Uint16Array(ind)};
+      }
+      function makeCylinder(seg=20){
+        const v=[],ind=[];
+        // side rings
+        for(let y=0;y<2;y++){
+          const yy=y?0.5:-0.5;
+          for(let i=0;i<seg;i++){
+            const a=i*2*Math.PI/seg;
+            v.push(.5*Math.cos(a),yy,.5*Math.sin(a));
+          }
+        }
+        // centers
+        const bottom=v.length/3;v.push(0,-.5,0);
+        const top=v.length/3;v.push(0,.5,0);
+        for(let i=0;i<seg;i++){
+          const n=(i+1)%seg;
+          ind.push(i,seg+i,n, n,seg+i,seg+n);
+          ind.push(bottom,n,i);
+          ind.push(top,seg+i,seg+n);
+        }
+        return {v:new Float32Array(v),i:new Uint16Array(ind)};
+      }
+      function uploadMesh(m){
+        const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,m.v,gl.STATIC_DRAW);
+        const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,m.i,gl.STATIC_DRAW);
+        return {v:vb,i:ib,count:m.i.length};
+      }
+      const sphereMesh=uploadMesh(makeSphere());
+      const cylinderMesh=uploadMesh(makeCylinder());
+
       const grid=[];
       for(let i=-WORLD_HALF;i<=WORLD_HALF;i++){
         grid.push(i,0,-WORLD_HALF, i,0,WORLD_HALF);
@@ -748,15 +940,13 @@ pre{
       }
       const gv = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,gv); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(grid),gl.STATIC_DRAW);
 
-      S.gl = {gl,pr,cv,ci,gv,gridCount:grid.length/3};
+      S.gl = {gl,pr,cv,ci,gv,gridCount:grid.length/3,sphereMesh,cylinderMesh};
       S.glReady = true;
       log('WebGL-Szene initialisiert.');
     }catch(e){
       log('WebGL-Fehler: ' + e.message);
     }
   }
-
-  function discovered(id){ return SECRETS.find(s=>s.id===id)?.found; }
 
   function drawCube(ctx,o){
     const {gl,cv,ci,ap,um,uc,VP} = ctx;
@@ -768,6 +958,17 @@ pre{
     gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0);
   }
 
+  function drawMesh(ctx,mesh,o){
+    const {gl,ap,um,uc,VP}=ctx;
+    gl.bindBuffer(gl.ARRAY_BUFFER,mesh.v);
+    gl.vertexAttribPointer(ap,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,mesh.i);
+    gl.uniformMatrix4fv(um,false,matMul(VP,modelTRS(o.x,o.y,o.z,o.w,o.h,o.d,o.rx||0,o.ry||0,o.rz||0)));
+    gl.uniform4fv(uc,new Float32Array(o.c));
+    gl.drawElements(gl.TRIANGLES,mesh.count,gl.UNSIGNED_SHORT,0);
+  }
+  function drawSphere(ctx,o){ drawMesh(ctx,S.gl.sphereMesh,o); }
+  function drawCylinder(ctx,o){ drawMesh(ctx,S.gl.cylinderMesh,o); }
 
   function drawOakTree(ctx,x,z,scale,t,variant=0){
     const sway = Math.sin(t*0.9 + x*0.21 + z*0.17)*0.06;
@@ -891,86 +1092,134 @@ pre{
     drawCube(ctx,{x,y:0.18,z,w:0.06,h:0.22,d:0.34,c:[0.80,0.66,0.28,1]});
   }
 
-  function drawScene(ctx, t){
-    // lush stylized meadow base
-    drawCube(ctx,{x:0,y:-0.10,z:0,w:38,h:0.18,d:38,c:[0.24,0.40,0.26,1]});
+  function modelTransform(type){
+    const meta=MODEL_META[type]||MODEL_META.mechanical;
+    return {cx:meta.center.x,cy:meta.center.y,cz:meta.center.z,s:S.modelScale};
+  }
+  function P(m,x,y,z){return {x:m.cx+x*m.s,y:m.cy+y*m.s,z:m.cz+z*m.s};}
 
-    // warm dirt clearing
-    const clearPatches = [
-      [0.0,0.0,7.8,0.03,7.2],
-      [2.0,0.3,2.3,0.03,1.9],
-      [-2.0,-1.1,2.1,0.03,1.8],
-      [2.4,-1.8,1.9,0.03,1.6],
-      [-2.7,1.7,2.0,0.03,1.7],
-      [0.8,2.6,1.6,0.03,1.4]
-    ];
-    for(const p of clearPatches){
-      drawCube(ctx,{x:p[0],y:-0.045,z:p[1],w:p[2],h:p[3],d:p[4],c:[0.58,0.46,0.31,1]});
+  function drawGear(ctx,m,x,y,z,r,teeth,depth,phase,color){
+    const c=P(m,x,y,z);
+    drawCylinder(ctx,{x:c.x,y:c.y,z:c.z,w:r*1.35*m.s,h:depth*m.s,d:r*1.35*m.s,rx:Math.PI/2,c:color});
+    drawCylinder(ctx,{x:c.x,y:c.y,z:c.z,w:r*.48*m.s,h:(depth*1.45)*m.s,d:r*.48*m.s,rx:Math.PI/2,c:[0.20,0.24,0.28,1]});
+    for(let i=0;i<teeth;i++){
+      const a=phase+i*2*Math.PI/teeth;
+      const p=P(m,x+Math.cos(a)*r*.80,y+Math.sin(a)*r*.80,z);
+      drawCube(ctx,{x:p.x,y:p.y,z:p.z,w:r*.30*m.s,h:r*.18*m.s,d:depth*1.28*m.s,rz:a,c:[Math.min(color[0]+.08,1),Math.min(color[1]+.08,1),Math.min(color[2]+.08,1),1]});
     }
+  }
 
-    // stylized forest ring: mix of oak and pine
-    const trees = [
-      [-12,-8,'oak',1.22,0],[-10,-11,'pine',1.16,1],[-6,-12,'oak',1.28,1],[-1,-12,'pine',1.22,0],
-      [4,-12,'oak',1.18,0],[9,-10,'pine',1.26,1],[12,-7,'oak',1.12,1],[12,-1,'pine',1.14,0],
-      [11,5,'oak',1.20,0],[10,10,'pine',1.18,1],[5,12,'oak',1.26,1],[-1,12,'pine',1.20,0],
-      [-7,11,'oak',1.16,0],[-11,8,'pine',1.24,1],[-12,2,'oak',1.10,1],[-12,-4,'pine',1.18,0],
-      [-8,4,'oak',1.10,0],[-6,-7,'pine',1.06,1],[7,7,'oak',1.18,1],[-3,9,'pine',1.10,0],[8,-4,'oak',1.14,0]
-    ];
-    for(const tr of trees){
-      if(tr[2]==='oak') drawOakTree(ctx,tr[0],tr[1],tr[3],t,tr[4]);
-      else drawPineTree(ctx,tr[0],tr[1],tr[3],t,tr[4]);
+  function drawMechanicalModel(ctx,t){
+    const m=modelTransform('mechanical'), spin=t*.45;
+    const base=P(m,0,.16,0);
+    drawCube(ctx,{x:base.x,y:base.y,z:base.z,w:2.5*m.s,h:.25*m.s,d:1.55*m.s,c:[0.16,0.20,0.24,1]});
+    const housing=P(m,0,.78,.12);
+    drawCube(ctx,{x:housing.x,y:housing.y,z:housing.z,w:2.05*m.s,h:1.05*m.s,d:.78*m.s,c:[0.28,0.34,0.40,1]});
+    drawGear(ctx,m,-.55,.82,-.48,.62,14,.24, spin,[0.78,0.52,0.18,1]);
+    drawGear(ctx,m,.50,.86,-.50,.48,12,.22,-spin*1.25,[0.42,0.66,0.80,1]);
+    drawGear(ctx,m,.08,1.54,-.48,.34,10,.18, spin*1.6,[0.70,0.72,0.76,1]);
+
+    // shafts / turbine
+    let p=P(m,0,.78,.52);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.30*m.s,h:1.75*m.s,d:.30*m.s,rx:Math.PI/2,c:[0.68,0.70,0.72,1]});
+    p=P(m,.83,.76,.48);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.62*m.s,h:.70*m.s,d:.62*m.s,rz:Math.PI/2,c:[0.18,0.42,0.55,1]});
+    for(let i=0;i<8;i++){
+      const a=spin*2+i*Math.PI/4;
+      const q=P(m,1.18,.76+Math.sin(a)*.24,.48+Math.cos(a)*.24);
+      drawCube(ctx,{x:q.x,y:q.y,z:q.z,w:.08*m.s,h:.38*m.s,d:.12*m.s,rx:a,c:[0.58,0.78,0.86,1]});
     }
+    // pipes
+    p=P(m,-.82,1.36,.30);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.16*m.s,h:.75*m.s,d:.16*m.s,c:[0.72,0.30,0.22,1]});
+    p=P(m,-.55,1.70,.30);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.16*m.s,h:.55*m.s,d:.16*m.s,rz:Math.PI/2,c:[0.72,0.30,0.22,1]});
+  }
 
-    // foreground shrubs and rocks for a cozier first impression
-    const shrubs = [[-4.8,3.0,1],[-5.4,2.3,0],[5.7,3.8,1],[6.4,4.5,0],[4.2,-5.5,0],[-6.6,-5.0,1],[8.2,6.8,0],[-8.0,6.7,1]];
-    shrubs.forEach((q,i)=>drawShrub(ctx,q[0],q[1],1.0+(i%3)*0.18,q[2],t));
-    const rocks = [[-3.6,3.7,1],[-2.9,4.2,0],[3.6,-3.0,1],[2.6,-2.7,0],[6.9,-6.0,1],[-7.7,7.9,0],[-9.4,-7.1,1]];
-    rocks.forEach(r=>drawRock(ctx,r[0],r[1],1.0,r[2]));
+  function drawMedicalModel(ctx,t){
+    const m=modelTransform('medical');
+    const beat=1+0.035*Math.sin(t*4.2);
+    let p=P(m,0,.12,0);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:1.15*m.s,h:.16*m.s,d:1.15*m.s,c:[0.18,0.22,0.26,1]});
+    p=P(m,0,.22,0);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.10*m.s,h:.75*m.s,d:.10*m.s,c:[0.48,0.52,0.56,1]});
 
-    // flowers and mushrooms
-    const flowers = [[-1.8,1.2],[2.8,0.8],[-2.6,-0.8],[1.5,-2.0],[0.6,2.5],[-4.2,2.0],[4.6,-1.2],[6.0,4.8],[-6.9,5.3],[-8.8,7.4]];
-    flowers.forEach((f,i)=>drawFlowerCluster(ctx,f[0],f[1],i%2?[0.98,0.56,0.80,1]:[0.90,0.90,0.40,1],[0.74,0.63,1.0,1]));
-    [[-0.8,1.7],[0.0,1.9],[3.1,1.2],[-3.4,-2.2],[7.8,-5.3]].forEach((m,i)=>drawMushroom(ctx,m[0],m[1],1.0+(i%2)*0.1,i%2?[0.98,0.28,0.34,1]:[0.93,0.77,0.20,1]));
+    // stylized anatomical heart
+    p=P(m,-.22,1.12,0);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.66*m.s*beat,h:.88*m.s*beat,d:.62*m.s*beat,rz:-.18,c:[0.72,0.12,0.18,1]});
+    p=P(m,.20,1.10,.02);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.62*m.s*beat,h:.82*m.s*beat,d:.58*m.s*beat,rz:.18,c:[0.82,0.16,0.20,1]});
+    p=P(m,.02,.78,0);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.62*m.s*beat,h:.72*m.s*beat,d:.56*m.s*beat,c:[0.76,0.10,0.16,1]});
 
-    // romantic center
-    drawCube(ctx,{x:0.4,y:0.01,z:0.2,w:1.65,h:0.03,d:1.20,c:[0.78,0.37,0.49,1]});
-    drawCube(ctx,{x:0.4,y:0.04,z:0.2,w:1.16,h:0.02,d:0.86,c:[0.99,0.83,0.88,1]});
-    drawLantern(ctx,-1.05,0.85,t);
-    drawLantern(ctx,1.75,-0.18,t);
-    drawLogBench(ctx,-1.8,-0.9,0.35);
-    drawLogBench(ctx,2.1,1.0,-0.55);
+    // major vessels
+    p=P(m,.05,1.66,.02);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.20*m.s,h:.68*m.s,d:.20*m.s,rz:-.12,c:[0.74,0.12,0.14,1]});
+    p=P(m,.33,1.62,.04);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.15*m.s,h:.60*m.s,d:.15*m.s,rz:.48,c:[0.18,0.40,0.76,1]});
+    p=P(m,-.30,1.55,.02);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.14*m.s,h:.52*m.s,d:.14*m.s,rz:-.52,c:[0.18,0.40,0.76,1]});
 
-    // hidden pond with heart stone
-    drawCube(ctx,{x:-7.8,y:-0.02,z:6.4,w:2.9,h:0.04,d:2.2,c:[0.20,0.56,0.80,1]});
-    drawCube(ctx,{x:-7.8,y:0.02,z:6.4,w:2.0,h:0.02,d:1.4,c:[0.50,0.86,0.98,1]});
-    const heartC = discovered('pond') ? [1.00,0.54,0.68,1] : [0.76,0.50,0.56,1];
-    drawCube(ctx,{x:-6.3,y:0.16,z:7.9,w:0.30,h:0.28,d:0.18,c:heartC});
+    // transparent-looking context: lungs as pale forms behind heart
+    p=P(m,-.53,1.22,.22);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.46*m.s,h:1.12*m.s,d:.34*m.s,rz:.10,c:[0.88,0.54,0.58,1]});
+    p=P(m,.53,1.22,.22);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.46*m.s,h:1.12*m.s,d:.34*m.s,rz:-.10,c:[0.88,0.54,0.58,1]});
+    // labels represented by small colored markers
+    [[-.58,1.72,-.15,[1,.68,.20,1]],[.58,1.52,-.18,[.24,.72,1,1]],[.0,.55,-.22,[.60,1,.72,1]]].forEach(a=>{
+      const q=P(m,a[0],a[1],a[2]); drawSphere(ctx,{x:q.x,y:q.y,z:q.z,w:.09*m.s,h:.09*m.s,d:.09*m.s,c:a[3]});
+    });
+  }
 
-    // animals
-    drawRabbit(ctx,-2.1,1.9,t,1);
-    drawRabbit(ctx,-1.1,2.4,t,-1);
-    drawDeer(ctx,4.9,-3.7,t,1);
-    drawFox(ctx,8.8,7.6,t,-1);
+  function drawMiniTree(ctx,m,x,z,sc,t){
+    let p=P(m,x,.10,z);
+    drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.10*m.s*sc,h:.40*m.s*sc,d:.10*m.s*sc,c:[.42,.28,.16,1]});
+    p=P(m,x,.44,z);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.46*m.s*sc,h:.52*m.s*sc,d:.46*m.s*sc,c:[.30,.62,.34,1]});
+    p=P(m,x+.10*sc,.63,z-.04*sc);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.34*m.s*sc,h:.34*m.s*sc,d:.34*m.s*sc,c:[.42,.72,.40,1]});
+  }
 
-    // ambient life
-    drawButterfly(ctx,0.2,1.8,t);
-    drawButterfly(ctx,-1.4,-0.4,t+0.9);
-    drawButterfly(ctx,1.8,2.7,t+1.6);
+  function drawLandscapeModel(ctx,t){
+    const m=modelTransform('landscape');
+    let p=P(m,0,.10,0);
+    drawCube(ctx,{x:p.x,y:p.y,z:p.z,w:3.45*m.s,h:.20*m.s,d:2.65*m.s,c:[0.22,0.36,0.24,1]});
+    // lake
+    p=P(m,-.55,.22,.20);
+    drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:1.35*m.s,h:.08*m.s,d:.82*m.s,c:[0.24,0.62,0.84,1]});
+    // mountains / hills
+    [[.65,.52,.48,.95,.85,[.42,.52,.38,1]],[1.10,.42,-.25,.70,.70,[.36,.48,.34,1]],[-1.15,.35,-.55,.58,.62,[.48,.58,.40,1]]].forEach(h=>{
+      const q=P(m,h[0],h[1],h[2]);
+      drawSphere(ctx,{x:q.x,y:q.y,z:q.z,w:h[3]*m.s,h:h[4]*m.s,d:h[3]*m.s,c:h[5]});
+    });
+    // snow caps
+    p=P(m,.65,.86,.48); drawSphere(ctx,{x:p.x,y:p.y,z:p.z,w:.38*m.s,h:.20*m.s,d:.36*m.s,c:[.92,.94,.94,1]});
+    // cabin
+    p=P(m,.55,.33,-.55); drawCube(ctx,{x:p.x,y:p.y,z:p.z,w:.48*m.s,h:.38*m.s,d:.42*m.s,c:[.58,.34,.18,1]});
+    p=P(m,.55,.58,-.55); drawCube(ctx,{x:p.x,y:p.y,z:p.z,w:.60*m.s,h:.10*m.s,d:.52*m.s,rz:.12,c:[.46,.18,.14,1]});
+    // trees
+    [[-1.20,.72,.75],[1.25,.68,.55],[-.10,.72,-.82],[.08,.55,.80],[-1.38,.50,-.05],[1.35,.48,-.72]].forEach((a,i)=>drawMiniTree(ctx,m,a[0],a[2],a[1],t+i));
+    // tiny wind turbine
+    p=P(m,1.15,.62,.85); drawCylinder(ctx,{x:p.x,y:p.y,z:p.z,w:.06*m.s,h:.95*m.s,d:.06*m.s,c:[.78,.80,.80,1]});
+    for(let i=0;i<3;i++){
+      const a=t*.75+i*2*Math.PI/3;
+      const q=P(m,1.15+Math.cos(a)*.26,.99+Math.sin(a)*.26,.85);
+      drawCube(ctx,{x:q.x,y:q.y,z:q.z,w:.32*m.s,h:.06*m.s,d:.04*m.s,rz:a,c:[.90,.91,.90,1]});
+    }
+  }
 
-    for(let i=0;i<5;i++) drawFirefly(ctx,7.2,-5.7,t,i*1.7,[0.78,1.00,0.70]);
-    for(let i=0;i<4;i++) drawFirefly(ctx,0.8,0.0,t+1.3+i,i*2.1,[1.00,0.84,0.50]);
+  function drawScene(ctx,t){
+    // neutral inspection room; model scale never changes tracking scale.
+    drawCube(ctx,{x:0,y:-.07,z:-2.6,w:14,h:.14,d:14,c:[0.16,0.19,0.22,1]});
+    drawCube(ctx,{x:0,y:2.7,z:-7.2,w:14,h:5.5,d:.18,c:[0.22,0.27,0.31,1]});
 
-    // secrets
-    const fairyGlow = discovered('fairy') ? [0.44,0.98,0.78,1] : [0.28,0.60,0.48,1];
-    drawCube(ctx,{x:7.2,y:0.04,z:-5.7,w:1.35,h:0.03,d:1.35,c:[0.40,0.45,0.24,1]});
-    drawCube(ctx,{x:7.2,y:0.12,z:-5.7,w:0.35,h:0.08,d:0.35,c:fairyGlow});
+    const meta=MODEL_META[S.modelType]||MODEL_META.mechanical;
+    const c=meta.center;
+    drawCylinder(ctx,{x:c.x,y:.09,z:c.z,w:(meta.width*.72*S.modelScale),h:.16,d:(meta.width*.72*S.modelScale),c:[0.28,0.32,0.36,1]});
 
-    const chestOpen = discovered('chest') ? 1 : 0;
-    drawChest(ctx,-8.7,-7.8,chestOpen);
-
-    // fox secret bushes
-    drawShrub(ctx,8.1,7.2,1.35,0,t);
-    drawShrub(ctx,9.5,8.1,1.25,1,t);
+    if(S.modelType==='medical') drawMedicalModel(ctx,t);
+    else if(S.modelType==='landscape') drawLandscapeModel(ctx,t);
+    else drawMechanicalModel(ctx,t);
   }
 
   function draw3D(){
@@ -982,7 +1231,7 @@ pre{
     gl.viewport(0,0,c.width,c.height);
     gl.enable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
-    gl.clearColor(0.63,0.80,0.94,1); // cozy stylized sky
+    gl.clearColor(0.12,0.15,0.18,1); // neutral inspection background
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.useProgram(pr);
 
@@ -1013,91 +1262,51 @@ pre{
     if(!S.originSet){
       $('hud').innerHTML =
         S.trackingStatus==='NORMAL'
-          ? 'Tracking bereit.<br><b>Bitte „Nullpunkt setzen / Reset“ drücken.</b>'
+          ? 'Tracking bereit.<br><b>Bitte „Tracking-Nullpunkt setzen“ drücken.</b>'
           : 'Warte auf Tracking …';
     }else{
-      const secretText = S.activeSecret !== '—' ? `<br>Nahe bei: <b>${S.activeSecret}</b>` : '';
+      const meta=MODEL_META[S.modelType]||MODEL_META.mechanical;
       $('hud').innerHTML =
-        `x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m` +
-        `<br>Pfad ${fmt(S.pathLength,2)} m · Geheimnisse ${S.discoveredCount}/${SECRETS.length}` +
-        secretText;
+        `${meta.label} · ${S.modelScale.toFixed(2)}×` +
+        `<br>x ${fmt(pos.x,2)} · y ${fmt(pos.y,2)} · z ${fmt(pos.z,2)} m` +
+        `<br>Pfad ${fmt(S.pathLength,2)} m · Reanchors ${S.reanchorCount}`;
     }
   }
 
   function drawMap(){
-    const c = $('map');
-    sizeCanvas(c);
-    const x = c.getContext('2d');
-    const d = Math.min(devicePixelRatio||1,2), w=c.width, h=c.height;
-    x.clearRect(0,0,w,h);
-    x.fillStyle='#0e141c';
-    x.fillRect(0,0,w,h);
+    const c=$('map'); sizeCanvas(c);
+    const x=c.getContext('2d'), d=Math.min(devicePixelRatio||1,2), w=c.width,h=c.height;
+    x.clearRect(0,0,w,h); x.fillStyle='#0e141c';x.fillRect(0,0,w,h);
 
-    const extent = 15;
-    const margin = 20*d;
-    const scale = Math.min((w-2*margin)/(extent*2), (h-2*margin)/(extent*2));
-    const cx = w/2, cy = h/2;
-    const sx = v => cx + v*scale;
-    const sz = v => cy + v*scale;
+    const extent=8, margin=20*d, scale=Math.min((w-2*margin)/(extent*2),(h-2*margin)/(extent*2));
+    const cx=w/2,cy=h/2, sx=v=>cx+v*scale, sz=v=>cy+v*scale;
 
-    // grid
-    x.strokeStyle='#1a2530'; x.lineWidth=1*d;
+    x.strokeStyle='#1d2a34';x.lineWidth=1*d;
     for(let i=-extent;i<=extent;i++){
-      x.beginPath(); x.moveTo(sx(i),sz(-extent)); x.lineTo(sx(i),sz(extent)); x.stroke();
-      x.beginPath(); x.moveTo(sx(-extent),sz(i)); x.lineTo(sx(extent),sz(i)); x.stroke();
+      x.beginPath();x.moveTo(sx(i),sz(-extent));x.lineTo(sx(i),sz(extent));x.stroke();
+      x.beginPath();x.moveTo(sx(-extent),sz(i));x.lineTo(sx(extent),sz(i));x.stroke();
     }
 
-    // clearing and pond
-    x.fillStyle='#3a4b33';
-    x.fillRect(sx(-WORLD_HALF), sz(-WORLD_HALF), WORLD_HALF*2*scale, WORLD_HALF*2*scale);
-    x.fillStyle='#705b3b';
-    x.beginPath(); x.ellipse(sx(0),sz(0),5.8*scale,5.4*scale,0,0,Math.PI*2); x.fill();
-    x.fillStyle='#257aa6';
-    x.beginPath(); x.ellipse(sx(-7.8),sz(6.4),1.35*scale,1.05*scale,0,0,Math.PI*2); x.fill();
-
-    // trees as small blobs
-    const ring = [
-      [-11,-8],[-9,-11],[-5,-12],[0,-12],[5,-12],[9,-10],[12,-7],[12,-1],[11,5],[10,10],[5,12],[-1,12],[-7,11],[-11,8],[-12,2],[-12,-4],[-8,4],[-6,-7],[7,7],[-3,9],[8,-4]
-    ];
+    const meta=MODEL_META[S.modelType]||MODEL_META.mechanical;
+    const r=Math.max(.45,meta.width*.45*S.modelScale);
     x.fillStyle='#33414f';
-    for(const p of ring){
-      x.beginPath(); x.arc(sx(p[0]),sz(p[1]),0.45*scale,0,Math.PI*2); x.fill();
-    }
+    x.beginPath();x.arc(sx(meta.center.x),sz(meta.center.z),r*scale,0,Math.PI*2);x.fill();
+    x.strokeStyle='#7df5c9';x.lineWidth=1.5*d;
+    x.beginPath();x.arc(sx(meta.center.x),sz(meta.center.z),r*scale,0,Math.PI*2);x.stroke();
 
-    // discovered secrets
-    x.fillStyle='#7df5c9';
-    for(const s of SECRETS){
-      if(s.found){
-        x.beginPath(); x.arc(sx(s.x),sz(s.z),0.28*scale,0,Math.PI*2); x.fill();
-      }
-    }
-
-    // path
     if(S.path.length>1){
-      x.strokeStyle='#b891ff';
-      x.lineWidth=2.3*d;
-      x.lineJoin='round';
-      x.lineCap='round';
-      x.beginPath();
-      S.path.forEach((p,i)=> i ? x.lineTo(sx(p.x), sz(p.z)) : x.moveTo(sx(p.x), sz(p.z)));
+      x.strokeStyle='#b891ff';x.lineWidth=2.3*d;x.lineJoin='round';x.lineCap='round';x.beginPath();
+      S.path.forEach((p,i)=>i?x.lineTo(sx(p.x),sz(p.z)):x.moveTo(sx(p.x),sz(p.z)));
       x.stroke();
     }
 
-    // camera marker
-    const px = sx(S.localPos.x), pz = sz(S.localPos.z);
-    const fx = Math.sin(S.yaw), fz = -Math.cos(S.yaw);
-    x.fillStyle='#ffd166';
-    x.beginPath(); x.arc(px,pz,5*d,0,Math.PI*2); x.fill();
-    x.strokeStyle='#ffd166'; x.lineWidth=2*d;
-    x.beginPath(); x.moveTo(px,pz); x.lineTo(px+fx*20*d,pz+fz*20*d); x.stroke();
+    const px=sx(S.localPos.x),pz=sz(S.localPos.z),fx=Math.sin(S.yaw),fz=-Math.cos(S.yaw);
+    x.fillStyle='#ffd166';x.beginPath();x.arc(px,pz,5*d,0,Math.PI*2);x.fill();
+    x.strokeStyle='#ffd166';x.lineWidth=2*d;x.beginPath();x.moveTo(px,pz);x.lineTo(px+fx*20*d,pz+fz*20*d);x.stroke();
 
-    x.fillStyle='#96a8b7';
-    x.font=`${10*d}px system-ui`;
-    x.fillText('1 m Raster', margin, 14*d);
-    x.fillText('+X →', w-48*d, cy-5*d);
-    x.fillText('+Z ↓', cx+5*d, h-8*d);
-
-    $('distanceLabel').textContent = `${fmt(Math.hypot(S.localPos.x,S.localPos.z),2)} m vom Start · Pfad ${fmt(S.pathLength,2)} m`;
+    x.fillStyle='#96a8b7';x.font=`${10*d}px system-ui`;
+    x.fillText('1 m Raster',margin,14*d);
+    $('distanceLabel').textContent=`${fmt(Math.hypot(S.localPos.x,S.localPos.z),2)} m vom Start · Pfad ${fmt(S.pathLength,2)} m`;
   }
 
   function updateDebug(){
@@ -1109,7 +1318,7 @@ pre{
     $('dbgFps').textContent = fmt(S.fps,1);
     $('dbgPath').textContent = fmt(S.pathLength,3) + ' m';
     $('dbgLost').textContent = String(S.trackingLostCount);
-    $('dbgSecrets').textContent = `${S.discoveredCount} / ${SECRETS.length}`;
+    $('dbgReanchors').textContent=String(S.reanchorCount);
 
     $('rawX').textContent = fmt(S.rawPos?.x);
     $('rawY').textContent = fmt(S.rawPos?.y);
@@ -1122,7 +1331,9 @@ pre{
     $('rollRaw').textContent = fmt(deg(S.rawRoll),2)+'°';
     $('worldPoints').textContent = String(S.worldPoints);
     $('trackReason').textContent = S.trackingReason;
-    $('secretName').textContent = S.activeSecret;
+    $('dbgModel').textContent=S.modelType;
+    $('dbgModelScale').textContent=S.modelScale.toFixed(2)+'×';
+    $('dbgGuard').textContent=String(S.recoveryGuardFrames);
     $('secure').textContent = String(window.isSecureContext);
   }
 
@@ -1147,6 +1358,16 @@ pre{
     }
     requestAnimationFrame(frame);
   }
+
+  function updateModelControls(){
+    S.modelType=$('modelSelect').value;
+    S.modelScale=clamp(Number($('modelScale').value)||1,.25,2.5);
+    const meta=MODEL_META[S.modelType]||MODEL_META.mechanical;
+    $('modelReadout').textContent=`${S.modelScale.toFixed(2)}× · ca. ${(meta.width*S.modelScale).toFixed(2)} m breit`;
+  }
+  $('modelSelect').addEventListener('change',updateModelControls);
+  $('modelScale').addEventListener('input',updateModelControls);
+  updateModelControls();
 
   $('startBtn').addEventListener('click',startWebAR);
   $('recenterBtn').addEventListener('click',()=>recenter(false));
