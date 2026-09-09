@@ -161,7 +161,7 @@
         <div class="step">
           <span id="rolePill" class="role">SOLO</span>
           <p id="flowText">Erstelle ein Spiel oder scanne den QR-Code eines Mitschülers.</p>
-          <div id="techInfo" class="tiny">LAN-only ICE · kein STUN/TURN · HTTPS für Kamerazugriff erforderlich.</div>
+          <div id="techInfo" class="tiny">WebRTC P2P · STUN-Fallback · HTTPS für Kamerazugriff erforderlich.</div>
         </div>
 
         <div class="step">
@@ -433,7 +433,7 @@
     } else if (m.t === "pong") {
       if (m.n) {
         pingMs = Math.max(0, Math.round(performance.now() - m.n));
-        $("techInfo").textContent = "Direktverbindung aktiv · Ping ca. " + pingMs + " ms · LAN-only ICE.";
+        $("techInfo").textContent = "Direktverbindung aktiv · Ping ca. " + pingMs + " ms · WebRTC P2P.";
       }
     }
   }
@@ -466,32 +466,75 @@
     if (pc) {
       try { pc.close(); } catch (_) {}
     }
-    // Absichtlich keine STUN-/TURN-Server: reine LAN-Direktverbindung.
-    pc = new RTCPeerConnection({ iceServers: [] });
+    // Das Frontend bleibt statisch. STUN ist nur eine Hilfestellung für ICE und
+    // transportiert weder Signaling- noch Spieldaten. Host-Kandidaten fürs LAN
+    // werden weiterhin ebenfalls gesammelt.
+    pc = new RTCPeerConnection({
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun.cloudflare.com:3478" }
+      ],
+      iceCandidatePoolSize: 2
+    });
+
     pc.onconnectionstatechange = () => {
       const s = pc.connectionState;
-      if (s === "failed" || s === "disconnected") {
-        setStatus("Verbindung " + s);
+      if (s === "connecting") setStatus("WebRTC verbindet …");
+      if (s === "connected") setStatus("WebRTC verbunden", true);
+      if (s === "failed") {
+        setStatus("WebRTC fehlgeschlagen");
+        setFlow("Die QR-Daten wurden übernommen, aber ICE konnte keinen Netzwerkpfad aufbauen. Prüfe Client/AP-Isolation im WLAN.");
+      }
+      if (s === "disconnected") setStatus("WebRTC unterbrochen");
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      const s = pc.iceConnectionState;
+      $("techInfo").textContent = "ICE: " + s + " · Gathering: " + pc.iceGatheringState;
+      if (s === "checking") setStatus("ICE prüft Verbindung …");
+      if (s === "connected" || s === "completed") setStatus("ICE verbunden", true);
+      if (s === "failed") {
+        setStatus("ICE fehlgeschlagen");
+        setFlow("Antwort wurde korrekt gescannt, aber die Geräte erreichen sich nicht direkt. Häufige Ursache: Client/AP-Isolation im Schul-WLAN.");
       }
     };
+
+    pc.onicegatheringstatechange = () => {
+      $("techInfo").textContent = "ICE: " + pc.iceConnectionState + " · Gathering: " + pc.iceGatheringState;
+    };
+
+    pc.onicecandidateerror = (ev) => {
+      console.warn("ICE candidate error", ev);
+    };
+
     return pc;
   }
 
-  function waitIceComplete(peer, timeout=7000) {
+  function countIceCandidates(desc) {
+    if (!desc || !desc.sdp) return 0;
+    return (desc.sdp.match(/^a=candidate:/gm) || []).length;
+  }
+
+  function waitIceComplete(peer, timeout=15000) {
     if (peer.iceGatheringState === "complete") return Promise.resolve();
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       let done = false;
-      const finish = () => {
+      const finish = (ok) => {
         if (done) return;
         done = true;
         peer.removeEventListener("icegatheringstatechange", check);
-        resolve();
+        clearTimeout(timer);
+        ok ? resolve() : reject(new Error("ICE-Kandidaten konnten nicht vollständig gesammelt werden."));
       };
       const check = () => {
-        if (peer.iceGatheringState === "complete") finish();
+        if (peer.iceGatheringState === "complete") finish(true);
       };
       peer.addEventListener("icegatheringstatechange", check);
-      setTimeout(finish, timeout);
+      const timer = setTimeout(() => {
+        // Safari kann in seltenen Fällen 'complete' spät melden. Wenn bereits
+        // mindestens ein Kandidat in localDescription steckt, verwenden wir ihn.
+        finish(countIceCandidates(peer.localDescription) > 0);
+      }, timeout);
     });
   }
 
@@ -570,6 +613,8 @@
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
       await waitIceComplete(peer);
+      const offerCandidateCount = countIceCandidates(peer.localDescription);
+      if (offerCandidateCount < 1) throw new Error("Kein ICE-Kandidat im Offer. WebRTC kann so keine Verbindung aufbauen.");
       const code = packDescription(peer.localDescription, "offer");
       currentSignalCode = code;
       $("scanAnswerBtn").disabled = false;
@@ -599,6 +644,8 @@
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
       await waitIceComplete(peer);
+      const answerCandidateCount = countIceCandidates(peer.localDescription);
+      if (answerCandidateCount < 1) throw new Error("Kein ICE-Kandidat im Answer. WebRTC kann so keine Verbindung aufbauen.");
 
       const answerCode = packDescription(peer.localDescription, "answer");
       currentSignalCode = answerCode;
@@ -616,9 +663,22 @@
     if (role !== "host" || !pc) throw new Error("Zuerst musst du auf diesem Gerät ein Spiel erstellen.");
     const parsed = unpackDescription(code);
     if (parsed.k !== "answer" && parsed.d.type !== "answer") throw new Error("Das ist kein Answer-Code.");
+    setStatus("Antwort erkannt …");
     await pc.setRemoteDescription(parsed.d);
-    setStatus("Verbindung wird aufgebaut …");
-    setFlow("Antwort übernommen. WebRTC versucht jetzt die direkte LAN-Verbindung.");
+    const remoteCandidates = countIceCandidates(parsed.d);
+    setStatus("ICE prüft Verbindung …");
+    setFlow("Antwort übernommen (" + remoteCandidates + " ICE-Kandidat" + (remoteCandidates === 1 ? "" : "en") + "). Die Geräte prüfen jetzt den direkten Netzwerkpfad.");
+    $("techInfo").textContent = "ICE: " + pc.iceConnectionState + " · Gathering: " + pc.iceGatheringState + " · Remote-Kandidaten: " + remoteCandidates;
+
+    // Safari kann setRemoteDescription erfolgreich abschließen, obwohl der
+    // anschließende ICE-Check scheitert. Wir zeigen deshalb nach einigen
+    // Sekunden einen klaren Hinweis statt scheinbar gar nichts zu tun.
+    setTimeout(() => {
+      if (!connected && pc && ["checking", "new"].includes(pc.iceConnectionState)) {
+        setStatus("ICE verbindet noch …");
+        setFlow("Der Answer-QR wurde erfolgreich gelesen. Falls das so bleibt, blockiert wahrscheinlich das WLAN direkte Verbindungen zwischen den iPads.");
+      }
+    }, 6000);
   }
 
   function disconnect(reason="Solo / nicht verbunden", preserveRole=false) {
@@ -638,7 +698,7 @@
     $("joinBtn").disabled = false;
     $("scanAnswerBtn").disabled = true;
     $("disconnectBtn").disabled = true;
-    $("techInfo").textContent = "LAN-only ICE · kein STUN/TURN · HTTPS für Kamerazugriff erforderlich.";
+    $("techInfo").textContent = "WebRTC P2P · STUN-Fallback · HTTPS für Kamerazugriff erforderlich.";
     if (!preserveRole) setFlow("Erstelle ein Spiel oder scanne den QR-Code eines Mitschülers.");
     resetRound();
   }
