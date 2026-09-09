@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#10131a" />
+  <title>QR WebRTC Arena</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1016;
+      --panel: #151a23;
+      --panel2: #1b2230;
+      --line: #2b3546;
+      --text: #f4f7fb;
+      --muted: #9eabbe;
+      --accent: #75a7ff;
+      --danger: #ff6f7d;
+      --good: #68d391;
+      --warn: #f6c85f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
+    button, textarea { font: inherit; }
+    button {
+      border: 1px solid var(--line); background: var(--panel2); color: var(--text);
+      min-height: 44px; padding: 10px 14px; border-radius: 12px; font-weight: 700;
+    }
+    button:active { transform: translateY(1px); }
+    button.primary { background: var(--accent); border-color: transparent; color: #07101f; }
+    button.danger { background: #3a1d24; border-color: #61303b; color: #ffd7dc; }
+    button:disabled { opacity: .45; transform: none; }
+    .app { width: min(1120px, 100%); margin: 0 auto; }
+    .topbar { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
+    .title { font-weight: 900; letter-spacing: .02em; font-size: clamp(20px, 3vw, 30px); }
+    .status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #667085; box-shadow: 0 0 0 4px rgba(255,255,255,.04); }
+    .dot.live { background: var(--good); }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: start; }
+    .game-card, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+    .canvas-wrap { position: relative; aspect-ratio: 16 / 9; background: #0b0f15; overflow: hidden; touch-action: none; }
+    canvas#game { width: 100%; height: 100%; display: block; }
+    .hud {
+      position: absolute; inset: 12px 12px auto 12px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: start;
+      pointer-events: none;
+    }
+    .hudbox { background: rgba(8,11,16,.72); border: 1px solid rgba(255,255,255,.10); backdrop-filter: blur(8px); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+    .hudbox.right { text-align: right; }
+    .hudname { font-size: 12px; color: #d9e0ea; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar { margin-top: 5px; height: 8px; background: rgba(255,255,255,.12); border-radius: 99px; overflow: hidden; }
+    .fill { height: 100%; width: 100%; background: var(--good); transition: width .12s linear; }
+    .fill.enemy { background: var(--danger); }
+    .score { font-weight: 900; font-size: 18px; text-align: center; }
+    .score small { display: block; color: var(--muted); font-size: 10px; font-weight: 700; }
+    .touch-controls { position: absolute; inset: 0; pointer-events: none; }
+    .stick-zone { position: absolute; left: 16px; bottom: 16px; width: 132px; height: 132px; pointer-events: auto; touch-action: none; }
+    .stick-base { position: absolute; inset: 10px; border-radius: 50%; border: 2px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); backdrop-filter: blur(3px); }
+    .stick-knob { position: absolute; left: 43px; top: 43px; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.78); box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+    .attack { position: absolute; right: 20px; bottom: 24px; width: 92px; height: 92px; border-radius: 50%; pointer-events: auto; touch-action: none; border: 2px solid rgba(255,255,255,.2); background: rgba(255,91,109,.78); color: white; font-weight: 900; }
+    .attack.cool { opacity: .45; }
+    .game-footer { padding: 10px 14px; color: var(--muted); font-size: 13px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .panel { padding: 14px; }
+    .panel h2 { margin: 0 0 8px; font-size: 17px; }
+    .panel p { color: var(--muted); font-size: 13px; line-height: 1.45; margin: 6px 0 12px; }
+    .actions { display: grid; gap: 8px; }
+    .step { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .tiny { font-size: 12px; color: var(--muted); line-height: 1.45; }
+    .role { display:inline-block; padding: 4px 8px; border-radius: 999px; background: #20293a; color: #cbd5e1; font-size: 11px; font-weight:800; }
+    .overlay {
+      position: fixed; inset: 0; z-index: 50; background: rgba(3,5,8,.82);
+      display: none; align-items: center; justify-content: center; padding: 18px;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      width: min(620px, 100%); max-height: 92%; overflow: auto; background: #121722; border: 1px solid #2d384b; border-radius: 18px; padding: 16px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.45);
+    }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .modal-head h3 { margin:0; font-size:18px; }
+    .qrbox { background: white; border-radius: 14px; padding: 14px; width: fit-content; max-width:100%; margin: 12px auto; }
+    .qrbox img, .qrbox canvas { max-width: min(72vw, 420px); height: auto !important; width: auto !important; display:block; }
+    .scanner { position: relative; background:#05070a; border-radius:14px; overflow:hidden; aspect-ratio:4/3; }
+    .scanner video { width:100%; height:100%; object-fit:cover; display:block; }
+    .scan-frame { position:absolute; inset:16% 12%; border:3px solid rgba(255,255,255,.78); border-radius:16px; box-shadow:0 0 0 2000px rgba(0,0,0,.22); pointer-events:none; }
+    textarea {
+      width:100%; min-height:110px; resize:vertical; background:#0b0f15; color:#e8edf4; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:12px;
+    }
+    .row { display:flex; gap:8px; flex-wrap:wrap; }
+    .row > * { flex:1 1 auto; }
+    .note { padding:10px 12px; border-radius:12px; background:#1a2230; color:#c9d3e2; font-size:12px; line-height:1.45; }
+    .error { color:#ffb7c0; }
+    .success { color:#a8efc3; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel { order: -1; }
+      .actions { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .actions { grid-template-columns: 1fr; }
+      .stick-zone { transform: scale(.88); transform-origin: bottom left; }
+      .attack { transform: scale(.9); transform-origin: bottom right; }
+      .hud { inset: 8px 8px auto 8px; gap:6px; }
+      .hudbox { padding:6px 8px; }
+    }
+  </style>
+
+  <!-- Rein clientseitige Bibliotheken. Für vollständig offline/abgeschottete Netze lokal mit hosten. -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div class="title">QR WebRTC Arena</div>
+      <div class="status"><span id="netDot" class="dot"></span><span id="netStatus">Solo / nicht verbunden</span></div>
+    </div>
+
+    <div class="layout">
+      <section class="game-card">
+        <div id="canvasWrap" class="canvas-wrap">
+          <canvas id="game" width="960" height="540" aria-label="2D-Kampfarena"></canvas>
+
+          <div class="hud">
+            <div class="hudbox">
+              <div class="hudname">Du · <span id="localScore">0</span> Siege</div>
+              <div class="bar"><div id="localHp" class="fill"></div></div>
+            </div>
+            <div class="hudbox score"><span id="centerScore">0 : 0</span><small>DUELL</small></div>
+            <div class="hudbox right">
+              <div class="hudname"><span id="enemyName">Gegner</span> · <span id="remoteScore">0</span> Siege</div>
+              <div class="bar"><div id="remoteHp" class="fill enemy"></div></div>
+            </div>
+          </div>
+
+          <div class="touch-controls" aria-label="Touch-Steuerung">
+            <div id="stickZone" class="stick-zone">
+              <div class="stick-base"></div>
+              <div id="stickKnob" class="stick-knob"></div>
+            </div>
+            <button id="attackBtn" class="attack" type="button">ANGRIFF</button>
+          </div>
+        </div>
+        <div class="game-footer">
+          <span>iPad: linker Stick bewegen · Angriff rechts</span>
+          <span>Tastatur: WASD/Pfeile · Leertaste</span>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Direkt verbinden</h2>
+        <p>Kein Spielserver: Zwei Browser tauschen einmalig WebRTC-Daten per QR-Code aus. Danach laufen die Spieldaten direkt zwischen den Geräten.</p>
+        <div class="actions">
+          <button id="hostBtn" class="primary" type="button">Spiel erstellen</button>
+          <button id="joinBtn" type="button">QR scannen & beitreten</button>
+          <button id="scanAnswerBtn" type="button" disabled>Antwort-QR scannen</button>
+          <button id="disconnectBtn" class="danger" type="button" disabled>Verbindung trennen</button>
+        </div>
+
+        <div class="step">
+          <span id="rolePill" class="role">SOLO</span>
+          <p id="flowText">Erstelle ein Spiel oder scanne den QR-Code eines Mitschülers.</p>
+          <div id="techInfo" class="tiny">LAN-only ICE · kein STUN/TURN · HTTPS für Kamerazugriff erforderlich.</div>
+        </div>
+
+        <div class="step">
+          <div class="tiny">Falls die Kamera gesperrt ist, kannst du denselben Verbindungscode manuell austauschen.</div>
+          <button id="manualBtn" type="button" style="width:100%; margin-top:8px;">Manuellen Code verwenden</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="qrOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="qrTitle">QR-Code</h3>
+        <button id="closeQrBtn" type="button">Schließen</button>
+      </div>
+      <div id="qrInstruction" class="note"></div>
+      <div id="qrBox" class="qrbox"></div>
+      <div class="tiny">Der QR enthält nur temporäre WebRTC-Verbindungsdaten. Es werden keine Spieldaten auf einen Signaling-Server geladen.</div>
+    </div>
+  </div>
+
+  <div id="scanOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="scanTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="scanTitle">QR scannen</h3>
+        <button id="closeScanBtn" type="button">Abbrechen</button>
+      </div>
+      <div id="scanMessage" class="note">Kamera wird vorbereitet …</div>
+      <div class="scanner" style="margin-top:12px;">
+        <video id="scanVideo" playsinline muted></video>
+        <div class="scan-frame"></div>
+      </div>
+      <canvas id="scanCanvas" hidden></canvas>
+    </div>
+  </div>
+
+  <div id="manualOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="manualTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="manualTitle">Manueller Verbindungscode</h3>
+        <button id="closeManualBtn" type="button">Schließen</button>
+      </div>
+      <p class="tiny">Hier kannst du einen erzeugten Offer-/Answer-Code anzeigen oder einen Code vom anderen Gerät einfügen.</p>
+      <textarea id="manualText" placeholder="Verbindungscode hier einfügen …"></textarea>
+      <div class="row" style="margin-top:8px;">
+        <button id="showCurrentCodeBtn" type="button">Aktuellen Code anzeigen</button>
+        <button id="applyManualBtn" class="primary" type="button">Code übernehmen</button>
+      </div>
+      <div id="manualMessage" class="tiny" style="margin-top:8px;"></div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const canvas = $("game");
+  const ctx = canvas.getContext("2d");
+
+  const W = 960, H = 540;
+  const PLAYER_R = 20;
+  const SPEED = 210;
+  const ATTACK_RANGE = 78;
+  const ATTACK_HALF_ANGLE = 0.72;
+  const ATTACK_DAMAGE = 25;
+  const ATTACK_COOLDOWN = 430;
+  const STATE_INTERVAL = 55;
+
+  const obstacles = [
+    {x: 480, y: 270, r: 42},
+    {x: 300, y: 170, r: 28},
+    {x: 660, y: 370, r: 28}
+  ];
+
+  const id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)) + "-" + Date.now().toString(36);
+
+  let role = "solo";
+  let pc = null;
+  let dc = null;
+  let currentSignalCode = "";
+  let scanMode = null; // "offer" | "answer"
+  let cameraStream = null;
+  let scanRAF = null;
+  let lastStateSent = 0;
+  let lastFrame = performance.now();
+  let respawnTimer = 0;
+  let localScore = 0;
+  let remoteScore = 0;
+  let lastAttackAt = -9999;
+  let localAttackFxUntil = 0;
+  let remoteAttackFxUntil = 0;
+  let connected = false;
+  let pingMs = null;
+
+  const local = { id, x: W/2, y: H/2, a: 0, hp: 100, alive: true };
+  const remote = { id: null, x: W*0.72, y: H/2, tx: W*0.72, ty: H/2, a: Math.PI, ta: Math.PI, hp: 100, alive: true, seen: false };
+
+  const keys = new Set();
+  const stick = { active: false, pointerId: null, x: 0, y: 0 };
+
+  function setRole(next) {
+    role = next;
+    $("rolePill").textContent = next.toUpperCase();
+  }
+
+  function setStatus(text, isLive=false) {
+    $("netStatus").textContent = text;
+    $("netDot").classList.toggle("live", isLive);
+  }
+
+  function setFlow(text) {
+    $("flowText").textContent = text;
+  }
+
+  function updateHud() {
+    $("localHp").style.width = Math.max(0, local.hp) + "%";
+    $("remoteHp").style.width = Math.max(0, remote.hp) + "%";
+    $("localScore").textContent = localScore;
+    $("remoteScore").textContent = remoteScore;
+    $("centerScore").textContent = localScore + " : " + remoteScore;
+    $("enemyName").textContent = remote.seen ? "Gegner" : "Kein Gegner";
+  }
+
+  function setSpawn() {
+    if (role === "host") {
+      local.x = 220; local.y = H/2; local.a = 0;
+    } else if (role === "guest") {
+      local.x = W-220; local.y = H/2; local.a = Math.PI;
+    } else {
+      local.x = W/2; local.y = H/2; local.a = 0;
+    }
+  }
+
+  function resetRound() {
+    local.hp = 100; local.alive = true;
+    setSpawn();
+    if (role === "host") {
+      remote.tx = W-220; remote.ty = H/2;
+    } else if (role === "guest") {
+      remote.tx = 220; remote.ty = H/2;
+    }
+    updateHud();
+  }
+
+  function circleCollides(x, y) {
+    for (const o of obstacles) {
+      const dx = x - o.x, dy = y - o.y;
+      if (Math.hypot(dx, dy) < PLAYER_R + o.r + 4) return true;
+    }
+    return false;
+  }
+
+  function moveLocal(dx, dy, dt) {
+    if (!local.alive) return;
+    const len = Math.hypot(dx, dy);
+    if (len < 0.01) return;
+    dx /= len; dy /= len;
+    local.a = Math.atan2(dy, dx);
+
+    const nx = Math.max(PLAYER_R+8, Math.min(W-PLAYER_R-8, local.x + dx*SPEED*dt));
+    const ny = Math.max(PLAYER_R+8, Math.min(H-PLAYER_R-8, local.y + dy*SPEED*dt));
+
+    if (!circleCollides(nx, local.y)) local.x = nx;
+    if (!circleCollides(local.x, ny)) local.y = ny;
+  }
+
+  function normAngle(a) {
+    while (a > Math.PI) a -= Math.PI*2;
+    while (a < -Math.PI) a += Math.PI*2;
+    return a;
+  }
+
+  function tryAttack() {
+    const now = performance.now();
+    if (!local.alive || now - lastAttackAt < ATTACK_COOLDOWN) return;
+    lastAttackAt = now;
+    localAttackFxUntil = now + 170;
+    $("attackBtn").classList.add("cool");
+    setTimeout(() => $("attackBtn").classList.remove("cool"), ATTACK_COOLDOWN);
+
+    send({
+      t: "attack",
+      id: local.id,
+      x: Math.round(local.x*10)/10,
+      y: Math.round(local.y*10)/10,
+      a: Math.round(local.a*1000)/1000,
+      n: Date.now()
+    });
+  }
+
+  function receiveAttack(m) {
+    remoteAttackFxUntil = performance.now() + 170;
+    if (!local.alive) return;
+
+    const dx = local.x - m.x, dy = local.y - m.y;
+    const dist = Math.hypot(dx, dy);
+    const targetAngle = Math.atan2(dy, dx);
+    const diff = Math.abs(normAngle(targetAngle - m.a));
+
+    if (dist <= ATTACK_RANGE + PLAYER_R && diff <= ATTACK_HALF_ANGLE) {
+      local.hp = Math.max(0, local.hp - ATTACK_DAMAGE);
+
+      if (dist > 0.1) {
+        const push = 22;
+        const nx = Math.max(PLAYER_R+8, Math.min(W-PLAYER_R-8, local.x + dx/dist*push));
+        const ny = Math.max(PLAYER_R+8, Math.min(H-PLAYER_R-8, local.y + dy/dist*push));
+        if (!circleCollides(nx, ny)) { local.x = nx; local.y = ny; }
+      }
+
+      if (local.hp <= 0) {
+        local.alive = false;
+        send({ t: "defeated", by: m.id, victim: local.id });
+        clearTimeout(respawnTimer);
+        respawnTimer = setTimeout(() => {
+          resetRound();
+          sendState(true);
+        }, 1100);
+      }
+      updateHud();
+      sendState(true);
+    }
+  }
+
+  function send(obj) {
+    if (dc && dc.readyState === "open") {
+      try { dc.send(JSON.stringify(obj)); } catch (_) {}
+    }
+  }
+
+  function sendState(force=false) {
+    const now = performance.now();
+    if (!force && now - lastStateSent < STATE_INTERVAL) return;
+    lastStateSent = now;
+    send({
+      t:"state", id:local.id,
+      x:Math.round(local.x*10)/10, y:Math.round(local.y*10)/10,
+      a:Math.round(local.a*1000)/1000,
+      hp:local.hp, alive:local.alive, score:localScore
+    });
+  }
+
+  function onMessage(ev) {
+    let m;
+    try { m = JSON.parse(ev.data); } catch { return; }
+    if (!m || typeof m.t !== "string") return;
+
+    if (m.t === "state") {
+      remote.id = m.id;
+      remote.tx = Number(m.x) || remote.tx;
+      remote.ty = Number(m.y) || remote.ty;
+      remote.ta = Number(m.a) || 0;
+      remote.hp = Math.max(0, Math.min(100, Number(m.hp) || 0));
+      remote.alive = !!m.alive;
+      remoteScore = Number.isFinite(m.score) ? m.score : remoteScore;
+      remote.seen = true;
+      updateHud();
+    } else if (m.t === "attack") {
+      receiveAttack(m);
+    } else if (m.t === "defeated") {
+      if (m.by === local.id) {
+        localScore++;
+        updateHud();
+        sendState(true);
+      }
+    } else if (m.t === "ping") {
+      send({t:"pong", n:m.n});
+    } else if (m.t === "pong") {
+      if (m.n) {
+        pingMs = Math.max(0, Math.round(performance.now() - m.n));
+        $("techInfo").textContent = "Direktverbindung aktiv · Ping ca. " + pingMs + " ms · LAN-only ICE.";
+      }
+    }
+  }
+
+  function attachChannel(channel) {
+    dc = channel;
+    dc.onopen = () => {
+      connected = true;
+      setStatus("Direkt verbunden", true);
+      setFlow("Verbindung steht. Ihr könnt euch jetzt in der Arena sehen und gegeneinander kämpfen.");
+      $("disconnectBtn").disabled = false;
+      $("hostBtn").disabled = true;
+      $("joinBtn").disabled = true;
+      $("scanAnswerBtn").disabled = true;
+      closeAllOverlays();
+      resetRound();
+      sendState(true);
+      setInterval(() => {
+        if (dc && dc.readyState === "open") send({t:"ping", n:performance.now()});
+      }, 2200);
+    };
+    dc.onmessage = onMessage;
+    dc.onclose = () => {
+      if (connected) disconnect("Verbindung beendet");
+    };
+    dc.onerror = () => setStatus("WebRTC-Fehler");
+  }
+
+  function newPeer() {
+    if (pc) {
+      try { pc.close(); } catch (_) {}
+    }
+    // Absichtlich keine STUN-/TURN-Server: reine LAN-Direktverbindung.
+    pc = new RTCPeerConnection({ iceServers: [] });
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      if (s === "failed" || s === "disconnected") {
+        setStatus("Verbindung " + s);
+      }
+    };
+    return pc;
+  }
+
+  function waitIceComplete(peer, timeout=7000) {
+    if (peer.iceGatheringState === "complete") return Promise.resolve();
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        peer.removeEventListener("icegatheringstatechange", check);
+        resolve();
+      };
+      const check = () => {
+        if (peer.iceGatheringState === "complete") finish();
+      };
+      peer.addEventListener("icegatheringstatechange", check);
+      setTimeout(finish, timeout);
+    });
+  }
+
+  function bytesToB64Url(bytes) {
+    let bin = "";
+    const chunk = 0x8000;
+    for (let i=0; i<bytes.length; i+=chunk) {
+      bin += String.fromCharCode(...bytes.subarray(i, i+chunk));
+    }
+    return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  }
+
+  function b64UrlToBytes(s) {
+    s = s.replace(/-/g,"+").replace(/_/g,"/");
+    while (s.length % 4) s += "=";
+    const bin = atob(s);
+    const out = new Uint8Array(bin.length);
+    for (let i=0; i<bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  function packDescription(desc, kind) {
+    if (!window.pako) throw new Error("Kompressionsbibliothek pako wurde nicht geladen.");
+    const payload = JSON.stringify({v:1, k:kind, d:{type:desc.type, sdp:desc.sdp}});
+    const compressed = window.pako.deflate(payload, {level:9});
+    return "QRA1." + bytesToB64Url(compressed);
+  }
+
+  function unpackDescription(code) {
+    code = code.trim();
+    if (!code.startsWith("QRA1.")) throw new Error("Unbekanntes QR-Arena-Format.");
+    if (!window.pako) throw new Error("Kompressionsbibliothek pako wurde nicht geladen.");
+    const raw = window.pako.inflate(b64UrlToBytes(code.slice(5)), {to:"string"});
+    const obj = JSON.parse(raw);
+    if (!obj || obj.v !== 1 || !obj.d || !obj.d.type || !obj.d.sdp) throw new Error("Ungültige Verbindungsdaten.");
+    return obj;
+  }
+
+  function showQr(code, title, instruction) {
+    currentSignalCode = code;
+    $("qrTitle").textContent = title;
+    $("qrInstruction").textContent = instruction;
+    $("qrBox").innerHTML = "";
+    if (!window.QRCode) {
+      $("qrBox").style.background = "#151a23";
+      $("qrBox").textContent = "QR-Bibliothek nicht geladen. Nutze den manuellen Code.";
+    } else {
+      $("qrBox").style.background = "white";
+      try {
+        new QRCode($("qrBox"), {
+          text: code,
+          width: 360,
+          height: 360,
+          correctLevel: QRCode.CorrectLevel.L
+        });
+      } catch (e) {
+        $("qrBox").style.background = "#151a23";
+        $("qrBox").innerHTML = '<div class="error">QR konnte nicht erzeugt werden. Nutze den manuellen Code.</div>';
+      }
+    }
+    $("qrOverlay").classList.add("open");
+  }
+
+  async function createHost() {
+    disconnect(null, true);
+    setRole("host");
+    setStatus("Offer wird erstellt …");
+    setFlow("Warte kurz, dann zeigst du den QR-Code deinem Mitspieler.");
+    setSpawn();
+
+    const peer = newPeer();
+    const channel = peer.createDataChannel("arena", { ordered: true });
+    attachChannel(channel);
+
+    try {
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
+      await waitIceComplete(peer);
+      const code = packDescription(peer.localDescription, "offer");
+      currentSignalCode = code;
+      $("scanAnswerBtn").disabled = false;
+      showQr(code, "1/2 · Offer zeigen", "Mitspieler: Tippe auf „QR scannen & beitreten“ und scanne diesen Code.");
+      setStatus("Warte auf Antwort");
+      setFlow("Offer erstellt. Nachdem der andere iPad den Code gescannt hat, scannst du dessen Antwort-QR.");
+    } catch (e) {
+      setStatus("Offer fehlgeschlagen");
+      setFlow(String(e.message || e));
+    }
+  }
+
+  async function acceptOfferCode(code) {
+    disconnect(null, true);
+    setRole("guest");
+    setStatus("Offer wird übernommen …");
+    setSpawn();
+
+    try {
+      const parsed = unpackDescription(code);
+      if (parsed.k !== "offer" && parsed.d.type !== "offer") throw new Error("Das ist kein Offer-Code.");
+
+      const peer = newPeer();
+      peer.ondatachannel = (ev) => attachChannel(ev.channel);
+
+      await peer.setRemoteDescription(parsed.d);
+      const answer = await peer.createAnswer();
+      await peer.setLocalDescription(answer);
+      await waitIceComplete(peer);
+
+      const answerCode = packDescription(peer.localDescription, "answer");
+      currentSignalCode = answerCode;
+      showQr(answerCode, "2/2 · Antwort zeigen", "Spielersteller: Tippe auf „Antwort-QR scannen“ und scanne diesen Code.");
+      setStatus("Warte auf Verbindung");
+      setFlow("Antwort erstellt. Zeige diesen QR jetzt dem Spielersteller.");
+    } catch (e) {
+      setStatus("Beitritt fehlgeschlagen");
+      setFlow(String(e.message || e));
+      throw e;
+    }
+  }
+
+  async function acceptAnswerCode(code) {
+    if (role !== "host" || !pc) throw new Error("Zuerst musst du auf diesem Gerät ein Spiel erstellen.");
+    const parsed = unpackDescription(code);
+    if (parsed.k !== "answer" && parsed.d.type !== "answer") throw new Error("Das ist kein Answer-Code.");
+    await pc.setRemoteDescription(parsed.d);
+    setStatus("Verbindung wird aufgebaut …");
+    setFlow("Antwort übernommen. WebRTC versucht jetzt die direkte LAN-Verbindung.");
+  }
+
+  function disconnect(reason="Solo / nicht verbunden", preserveRole=false) {
+    connected = false;
+    remote.seen = false;
+    remote.id = null;
+    remote.hp = 100;
+    remoteScore = 0;
+    localScore = 0;
+    pingMs = null;
+    try { if (dc) dc.close(); } catch (_) {}
+    try { if (pc) pc.close(); } catch (_) {}
+    dc = null; pc = null;
+    if (!preserveRole) setRole("solo");
+    setStatus(reason || "Solo / nicht verbunden", false);
+    $("hostBtn").disabled = false;
+    $("joinBtn").disabled = false;
+    $("scanAnswerBtn").disabled = true;
+    $("disconnectBtn").disabled = true;
+    $("techInfo").textContent = "LAN-only ICE · kein STUN/TURN · HTTPS für Kamerazugriff erforderlich.";
+    if (!preserveRole) setFlow("Erstelle ein Spiel oder scanne den QR-Code eines Mitschülers.");
+    resetRound();
+  }
+
+  async function startScanner(mode) {
+    scanMode = mode;
+    $("scanTitle").textContent = mode === "offer" ? "Offer-QR scannen" : "Antwort-QR scannen";
+    $("scanMessage").textContent = "Kamera wird vorbereitet …";
+    $("scanMessage").className = "note";
+    $("scanOverlay").classList.add("open");
+
+    if (!window.jsQR) {
+      $("scanMessage").textContent = "QR-Scanner-Bibliothek wurde nicht geladen. Nutze den manuellen Code.";
+      $("scanMessage").className = "note error";
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      $("scanMessage").textContent = "Kamerazugriff ist hier nicht verfügbar. Nutze den manuellen Code.";
+      $("scanMessage").className = "note error";
+      return;
+    }
+
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } },
+        audio: false
+      });
+      const video = $("scanVideo");
+      video.srcObject = cameraStream;
+      await video.play();
+      $("scanMessage").textContent = "Halte den QR-Code des anderen iPads in den Rahmen.";
+      scanLoop();
+    } catch (e) {
+      $("scanMessage").textContent = "Kamera konnte nicht geöffnet werden: " + (e.message || e);
+      $("scanMessage").className = "note error";
+    }
+  }
+
+  function stopScanner() {
+    if (scanRAF) cancelAnimationFrame(scanRAF);
+    scanRAF = null;
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      cameraStream = null;
+    }
+    const v = $("scanVideo");
+    v.pause();
+    v.srcObject = null;
+  }
+
+  function scanLoop() {
+    const video = $("scanVideo");
+    const c = $("scanCanvas");
+    const cctx = c.getContext("2d", {willReadFrequently:true});
+
+    const tick = async () => {
+      if (!cameraStream) return;
+      if (video.readyState >= 2 && video.videoWidth > 0) {
+        const maxW = 720;
+        const scale = Math.min(1, maxW / video.videoWidth);
+        c.width = Math.max(1, Math.round(video.videoWidth * scale));
+        c.height = Math.max(1, Math.round(video.videoHeight * scale));
+        cctx.drawImage(video, 0, 0, c.width, c.height);
+        const img = cctx.getImageData(0,0,c.width,c.height);
+        const result = jsQR(img.data, img.width, img.height, {inversionAttempts:"dontInvert"});
+        if (result && result.data && result.data.startsWith("QRA1.")) {
+          stopScanner();
+          $("scanOverlay").classList.remove("open");
+          try {
+            if (scanMode === "offer") await acceptOfferCode(result.data);
+            else await acceptAnswerCode(result.data);
+          } catch (e) {
+            setStatus("QR ungültig");
+            setFlow(String(e.message || e));
+          }
+          return;
+        }
+      }
+      scanRAF = requestAnimationFrame(tick);
+    };
+    scanRAF = requestAnimationFrame(tick);
+  }
+
+  function closeAllOverlays() {
+    stopScanner();
+    document.querySelectorAll(".overlay").forEach(el => el.classList.remove("open"));
+  }
+
+  $("hostBtn").addEventListener("click", createHost);
+  $("joinBtn").addEventListener("click", () => startScanner("offer"));
+  $("scanAnswerBtn").addEventListener("click", () => startScanner("answer"));
+  $("disconnectBtn").addEventListener("click", () => disconnect("Verbindung getrennt"));
+  $("closeQrBtn").addEventListener("click", () => $("qrOverlay").classList.remove("open"));
+  $("closeScanBtn").addEventListener("click", () => { stopScanner(); $("scanOverlay").classList.remove("open"); });
+  $("manualBtn").addEventListener("click", () => {
+    $("manualMessage").textContent = "";
+    $("manualOverlay").classList.add("open");
+  });
+  $("closeManualBtn").addEventListener("click", () => $("manualOverlay").classList.remove("open"));
+  $("showCurrentCodeBtn").addEventListener("click", () => {
+    $("manualText").value = currentSignalCode || "";
+    $("manualText").focus();
+    $("manualText").select();
+    $("manualMessage").textContent = currentSignalCode ? "Aktueller Code angezeigt. Auf iPad: lang drücken → Kopieren." : "Noch kein Code erzeugt.";
+  });
+  $("applyManualBtn").addEventListener("click", async () => {
+    const code = $("manualText").value.trim();
+    if (!code) { $("manualMessage").textContent = "Bitte zuerst einen Code einfügen."; return; }
+    try {
+      const parsed = unpackDescription(code);
+      if (parsed.k === "offer" || parsed.d.type === "offer") {
+        $("manualOverlay").classList.remove("open");
+        await acceptOfferCode(code);
+      } else if (parsed.k === "answer" || parsed.d.type === "answer") {
+        await acceptAnswerCode(code);
+        $("manualOverlay").classList.remove("open");
+      } else {
+        throw new Error("Unbekannter Code-Typ.");
+      }
+    } catch (e) {
+      $("manualMessage").textContent = "Fehler: " + (e.message || e);
+      $("manualMessage").className = "tiny error";
+    }
+  });
+
+  // Touch-Joystick
+  const zone = $("stickZone"), knob = $("stickKnob");
+  function updateStickFromPointer(e) {
+    const r = zone.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    let dx = e.clientX - cx, dy = e.clientY - cy;
+    const max = r.width * 0.32;
+    const len = Math.hypot(dx,dy);
+    if (len > max) { dx = dx/len*max; dy = dy/len*max; }
+    stick.x = dx / max; stick.y = dy / max;
+    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+  }
+  zone.addEventListener("pointerdown", (e) => {
+    stick.active = true; stick.pointerId = e.pointerId;
+    zone.setPointerCapture(e.pointerId);
+    updateStickFromPointer(e);
+  });
+  zone.addEventListener("pointermove", (e) => {
+    if (stick.active && e.pointerId === stick.pointerId) updateStickFromPointer(e);
+  });
+  function releaseStick(e) {
+    if (!stick.active || (e && e.pointerId !== stick.pointerId)) return;
+    stick.active = false; stick.pointerId = null; stick.x = stick.y = 0;
+    knob.style.transform = "translate(0px, 0px)";
+  }
+  zone.addEventListener("pointerup", releaseStick);
+  zone.addEventListener("pointercancel", releaseStick);
+
+  $("attackBtn").addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    tryAttack();
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," ","w","a","s","d","W","A","S","D"].includes(e.key)) e.preventDefault();
+    keys.add(e.key.toLowerCase());
+    if (e.key === " ") tryAttack();
+  }, {passive:false});
+  window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
+
+  function inputVector() {
+    let x = stick.x, y = stick.y;
+    if (keys.has("a") || keys.has("arrowleft")) x -= 1;
+    if (keys.has("d") || keys.has("arrowright")) x += 1;
+    if (keys.has("w") || keys.has("arrowup")) y -= 1;
+    if (keys.has("s") || keys.has("arrowdown")) y += 1;
+    return {x,y};
+  }
+
+  function lerpAngle(a,b,t) {
+    return a + normAngle(b-a)*t;
+  }
+
+  function drawArena() {
+    const g = ctx.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,"#101725");
+    g.addColorStop(1,"#0b111b");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.strokeStyle = "rgba(255,255,255,.035)";
+    ctx.lineWidth = 1;
+    for (let x=0; x<=W; x+=48) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y=0; y<=H; y+=48) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    ctx.strokeStyle = "rgba(255,255,255,.15)";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(6,6,W-12,H-12);
+
+    for (const o of obstacles) {
+      const og = ctx.createRadialGradient(o.x-8,o.y-10,4,o.x,o.y,o.r+6);
+      og.addColorStop(0,"#536175");
+      og.addColorStop(1,"#263142");
+      ctx.fillStyle = og;
+      ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.12)";
+      ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,.035)";
+    ctx.beginPath();
+    ctx.arc(W/2,H/2,125,0,Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.08)";
+    ctx.stroke();
+  }
+
+  function drawPlayer(p, isLocal, attackFx) {
+    const aliveAlpha = p.alive ? 1 : .3;
+    ctx.save();
+    ctx.globalAlpha = aliveAlpha;
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.a);
+
+    if (attackFx) {
+      ctx.strokeStyle = isLocal ? "rgba(117,167,255,.95)" : "rgba(255,111,125,.95)";
+      ctx.lineWidth = 13;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.arc(0,0,ATTACK_RANGE,-ATTACK_HALF_ANGLE,ATTACK_HALF_ANGLE);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = isLocal ? "#75a7ff" : "#ff6f7d";
+    ctx.beginPath(); ctx.arc(0,0,PLAYER_R,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.72)";
+    ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.fillStyle = "#e8edf6";
+    ctx.fillRect(8,-4,25,8);
+    ctx.fillStyle = "#f6c85f";
+    ctx.fillRect(30,-6,9,12);
+
+    ctx.restore();
+
+    ctx.save();
+    ctx.textAlign="center";
+    ctx.font="700 13px system-ui";
+    ctx.fillStyle="rgba(255,255,255,.9)";
+    ctx.fillText(isLocal ? "DU" : "GEGNER", p.x, p.y-31);
+    ctx.restore();
+  }
+
+  function render(now) {
+    drawArena();
+
+    if (remote.seen) {
+      remote.x += (remote.tx - remote.x) * 0.22;
+      remote.y += (remote.ty - remote.y) * 0.22;
+      remote.a = lerpAngle(remote.a, remote.ta, 0.24);
+      drawPlayer(remote, false, now < remoteAttackFxUntil);
+    }
+
+    drawPlayer(local, true, now < localAttackFxUntil);
+
+    if (!remote.seen) {
+      ctx.save();
+      ctx.fillStyle="rgba(255,255,255,.62)";
+      ctx.font="700 18px system-ui";
+      ctx.textAlign="center";
+      ctx.fillText("Verbinde ein zweites iPad für ein Duell", W/2, 58);
+      ctx.restore();
+    }
+
+    if (!local.alive) {
+      ctx.save();
+      ctx.fillStyle="rgba(0,0,0,.45)";
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="#fff";
+      ctx.font="900 34px system-ui";
+      ctx.textAlign="center";
+      ctx.fillText("K. O.", W/2, H/2);
+      ctx.font="600 16px system-ui";
+      ctx.fillText("Respawn …", W/2, H/2+32);
+      ctx.restore();
+    }
+  }
+
+  function gameLoop(now) {
+    const dt = Math.min(0.033, Math.max(0, (now-lastFrame)/1000));
+    lastFrame = now;
+    const v = inputVector();
+    moveLocal(v.x, v.y, dt);
+    if (connected) sendState(false);
+    render(now);
+    requestAnimationFrame(gameLoop);
+  }
+
+  // Aufräumen
+  window.addEventListener("pagehide", () => {
+    stopScanner();
+    try { if (dc) dc.close(); } catch (_) {}
+    try { if (pc) pc.close(); } catch (_) {}
+  });
+
+  setRole("solo");
+  resetRound();
+  updateHud();
+  requestAnimationFrame(gameLoop);
+})();
+</script>
+</body>
+</html>
