@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>WebAR SLAM 1:1 Path Test</title>
+<title>WebAR SLAM 1:1 Path Test · Direction Fix</title>
 
 <script
   src="https://cdn.jsdelivr.net/npm/@8thwall/coaching-overlay@1/dist/coaching-overlay.js"
@@ -129,7 +129,7 @@ pre{
   <div class="top">
     <div>
       <h1>WebAR SLAM · 1:1 Meter-Test</h1>
-      <p class="sub">Absolute Scale · Roll-freie First-Person-Kamera · Top-Down-Pfad</p>
+      <p class="sub">Absolute Scale · Richtungsfix · Roll-freie First-Person-Kamera · Top-Down-Pfad</p>
     </div>
     <div class="actions">
       <span class="status"><i id="statusDot" class="dot"></i><span id="statusText">Engine lädt …</span></span>
@@ -180,7 +180,7 @@ pre{
     <div class="debugHead">
       <div>
         <h2>Debug View</h2>
-        <div class="note">Raw XR8 → Achsenabbildung → Nullpunkt → 1:1 Meter → 12-mm-Jitter-Deadzone.</div>
+        <div class="note">Raw XR8 → getrennte Pose-Achsen → Nullpunkt → 1:1 Meter → 12-mm-Jitter-Deadzone.</div>
       </div>
       <button id="closeDebugBtn">Schließen</button>
     </div>
@@ -225,9 +225,10 @@ pre{
     </div>
 
     <p class="note">
-      XR8 läuft mit <b>scale: "absolute"</b>. 8th Walls Standardachsen sind X-links, Y-oben,
-      Z-vorne. Für die WebGL-Welt werden nur die Achsen gespiegelt; es gibt <b>keinen Skalierungsfaktor</b>.
-      Die Ausrichtung verwendet nur Yaw und Pitch. Roll wird absichtlich nicht gerendert.
+      XR8 läuft mit <b>scale: "absolute"</b>. Translation und Blickrichtung werden getrennt
+      konvertiert: Die XR8-Kameraposition nutzt für Vorwärts/Rückwärts ein anderes Z-Vorzeichen als
+      unser WebGL-Blickvektor. Es gibt <b>keinen Skalierungsfaktor</b>. Die Ausrichtung verwendet nur
+      Yaw und korrigiertes Pitch; Roll wird absichtlich nicht gerendert.
     </p>
   </section>
 </div>
@@ -310,18 +311,27 @@ pre{
     return {x:c*v.x+s*v.z,y:v.y,z:-s*v.x+c*v.z};
   }
 
-  // XR8 default: X-left, Y-up, Z-forward.
-  // Our WebGL world: X-right, Y-up, camera forward = -Z.
-  // This rigid 180° Y-axis basis conversion preserves all distances exactly.
-  function xrVecToWeb(v){return {x:-v.x,y:v.y,z:-v.z}}
+  // XR8 orientation basis -> our WebGL viewing basis.
+  // Kept separate from translation because XR8's returned CAMERA POSITION
+  // changes with the opposite Z sign from the camera's forward viewing vector.
+  function xrOrientationVecToWeb(v){return {x:-v.x,y:v.y,z:-v.z}}
+
+  // XR8 camera-position delta -> our WebGL world.
+  // Empirically / pose-convention-correct:
+  //   walk forward  => local Z becomes negative => virtual camera moves forward
+  //   walk backward => local Z becomes positive => virtual camera moves backward
+  // No scale is applied: 1 XR8 meter remains 1 virtual meter.
+  function xrTranslationToWeb(v){return {x:-v.x,y:v.y,z:v.z}}
 
   function cameraAnglesFromXR(q){
     // XR8 camera forward is +Z in its documented scene axes.
-    const forward=norm(xrVecToWeb(qRotate(q,{x:0,y:0,z:1})));
-    const up=norm(xrVecToWeb(qRotate(q,{x:0,y:1,z:0})));
+    const forward=norm(xrOrientationVecToWeb(qRotate(q,{x:0,y:0,z:1})));
+    const up=norm(xrOrientationVecToWeb(qRotate(q,{x:0,y:1,z:0})));
 
     const yaw=Math.atan2(forward.x,-forward.z);
-    const pitch=Math.asin(clamp(forward.y,-1,1));
+    // Screen/camera pitch convention is opposite to our lookAt pitch convention.
+    // Therefore invert it: iPad down => camera looks down, iPad up => camera looks up.
+    const pitch=-Math.asin(clamp(forward.y,-1,1));
 
     // Roll is measured only for diagnostics and deliberately discarded in rendering.
     let right=cross(forward,{x:0,y:1,z:0});
@@ -340,7 +350,7 @@ pre{
       y:S.rawPos.y-S.originRawPos.y,
       z:S.rawPos.z-S.originRawPos.z
     };
-    const webDelta=xrVecToWeb(rawDelta);
+    const webDelta=xrTranslationToWeb(rawDelta);
 
     // Align initial horizontal viewing direction with virtual -Z.
     // Rotation is rigid: |Δ| remains exactly unchanged.
