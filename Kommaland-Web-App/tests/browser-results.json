@@ -1,0 +1,319 @@
+{
+  "playthrough": {
+    "completed": 37,
+    "stats": {
+      "attempts": 123,
+      "correct": 122,
+      "hints": 1
+    },
+    "glError": 0,
+    "tasks": 122,
+    "order": [
+      "v0a",
+      "v0b",
+      "v1",
+      "v0c",
+      "v2",
+      "v0d",
+      "v3",
+      "v4",
+      "f1",
+      "f2",
+      "f3",
+      "f4",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "a1",
+      "a2",
+      "a3",
+      "a4",
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "m1",
+      "m2",
+      "h5",
+      "m3",
+      "m4",
+      "d1",
+      "d2",
+      "d3",
+      "d4",
+      "k1",
+      "k2",
+      "k3",
+      "k4"
+    ],
+    "formats": [
+      "choice",
+      "classify",
+      "line",
+      "multi",
+      "number",
+      "order"
+    ]
+  },
+  "layouts": [
+    {
+      "mode": "lesson",
+      "w": 1180,
+      "h": 820,
+      "panel": {
+        "x": 210,
+        "y": 170.34375,
+        "w": 760,
+        "h": 479.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "example",
+      "w": 1180,
+      "h": 820,
+      "panel": {
+        "x": 210,
+        "y": 125.796875,
+        "w": 760,
+        "h": 568.390625
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "lesson",
+      "w": 1180,
+      "h": 820,
+      "panel": {
+        "x": 210,
+        "y": 170.34375,
+        "w": 760,
+        "h": 479.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "task",
+      "w": 1180,
+      "h": 820,
+      "panel": {
+        "x": 160,
+        "y": 119.5,
+        "w": 860,
+        "h": 581
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "map",
+      "w": 1180,
+      "h": 820,
+      "overflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "lesson",
+      "w": 1024,
+      "h": 768,
+      "panel": {
+        "x": 132,
+        "y": 144.34375,
+        "w": 760,
+        "h": 479.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "example",
+      "w": 1024,
+      "h": 768,
+      "panel": {
+        "x": 132,
+        "y": 99.796875,
+        "w": 760,
+        "h": 568.390625
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "lesson",
+      "w": 1024,
+      "h": 768,
+      "panel": {
+        "x": 132,
+        "y": 144.34375,
+        "w": 760,
+        "h": 479.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "task",
+      "w": 1024,
+      "h": 768,
+      "panel": {
+        "x": 82,
+        "y": 93.5,
+        "w": 860,
+        "h": 581
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "map",
+      "w": 1024,
+      "h": 768,
+      "overflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "lesson",
+      "w": 768,
+      "h": 1024,
+      "panel": {
+        "x": 20,
+        "y": 277.34375,
+        "w": 728,
+        "h": 469.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "example",
+      "w": 768,
+      "h": 1024,
+      "panel": {
+        "x": 20,
+        "y": 232.796875,
+        "w": 728,
+        "h": 558.390625
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "lesson",
+      "w": 768,
+      "h": 1024,
+      "panel": {
+        "x": 20,
+        "y": 277.34375,
+        "w": 728,
+        "h": 469.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "task",
+      "w": 768,
+      "h": 1024,
+      "panel": {
+        "x": 20,
+        "y": 226.5,
+        "w": 728,
+        "h": 571
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "map",
+      "w": 768,
+      "h": 1024,
+      "overflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "lesson",
+      "w": 820,
+      "h": 1180,
+      "panel": {
+        "x": 30,
+        "y": 355.34375,
+        "w": 760,
+        "h": 469.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "example",
+      "w": 820,
+      "h": 1180,
+      "panel": {
+        "x": 30,
+        "y": 310.796875,
+        "w": 760,
+        "h": 558.390625
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "lesson",
+      "w": 820,
+      "h": 1180,
+      "panel": {
+        "x": 30,
+        "y": 355.34375,
+        "w": 760,
+        "h": 469.3125
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "task",
+      "w": 820,
+      "h": 1180,
+      "panel": {
+        "x": 20,
+        "y": 304.5,
+        "w": 780,
+        "h": 571
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "footerFits": true
+    },
+    {
+      "mode": "map",
+      "w": 820,
+      "h": 1180,
+      "overflowX": false,
+      "footerFits": true
+    }
+  ],
+  "errors": [],
+  "firstQuest": "actual pointer navigation, wrong-answer feedback, ready reload, explicit commit, real-time 2.65s build",
+  "remainingBuilds": "reduced-motion setting (0.25s)",
+  "help": "stepwise example; nested knowledge/example return; typed input preserved; no extra attempts",
+  "save": "JSON download, corrupt import preserved, valid import confirmed, rollback, schema-1 migration",
+  "environment": "144.0.7559.96; headed Chromium/Xvfb, WebGL SwiftShader; offline module harness; memory-backed localStorage substitute"
+}

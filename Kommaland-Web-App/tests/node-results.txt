@@ -1,0 +1,212 @@
+
+> kommaland@2.0.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: Jede Teilaufgabe hat einen kleinen Wissensschritt und ein vollständiges Lösungsbeispiel
+ok 1 - Jede Teilaufgabe hat einen kleinen Wissensschritt und ein vollständiges Lösungsbeispiel
+  ---
+  duration_ms: 1.195837
+  type: 'test'
+  ...
+# Subtest: Der Dorfeinstieg baut ganze Zahlen, Hälfte, Zehntel, Hundertstel und Brüche getrennt auf
+ok 2 - Der Dorfeinstieg baut ganze Zahlen, Hälfte, Zehntel, Hundertstel und Brüche getrennt auf
+  ---
+  duration_ms: 0.956877
+  type: 'test'
+  ...
+# Subtest: Voraussetzungen sind konkrete Aufgaben; es gibt keine unbekannten oder zyklischen Kanten
+ok 3 - Voraussetzungen sind konkrete Aufgaben; es gibt keine unbekannten oder zyklischen Kanten
+  ---
+  duration_ms: 1.173165
+  type: 'test'
+  ...
+# Subtest: Kernroute erreicht das Finale ohne die beiden gekennzeichneten Zusatzwege
+ok 4 - Kernroute erreicht das Finale ohne die beiden gekennzeichneten Zusatzwege
+  ---
+  duration_ms: 0.223439
+  type: 'test'
+  ...
+# Subtest: Erinnerungsrätsel verwenden ausschließlich wirklich bearbeitete Aufgaben
+ok 5 - Erinnerungsrätsel verwenden ausschließlich wirklich bearbeitete Aufgaben
+  ---
+  duration_ms: 0.497571
+  type: 'test'
+  ...
+# Subtest: Ausgewählte neue Ergebnisse werden unabhängig vom Antwortprüfer nachgerechnet
+ok 6 - Ausgewählte neue Ergebnisse werden unabhängig vom Antwortprüfer nachgerechnet
+  ---
+  duration_ms: 0.44191
+  type: 'test'
+  ...
+# Subtest: Traglasten im Hafen setzen das Vergleichen im Wald voraus
+ok 7 - Traglasten im Hafen setzen das Vergleichen im Wald voraus
+  ---
+  duration_ms: 0.1632
+  type: 'test'
+  ...
+# Subtest: Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+ok 8 - Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+  ---
+  duration_ms: 1.950176
+  type: 'test'
+  ...
+# Subtest: Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+ok 9 - Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+  ---
+  duration_ms: 0.146645
+  type: 'test'
+  ...
+# Subtest: Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+ok 10 - Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+  ---
+  duration_ms: 0.251851
+  type: 'test'
+  ...
+# Subtest: 37 eindeutige Quests, 122 vollständige Aufgaben und 83 Wissensschritte
+ok 11 - 37 eindeutige Quests, 122 vollständige Aufgaben und 83 Wissensschritte
+  ---
+  duration_ms: 1.210639
+  type: 'test'
+  ...
+# Subtest: Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+ok 12 - Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+  ---
+  duration_ms: 0.319971
+  type: 'test'
+  ...
+# Subtest: Waldbegegnungen beziehen sich nur auf tatsächlich abgeschlossene Aufgaben
+ok 13 - Waldbegegnungen beziehen sich nur auf tatsächlich abgeschlossene Aufgaben
+  ---
+  duration_ms: 0.356734
+  type: 'test'
+  ...
+# Subtest: Offline-Installation enthält alle existierenden App-Dateien
+ok 14 - Offline-Installation enthält alle existierenden App-Dateien
+  ---
+  duration_ms: 2.835117
+  type: 'test'
+  ...
+# Subtest: Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+ok 15 - Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+  ---
+  duration_ms: 0.995013
+  type: 'test'
+  ...
+# Subtest: Fremde Domains und Schreibanfragen werden nicht abgefangen
+ok 16 - Fremde Domains und Schreibanfragen werden nicht abgefangen
+  ---
+  duration_ms: 0.85684
+  type: 'test'
+  ...
+# Subtest: Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+ok 17 - Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+  ---
+  duration_ms: 1.987892
+  type: 'test'
+  ...
+# Subtest: Ungültige Daten werden vor einer Übernahme abgelehnt
+ok 18 - Ungültige Daten werden vor einer Übernahme abgelehnt
+  ---
+  duration_ms: 0.446026
+  type: 'test'
+  ...
+# Subtest: Import übernimmt weder HTML noch fremde Felder
+ok 19 - Import übernimmt weder HTML noch fremde Felder
+  ---
+  duration_ms: 0.275665
+  type: 'test'
+  ...
+# Subtest: Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+ok 20 - Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+  ---
+  duration_ms: 0.845352
+  type: 'test'
+  ...
+# Subtest: Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+ok 21 - Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+  ---
+  duration_ms: 0.221866
+  type: 'test'
+  ...
+# Subtest: Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+ok 22 - Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+  ---
+  duration_ms: 0.25847
+  type: 'test'
+  ...
+# Subtest: Version-1-Migration erhält Bauwerke, startet alte Teilaufgaben neu und öffnet neue Einstiegsquests
+ok 23 - Version-1-Migration erhält Bauwerke, startet alte Teilaufgaben neu und öffnet neue Einstiegsquests
+  ---
+  duration_ms: 0.275235
+  type: 'test'
+  ...
+# Subtest: Fertige Antworten bleiben bis zum ausdrücklichen Bauabschluss als ready erhalten
+ok 24 - Fertige Antworten bleiben bis zum ausdrücklichen Bauabschluss als ready erhalten
+  ---
+  duration_ms: 0.203149
+  type: 'test'
+  ...
+# Subtest: Automatische Migration findet den bisherigen installationsbezogenen Speicher
+ok 25 - Automatische Migration findet den bisherigen installationsbezogenen Speicher
+  ---
+  duration_ms: 0.330396
+  type: 'test'
+  ...
+# Subtest: 45 interaktive Objekte und endliche 3D-Geometrie
+ok 26 - 45 interaktive Objekte und endliche 3D-Geometrie
+  ---
+  duration_ms: 0.89751
+  type: 'test'
+  ...
+# Subtest: Jeder Lernort liegt auf seinem begehbaren Gelände
+ok 27 - Jeder Lernort liegt auf seinem begehbaren Gelände
+  ---
+  duration_ms: 0.856009
+  type: 'test'
+  ...
+# Subtest: Alle 45 interaktiven Ziele haben einen Weg vom Dorf aus
+ok 28 - Alle 45 interaktiven Ziele haben einen Weg vom Dorf aus
+  ---
+  duration_ms: 3042.59407
+  type: 'test'
+  ...
+# Subtest: Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+ok 29 - Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+  ---
+  duration_ms: 3068.078279
+  type: 'test'
+  ...
+# Subtest: Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+ok 30 - Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+  ---
+  duration_ms: 3221.471284
+  type: 'test'
+  ...
+# Subtest: Zusammenhängendes Festland statt Inseln: alle Pfade verlaufen über Land
+ok 31 - Zusammenhängendes Festland statt Inseln: alle Pfade verlaufen über Land
+  ---
+  duration_ms: 1.174727
+  type: 'test'
+  ...
+# Subtest: Bauabschluss enthüllt das echte neue Objekt und beendet den Aufbau genau einmal
+ok 32 - Bauabschluss enthüllt das echte neue Objekt und beendet den Aufbau genau einmal
+  ---
+  duration_ms: 0.548336
+  type: 'test'
+  ...
+# Subtest: Reduzierte Bewegung verkürzt den Aufbau ohne Verlust der Fertigstellung
+ok 33 - Reduzierte Bewegung verkürzt den Aufbau ohne Verlust der Fertigstellung
+  ---
+  duration_ms: 0.260933
+  type: 'test'
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10262.459133
