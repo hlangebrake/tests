@@ -1,0 +1,108 @@
+{
+  "playthrough": {
+    "completed": 33,
+    "tasks": 99,
+    "quests": [
+      "v2",
+      "v3",
+      "v4",
+      "f1",
+      "f2",
+      "f3",
+      "f4",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "a1",
+      "a2",
+      "a3",
+      "a4",
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "m1",
+      "m2",
+      "m3",
+      "m4",
+      "d1",
+      "d2",
+      "d3",
+      "d4",
+      "k1",
+      "k2",
+      "k3",
+      "k4"
+    ],
+    "stats": {
+      "attempts": 100,
+      "correct": 99,
+      "hints": 0
+    },
+    "glError": 0,
+    "position": {
+      "x": 25,
+      "z": -63,
+      "angle": 3.141592653589793
+    }
+  },
+  "layouts": [
+    {
+      "width": 1180,
+      "height": 820,
+      "panel": {
+        "x": 130,
+        "y": 43.59375,
+        "w": 920,
+        "h": 732.796875
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "buttonsVisible": true
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "panel": {
+        "x": 52,
+        "y": 25,
+        "w": 920,
+        "h": 718
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "buttonsVisible": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "panel": {
+        "x": 20,
+        "y": 104.09375,
+        "w": 728,
+        "h": 815.796875
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "buttonsVisible": true
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "panel": {
+        "x": 20,
+        "y": 182.09375,
+        "w": 780,
+        "h": 815.796875
+      },
+      "overflowX": false,
+      "bodyOverflowX": false,
+      "buttonsVisible": true
+    }
+  ],
+  "errors": [],
+  "import": "invalid-preserved, valid-confirmed, rollback-restored",
+  "environment": "Chromium 144, Xvfb, WebGL; injected module test harness; memory-backed localStorage substitute"
+}

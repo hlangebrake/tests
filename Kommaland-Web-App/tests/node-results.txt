@@ -1,0 +1,134 @@
+
+> kommaland@1.0.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+ok 1 - Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+  ---
+  duration_ms: 0.984746
+  type: 'test'
+  ...
+# Subtest: Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+ok 2 - Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+  ---
+  duration_ms: 0.135594
+  type: 'test'
+  ...
+# Subtest: Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+ok 3 - Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+  ---
+  duration_ms: 0.253022
+  type: 'test'
+  ...
+# Subtest: 33 eindeutige Quests, 99 vollständige Aufgaben und 24 Wissensseiten
+ok 4 - 33 eindeutige Quests, 99 vollständige Aufgaben und 24 Wissensseiten
+  ---
+  duration_ms: 1.113049
+  type: 'test'
+  ...
+# Subtest: Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+ok 5 - Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+  ---
+  duration_ms: 0.436018
+  type: 'test'
+  ...
+# Subtest: Waldbegegnungen beziehen sich nur auf bereits besuchte Lerninhalte
+ok 6 - Waldbegegnungen beziehen sich nur auf bereits besuchte Lerninhalte
+  ---
+  duration_ms: 1.510008
+  type: 'test'
+  ...
+# Subtest: Offline-Installation enthält alle existierenden App-Dateien
+ok 7 - Offline-Installation enthält alle existierenden App-Dateien
+  ---
+  duration_ms: 2.737399
+  type: 'test'
+  ...
+# Subtest: Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+ok 8 - Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+  ---
+  duration_ms: 0.972997
+  type: 'test'
+  ...
+# Subtest: Fremde Domains und Schreibanfragen werden nicht abgefangen
+ok 9 - Fremde Domains und Schreibanfragen werden nicht abgefangen
+  ---
+  duration_ms: 0.865776
+  type: 'test'
+  ...
+# Subtest: Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+ok 10 - Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+  ---
+  duration_ms: 2.033557
+  type: 'test'
+  ...
+# Subtest: Ungültige Daten werden vor einer Übernahme abgelehnt
+ok 11 - Ungültige Daten werden vor einer Übernahme abgelehnt
+  ---
+  duration_ms: 0.601578
+  type: 'test'
+  ...
+# Subtest: Import übernimmt weder HTML noch fremde Felder
+ok 12 - Import übernimmt weder HTML noch fremde Felder
+  ---
+  duration_ms: 0.355356
+  type: 'test'
+  ...
+# Subtest: Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+ok 13 - Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+  ---
+  duration_ms: 0.703371
+  type: 'test'
+  ...
+# Subtest: Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+ok 14 - Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+  ---
+  duration_ms: 0.322286
+  type: 'test'
+  ...
+# Subtest: Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+ok 15 - Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+  ---
+  duration_ms: 0.460945
+  type: 'test'
+  ...
+# Subtest: 41 interaktive Objekte und endliche 3D-Geometrie
+ok 16 - 41 interaktive Objekte und endliche 3D-Geometrie
+  ---
+  duration_ms: 0.740897
+  type: 'test'
+  ...
+# Subtest: Jeder Lernort liegt auf seinem begehbaren Gelände
+ok 17 - Jeder Lernort liegt auf seinem begehbaren Gelände
+  ---
+  duration_ms: 0.203036
+  type: 'test'
+  ...
+# Subtest: Alle 41 interaktiven Ziele haben einen Weg vom Dorf aus
+ok 18 - Alle 41 interaktiven Ziele haben einen Weg vom Dorf aus
+  ---
+  duration_ms: 1826.671429
+  type: 'test'
+  ...
+# Subtest: Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+ok 19 - Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+  ---
+  duration_ms: 1866.242633
+  type: 'test'
+  ...
+# Subtest: Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+ok 20 - Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+  ---
+  duration_ms: 1816.537189
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5821.631189
