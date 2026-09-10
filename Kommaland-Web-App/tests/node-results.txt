@@ -1,0 +1,1034 @@
+
+> kommaland@5.1.0 test
+> node --test --test-concurrency=1 tests/*.test.js
+
+TAP version 13
+# Subtest: Jeder Lerngedanke besitzt mindestens drei Aufgaben, mit Festigung und Transfer
+ok 1 - Jeder Lerngedanke besitzt mindestens drei Aufgaben, mit Festigung und Transfer
+  ---
+  duration_ms: 1.432453
+  type: 'test'
+  ...
+# Subtest: Alle 83 Themen erzeugen gültige Nah-, Transfer- und Testaufgaben in 30 Parameterständen
+ok 2 - Alle 83 Themen erzeugen gültige Nah-, Transfer- und Testaufgaben in 30 Parameterständen
+  ---
+  duration_ms: 28.410973
+  type: 'test'
+  ...
+# Subtest: Testkarten sind keine identischen Kopien der 393 Questaufgaben
+ok 3 - Testkarten sind keine identischen Kopien der 393 Questaufgaben
+  ---
+  duration_ms: 4.1377
+  type: 'test'
+  ...
+# Subtest: Acht Herausforderungen erscheinen ausschließlich nach allen regulären Gebietsquests
+ok 4 - Acht Herausforderungen erscheinen ausschließlich nach allen regulären Gebietsquests
+  ---
+  duration_ms: 1.464633
+  type: 'test'
+  ...
+# Subtest: Jeder gerichtete Wegtest umfasst das Ausgangsgebiet und sämtliches noch fehlendes Zielvorwissen
+ok 5 - Jeder gerichtete Wegtest umfasst das Ausgangsgebiet und sämtliches noch fehlendes Zielvorwissen
+  ---
+  duration_ms: 0.555269
+  type: 'test'
+  ...
+# Subtest: Gebietstest ist schon ohne abgeschlossene Quests vollständig versuchbar
+ok 6 - Gebietstest ist schon ohne abgeschlossene Quests vollständig versuchbar
+  ---
+  duration_ms: 0.45027
+  type: 'test'
+  ...
+# Subtest: Ein Gebietssiegel räumt Source-Sperren weg, bescheinigt aber kein ungeprüftes Zielvorwissen
+ok 7 - Ein Gebietssiegel räumt Source-Sperren weg, bescheinigt aber kein ungeprüftes Zielvorwissen
+  ---
+  duration_ms: 0.399113
+  type: 'test'
+  ...
+# Subtest: Falsche Testantworten sperren den Weg; nur fehlende Gedanken kommen erneut
+ok 8 - Falsche Testantworten sperren den Weg; nur fehlende Gedanken kommen erneut
+  ---
+  duration_ms: 0.518893
+  type: 'test'
+  ...
+# Subtest: Unterbrochene Tests behalten Position und reproduzierbare Aufgaben nach Export/Import
+ok 9 - Unterbrochene Tests behalten Position und reproduzierbare Aufgaben nach Export/Import
+  ---
+  duration_ms: 1.317029
+  type: 'test'
+  ...
+# Subtest: Version-2-Lernfortschritt wird auf die eingefügten Übungsschritte abgebildet
+ok 10 - Version-2-Lernfortschritt wird auf die eingefügten Übungsschritte abgebildet
+  ---
+  duration_ms: 0.500316
+  type: 'test'
+  ...
+# Subtest: Neue Aufgabentypen lehnen falsche Schritte, Argumente und Markierungen ab
+ok 11 - Neue Aufgabentypen lehnen falsche Schritte, Argumente und Markierungen ab
+  ---
+  duration_ms: 0.274134
+  type: 'test'
+  ...
+# Subtest: Zahlengeraden haben Striche, aber nur zwei Zahlenbeschriftungen; Marker verrät keinen Wert
+ok 12 - Zahlengeraden haben Striche, aber nur zwei Zahlenbeschriftungen; Marker verrät keinen Wert
+  ---
+  duration_ms: 15.464077
+  type: 'test'
+  ...
+# Subtest: Mischen ergibt über mehrere Sitzungen verschiedene vollständige Permutationen
+ok 13 - Mischen ergibt über mehrere Sitzungen verschiedene vollständige Permutationen
+  ---
+  duration_ms: 0.361206
+  type: 'test'
+  ...
+# Subtest: Meisteraufgaben: unabhängige Rechnungen zu Rückwärtsweg, Grenzwerten, Einheiten und Resten
+ok 14 - Meisteraufgaben: unabhängige Rechnungen zu Rückwärtsweg, Grenzwerten, Einheiten und Resten
+  ---
+  duration_ms: 0.48965
+  type: 'test'
+  ...
+# Subtest: Neue Zusatzprüfungen haben mindestens drei Aufgaben, auch wenn nur ein oder zwei Gedanken fehlen
+ok 15 - Neue Zusatzprüfungen haben mindestens drei Aufgaben, auch wenn nur ein oder zwei Gedanken fehlen
+  ---
+  duration_ms: 1.188685
+  type: 'test'
+  ...
+# Subtest: Katalog enthält exakt die bestehenden Quests und Aufgaben ohne Lösungen
+ok 16 - Katalog enthält exakt die bestehenden Quests und Aufgaben ohne Lösungen
+  ---
+  duration_ms: 2.519165
+  type: 'test'
+  ...
+# Subtest: Exportname enthält sicheren Anzeigenamen und lokales Datum
+ok 17 - Exportname enthält sicheren Anzeigenamen und lokales Datum
+  ---
+  duration_ms: 1.937336
+  type: 'test'
+  ...
+# Subtest: Alte Spielstände bleiben unverändert ladbar
+ok 18 - Alte Spielstände bleiben unverändert ladbar
+  ---
+  duration_ms: 0.966921
+  type: 'test'
+  ...
+# Subtest: Namens- und stabile ID-Daten bleiben in lokalem Spielstand erhalten
+ok 19 - Namens- und stabile ID-Daten bleiben in lokalem Spielstand erhalten
+  ---
+  duration_ms: 2.770595
+  type: 'test'
+  ...
+# Subtest: Neue Lernstandsdatei ist auch wieder in Schüler-App importierbar
+ok 20 - Neue Lernstandsdatei ist auch wieder in Schüler-App importierbar
+  ---
+  duration_ms: 14.059606
+  type: 'test'
+  ...
+# Subtest: Pflichtfelder, Versionen und fremde IDs werden streng validiert
+ok 21 - Pflichtfelder, Versionen und fremde IDs werden streng validiert
+  ---
+  duration_ms: 10.509143
+  type: 'test'
+  ...
+# Subtest: Fehlende Sitzungsreferenz und doppelte Event-IDs sind ungültig
+ok 22 - Fehlende Sitzungsreferenz und doppelte Event-IDs sind ungültig
+  ---
+  duration_ms: 11.839323
+  type: 'test'
+  ...
+# Subtest: Prototype-Schlüssel in Ereignisdaten werden abgelehnt
+ok 23 - Prototype-Schlüssel in Ereignisdaten werden abgelehnt
+  ---
+  duration_ms: 4.769654
+  type: 'test'
+  ...
+# Subtest: Keine Metriken aus Datei übernommen: manipulierte Aggregate werden ignoriert
+ok 24 - Keine Metriken aus Datei übernommen: manipulierte Aggregate werden ignoriert
+  ---
+  duration_ms: 17.472341
+  type: 'test'
+  ...
+# Subtest: Ein importierter Lernstand enthält aktuelle und historische Projektionen
+ok 25 - Ein importierter Lernstand enthält aktuelle und historische Projektionen
+  ---
+  duration_ms: 49.03203
+  type: 'test'
+  ...
+# Subtest: Fünffacher Import ist für Lernereignisse, Sessions und Projektionen idempotent
+ok 26 - Fünffacher Import ist für Lernereignisse, Sessions und Projektionen idempotent
+  ---
+  duration_ms: 109.779089
+  type: 'test'
+  ...
+# Subtest: Späterer Export ergänzt nur neue Events und aktualisiert offene Sitzung
+ok 27 - Späterer Export ergänzt nur neue Events und aktualisiert offene Sitzung
+  ---
+  duration_ms: 41.574325
+  type: 'test'
+  ...
+# Subtest: Ältere Importe setzen neueren Namen und Spielstand nicht zurück
+ok 28 - Ältere Importe setzen neueren Namen und Spielstand nicht zurück
+  ---
+  duration_ms: 39.63851
+  type: 'test'
+  ...
+# Subtest: Gleicher Name mit zwei Schüler-IDs bleibt getrennt
+ok 29 - Gleicher Name mit zwei Schüler-IDs bleibt getrennt
+  ---
+  duration_ms: 55.616695
+  type: 'test'
+  ...
+# Subtest: Kollision einer eventId bricht gesamten Import atomar ab
+ok 30 - Kollision einer eventId bricht gesamten Import atomar ab
+  ---
+  duration_ms: 29.720911
+  type: 'test'
+  ...
+# Subtest: Konkurrierende Importe derselben Datei erzeugen keine doppelten Daten
+ok 31 - Konkurrierende Importe derselben Datei erzeugen keine doppelten Daten
+  ---
+  duration_ms: 40.522998
+  type: 'test'
+  ...
+# Subtest: JSON-Mehrfachimport isoliert ungültige Dateien
+ok 32 - JSON-Mehrfachimport isoliert ungültige Dateien
+  ---
+  duration_ms: 49.133924
+  type: 'test'
+  ...
+# Subtest: ZIP-Import durchsucht tiefe Ordner, ignoriert andere Dateien und dedupliziert
+ok 33 - ZIP-Import durchsucht tiefe Ordner, ignoriert andere Dateien und dedupliziert
+  ---
+  duration_ms: 142.075657
+  type: 'test'
+  ...
+# Subtest: ZIP-Größengrenze verhindert übergroße dekomprimierte JSON-Einträge
+ok 34 - ZIP-Größengrenze verhindert übergroße dekomprimierte JSON-Einträge
+  ---
+  duration_ms: 1.151499
+  type: 'test'
+  ...
+# Subtest: ZIP-Prüfsumme erkennt geänderte Dateidaten
+ok 35 - ZIP-Prüfsumme erkennt geänderte Dateidaten
+  ---
+  duration_ms: 1.179391
+  type: 'test'
+  ...
+# Subtest: Leere und beschädigte ZIP-Dateien stürzen nicht ab
+ok 36 - Leere und beschädigte ZIP-Dateien stürzen nicht ab
+  ---
+  duration_ms: 2.302698
+  type: 'test'
+  ...
+# Subtest: Aufgabenversuche, Hilfezählung und aktive Dauer werden aus Events berechnet
+ok 37 - Aufgabenversuche, Hilfezählung und aktive Dauer werden aus Events berechnet
+  ---
+  duration_ms: 8.79224
+  type: 'test'
+  ...
+# Subtest: Automatische Wissenserklärungen zählen nicht als selbstgewählte Hilfe
+ok 38 - Automatische Wissenserklärungen zählen nicht als selbstgewählte Hilfe
+  ---
+  duration_ms: 3.849084
+  type: 'test'
+  ...
+# Subtest: Challenges lösen keine negativen Grundkompetenz-Hinweise aus
+ok 39 - Challenges lösen keine negativen Grundkompetenz-Hinweise aus
+  ---
+  duration_ms: 37.537588
+  type: 'test'
+  ...
+# Subtest: Häufige Hilfen allein erzeugen keine Schwierigkeitshinweise
+ok 40 - Häufige Hilfen allein erzeugen keine Schwierigkeitshinweise
+  ---
+  duration_ms: 41.16717
+  type: 'test'
+  ...
+# Subtest: Wenige Daten werden nicht zu einer Diagnose hochgerechnet
+ok 41 - Wenige Daten werden nicht zu einer Diagnose hochgerechnet
+  ---
+  duration_ms: 5.492476
+  type: 'test'
+  ...
+# Subtest: Historischer Stand vor der ersten Beobachtung ist unbekannt
+ok 42 - Historischer Stand vor der ersten Beobachtung ist unbekannt
+  ---
+  duration_ms: 4.500017
+  type: 'test'
+  ...
+# Subtest: Zeitfilter verändert Fehlerdaten, aber rekonstruiert Fortschritt bis zum Ende
+ok 43 - Zeitfilter verändert Fehlerdaten, aber rekonstruiert Fortschritt bis zum Ende
+  ---
+  duration_ms: 4.118561
+  type: 'test'
+  ...
+# Subtest: Zeitleiste rekonstruiert echte frühere Questabschlüsse aus Events
+ok 44 - Zeitleiste rekonstruiert echte frühere Questabschlüsse aus Events
+  ---
+  duration_ms: 5.725528
+  type: 'test'
+  ...
+# Subtest: Komplette Lehrkräfte-Sicherung ist wieder importierbar und idempotent
+ok 45 - Komplette Lehrkräfte-Sicherung ist wieder importierbar und idempotent
+  ---
+  duration_ms: 96.940698
+  type: 'test'
+  ...
+# Subtest: Personenbezogenes Löschen entfernt Ereignisse, Projektionen und Importprotokolle
+ok 46 - Personenbezogenes Löschen entfernt Ereignisse, Projektionen und Importprotokolle
+  ---
+  duration_ms: 105.129737
+  type: 'test'
+  ...
+# Subtest: Klassenbericht aggregiert echte Daten und enthält Themen plus Wissensgedanken
+ok 47 - Klassenbericht aggregiert echte Daten und enthält Themen plus Wissensgedanken
+  ---
+  duration_ms: 92.903475
+  type: 'test'
+  ...
+# Subtest: ZIP mit ungültigem UTF-8 wird als Fehler isoliert, weitere Dateien werden importiert
+ok 48 - ZIP mit ungültigem UTF-8 wird als Fehler isoliert, weitere Dateien werden importiert
+  ---
+  duration_ms: 33.498708
+  type: 'test'
+  ...
+# Subtest: Sitzungsende nach Absturz kann auch bei gleichem updatedAt ergänzt werden
+ok 49 - Sitzungsende nach Absturz kann auch bei gleichem updatedAt ergänzt werden
+  ---
+  duration_ms: 27.880321
+  type: 'test'
+  ...
+# Subtest: Nicht lesbare Einzeldateien verhindern nachfolgenden Import nicht
+ok 50 - Nicht lesbare Einzeldateien verhindern nachfolgenden Import nicht
+  ---
+  duration_ms: 20.446328
+  type: 'test'
+  ...
+# Subtest: Wochenansicht darf nicht über den gewählten Endzeitpunkt hinausschauen
+ok 51 - Wochenansicht darf nicht über den gewählten Endzeitpunkt hinausschauen
+  ---
+  duration_ms: 3.316519
+  type: 'test'
+  ...
+# Subtest: Zeitstempel müssen echte, kanonische UTC-Datumswerte sein
+ok 52 - Zeitstempel müssen echte, kanonische UTC-Datumswerte sein
+  ---
+  duration_ms: 2.499275
+  type: 'test'
+  ...
+# Subtest: Aufgabenereignis ohne taskRunId wird abgelehnt
+ok 53 - Aufgabenereignis ohne taskRunId wird abgelehnt
+  ---
+  duration_ms: 5.789494
+  type: 'test'
+  ...
+# Subtest: Produktive Worker-Einstiegspunkte verarbeiten Import- und Analyse-Nachrichten
+ok 54 - Produktive Worker-Einstiegspunkte verarbeiten Import- und Analyse-Nachrichten
+  ---
+  duration_ms: 40.091606
+  type: 'test'
+  ...
+# Subtest: Jede Teilaufgabe hat einen kleinen Wissensschritt und ein vollständiges Lösungsbeispiel
+ok 55 - Jede Teilaufgabe hat einen kleinen Wissensschritt und ein vollständiges Lösungsbeispiel
+  ---
+  duration_ms: 2.8336
+  type: 'test'
+  ...
+# Subtest: Der Dorfeinstieg baut ganze Zahlen, Hälfte, Zehntel, Hundertstel und Brüche getrennt auf
+ok 56 - Der Dorfeinstieg baut ganze Zahlen, Hälfte, Zehntel, Hundertstel und Brüche getrennt auf
+  ---
+  duration_ms: 1.088604
+  type: 'test'
+  ...
+# Subtest: Voraussetzungen sind konkrete Aufgaben; es gibt keine unbekannten oder zyklischen Kanten
+ok 57 - Voraussetzungen sind konkrete Aufgaben; es gibt keine unbekannten oder zyklischen Kanten
+  ---
+  duration_ms: 1.67494
+  type: 'test'
+  ...
+# Subtest: Kernroute erreicht das Finale ohne die beiden gekennzeichneten Zusatzwege
+ok 58 - Kernroute erreicht das Finale ohne die beiden gekennzeichneten Zusatzwege
+  ---
+  duration_ms: 0.557432
+  type: 'test'
+  ...
+# Subtest: Erinnerungsrätsel verwenden ausschließlich wirklich bearbeitete Aufgaben
+ok 59 - Erinnerungsrätsel verwenden ausschließlich wirklich bearbeitete Aufgaben
+  ---
+  duration_ms: 0.740168
+  type: 'test'
+  ...
+# Subtest: Ausgewählte neue Ergebnisse werden unabhängig vom Antwortprüfer nachgerechnet
+ok 60 - Ausgewählte neue Ergebnisse werden unabhängig vom Antwortprüfer nachgerechnet
+  ---
+  duration_ms: 0.517231
+  type: 'test'
+  ...
+# Subtest: Traglasten im Hafen setzen das Vergleichen im Wald voraus
+ok 61 - Traglasten im Hafen setzen das Vergleichen im Wald voraus
+  ---
+  duration_ms: 0.113251
+  type: 'test'
+  ...
+# Subtest: Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+ok 62 - Dezimalkomma, Punkt, Stellenhalter und gleichwertige Eingaben
+  ---
+  duration_ms: 1.282317
+  type: 'test'
+  ...
+# Subtest: Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+ok 63 - Keine Ausdrücke, Tausendertrennzeichen oder Fließkomma-Toleranz
+  ---
+  duration_ms: 0.214023
+  type: 'test'
+  ...
+# Subtest: Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+ok 64 - Alle sechs Antwortformate prüfen korrekt und lehnen falsche Antworten ab
+  ---
+  duration_ms: 0.269087
+  type: 'test'
+  ...
+# Subtest: 45 eindeutige Quests, 393 vollständige Aufgaben und 83 Wissensschritte
+ok 65 - 45 eindeutige Quests, 393 vollständige Aufgaben und 83 Wissensschritte
+  ---
+  duration_ms: 3.825999
+  type: 'test'
+  ...
+# Subtest: Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+ok 66 - Der Lernweg ist ohne Zirkelschluss bis zum Finale lösbar
+  ---
+  duration_ms: 0.46986
+  type: 'test'
+  ...
+# Subtest: Waldbegegnungen beziehen sich nur auf tatsächlich abgeschlossene Aufgaben
+ok 67 - Waldbegegnungen beziehen sich nur auf tatsächlich abgeschlossene Aufgaben
+  ---
+  duration_ms: 0.573025
+  type: 'test'
+  ...
+# Subtest: Offline-Installation enthält alle existierenden App-Dateien
+ok 68 - Offline-Installation enthält alle existierenden App-Dateien
+  ---
+  duration_ms: 3.09172
+  type: 'test'
+  ...
+# Subtest: Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+ok 69 - Offline-Cache funktioniert auch in einem Unterordner und mit Querystring
+  ---
+  duration_ms: 1.184489
+  type: 'test'
+  ...
+# Subtest: Fremde Domains und Schreibanfragen werden nicht abgefangen
+ok 70 - Fremde Domains und Schreibanfragen werden nicht abgefangen
+  ---
+  duration_ms: 0.5758
+  type: 'test'
+  ...
+# Subtest: In jeder regulären Quest erscheint jeder bekannte Gedanke höchstens einmal, auch über Gruppengrenzen hinweg
+ok 71 - In jeder regulären Quest erscheint jeder bekannte Gedanke höchstens einmal, auch über Gruppengrenzen hinweg
+  ---
+  duration_ms: 2.048084
+  type: 'test'
+  ...
+# Subtest: Brunnen: der gleiche Stellenwertgedanke wird nach einer anderen Aufgabe nicht erneut automatisch geöffnet
+ok 72 - Brunnen: der gleiche Stellenwertgedanke wird nach einer anderen Aufgabe nicht erneut automatisch geöffnet
+  ---
+  duration_ms: 0.201795
+  type: 'test'
+  ...
+# Subtest: Neue fachliche Teilgedanken bleiben eigenständig: Nullstellen, Tausendstel, Viertel, Entbündeln und Einheiten
+ok 73 - Neue fachliche Teilgedanken bleiben eigenständig: Nullstellen, Tausendstel, Viertel, Entbündeln und Einheiten
+  ---
+  duration_ms: 0.252662
+  type: 'test'
+  ...
+# Subtest: Laufende alte Spielstände leiten bekanntes Wissen nur aus bereits gelösten Aufgaben ab
+ok 74 - Laufende alte Spielstände leiten bekanntes Wissen nur aus bereits gelösten Aufgaben ab
+  ---
+  duration_ms: 0.189867
+  type: 'test'
+  ...
+# Subtest: Freiwillig geöffnetes Wissen bleibt nach JSON-Export und Import bekannt, ohne richtige Antworten zu erfinden
+ok 75 - Freiwillig geöffnetes Wissen bleibt nach JSON-Export und Import bekannt, ohne richtige Antworten zu erfinden
+  ---
+  duration_ms: 1.072911
+  type: 'test'
+  ...
+# Subtest: Unbrauchbare optionale Lesemetadaten beschädigen keinen gültigen mathematischen Spielstand
+ok 76 - Unbrauchbare optionale Lesemetadaten beschädigen keinen gültigen mathematischen Spielstand
+  ---
+  duration_ms: 0.298851
+  type: 'test'
+  ...
+# Subtest: Fertige Quests wiederholen sich ohne automatische Wissenspflicht, Prüfungen erhalten keine Hilfen
+ok 77 - Fertige Quests wiederholen sich ohne automatische Wissenspflicht, Prüfungen erhalten keine Hilfen
+  ---
+  duration_ms: 0.580527
+  type: 'test'
+  ...
+# Subtest: Fachaufgaben, Wissenskarten, Antwortprüfer und Weganforderungen bleiben bytegleich zur Version 4.0
+ok 78 - Fachaufgaben, Wissenskarten, Antwortprüfer und Weganforderungen bleiben bytegleich zur Version 4.0
+  ---
+  duration_ms: 2.133863
+  type: 'test'
+  ...
+# Subtest: Alle 45 Questobjekte haben drei strukturell verschiedene, vollständig endliche Modelle
+ok 79 - Alle 45 Questobjekte haben drei strukturell verschiedene, vollständig endliche Modelle
+  ---
+  duration_ms: 126.918297
+  type: 'test'
+  ...
+# Subtest: Ein reines Öffnen oder eine falsche Antwort repariert kein Objekt; erst gelöste Aufgaben ergeben den Teilaufbau
+ok 80 - Ein reines Öffnen oder eine falsche Antwort repariert kein Objekt; erst gelöste Aufgaben ergeben den Teilaufbau
+  ---
+  duration_ms: 0.520306
+  type: 'test'
+  ...
+# Subtest: Alle Antworten richtig heißt noch nicht abgeschlossen: ready behält den Teilaufbau bis zur Bestätigung
+ok 81 - Alle Antworten richtig heißt noch nicht abgeschlossen: ready behält den Teilaufbau bis zur Bestätigung
+  ---
+  duration_ms: 0.505083
+  type: 'test'
+  ...
+# Subtest: Haus und Brunnen sind am Anfang tatsächlich niedrig und unvollständig, nicht nur anders eingefärbt
+ok 82 - Haus und Brunnen sind am Anfang tatsächlich niedrig und unvollständig, nicht nur anders eingefärbt
+  ---
+  duration_ms: 2.803524
+  type: 'test'
+  ...
+# Subtest: JSON-Rundsicherung erhält gleichzeitig Teilaufbau, ready, Gebietssiegel und bereits gezeigte Gedanken
+ok 83 - JSON-Rundsicherung erhält gleichzeitig Teilaufbau, ready, Gebietssiegel und bereits gezeigte Gedanken
+  ---
+  duration_ms: 0.355807
+  type: 'test'
+  ...
+# Subtest: Alle abgeschlossenen Modelle bleiben geometrisch identisch zu Version 4.0
+ok 84 - Alle abgeschlossenen Modelle bleiben geometrisch identisch zu Version 4.0
+  ---
+  duration_ms: 69.949054
+  type: 'test'
+  ...
+# Subtest: Ein bloßes Wiederverbinden zweier schon eingeführter Gedanken erscheint nicht als neues Wissen
+ok 85 - Ein bloßes Wiederverbinden zweier schon eingeführter Gedanken erscheint nicht als neues Wissen
+  ---
+  duration_ms: 0.241435
+  type: 'test'
+  ...
+# Subtest: SRL defaults distinguish five independent support dimensions
+ok 86 - SRL defaults distinguish five independent support dimensions
+  ---
+  duration_ms: 1.357861
+  type: 'test'
+  ...
+# Subtest: Only known support dimensions and 0..3 affect derived settings
+ok 87 - Only known support dimensions and 0..3 affect derived settings
+  ---
+  duration_ms: 0.561388
+  type: 'test'
+  ...
+# Subtest: Budget begins available and first error does not count as prompt
+ok 88 - Budget begins available and first error does not count as prompt
+  ---
+  duration_ms: 0.283678
+  type: 'test'
+  ...
+# Subtest: Regular errors require three consecutive unsuccessful attempts
+ok 89 - Regular errors require three consecutive unsuccessful attempts
+  ---
+  duration_ms: 0.11932
+  type: 'test'
+  ...
+# Subtest: A correct attempt resets the current error streak
+ok 90 - A correct attempt resets the current error streak
+  ---
+  duration_ms: 0.27756
+  type: 'test'
+  ...
+# Subtest: Challenge errors require five, exam and encounter errors never trigger
+ok 91 - Challenge errors require five, exam and encounter errors never trigger
+  ---
+  duration_ms: 0.221955
+  type: 'test'
+  ...
+# Subtest: Five minute cooldown is shared across all unsolicited prompt types
+ok 92 - Five minute cooldown is shared across all unsolicited prompt types
+  ---
+  duration_ms: 0.13201
+  type: 'test'
+  ...
+# Subtest: At most two unplanned prompts per session even if hours pass
+ok 93 - At most two unplanned prompts per session even if hours pass
+  ---
+  duration_ms: 0.099981
+  type: 'test'
+  ...
+# Subtest: Reload/new session cannot reset the rolling 30-minute limit
+ok 94 - Reload/new session cannot reset the rolling 30-minute limit
+  ---
+  duration_ms: 0.294855
+  type: 'test'
+  ...
+# Subtest: User-requested help never consumes the interruption budget
+ok 95 - User-requested help never consumes the interruption budget
+  ---
+  duration_ms: 0.723382
+  type: 'test'
+  ...
+# Subtest: Only distinct regular explicitly skipped quests count
+ok 96 - Only distinct regular explicitly skipped quests count
+  ---
+  duration_ms: 0.298791
+  type: 'test'
+  ...
+# Subtest: A skip discussion resets the relevant skip cluster, not quest state
+ok 97 - A skip discussion resets the relevant skip cluster, not quest state
+  ---
+  duration_ms: 0.134183
+  type: 'test'
+  ...
+# Subtest: Rapid opening and exiting without work yields a conservative offer
+ok 98 - Rapid opening and exiting without work yields a conservative offer
+  ---
+  duration_ms: 0.259923
+  type: 'test'
+  ...
+# Subtest: Reading knowledge or attempting answers is not directionless jumping
+ok 99 - Reading knowledge or attempting answers is not directionless jumping
+  ---
+  duration_ms: 0.096736
+  type: 'test'
+  ...
+# Subtest: Stable performance and successful own choices fade exactly one level
+ok 100 - Stable performance and successful own choices fade exactly one level
+  ---
+  duration_ms: 1.46007
+  type: 'test'
+  ...
+# Subtest: Few correct tasks and quest count alone cannot fade support
+ok 101 - Few correct tasks and quest count alone cannot fade support
+  ---
+  duration_ms: 0.388066
+  type: 'test'
+  ...
+# Subtest: Reliable work without own decisions does not fade
+ok 102 - Reliable work without own decisions does not fade
+  ---
+  duration_ms: 0.179231
+  type: 'test'
+  ...
+# Subtest: Challenge success alone cannot fade, challenge failure cannot increase support
+ok 103 - Challenge success alone cannot fade, challenge failure cannot increase support
+  ---
+  duration_ms: 0.373324
+  type: 'test'
+  ...
+# Subtest: Evidence cannot be reused to cascade through several levels
+ok 104 - Evidence cannot be reused to cascade through several levels
+  ---
+  duration_ms: 0.194764
+  type: 'test'
+  ...
+# Subtest: Poor regular performance does not silently restore maximum guidance
+ok 105 - Poor regular performance does not silently restore maximum guidance
+  ---
+  duration_ms: 0.295006
+  type: 'test'
+  ...
+# Subtest: All mathematical help settings remain independent when navigation changes
+ok 106 - All mathematical help settings remain independent when navigation changes
+  ---
+  duration_ms: 0.241715
+  type: 'test'
+  ...
+# Subtest: Strategy outcomes refer to the latest relevant choice on the same task run
+ok 107 - Strategy outcomes refer to the latest relevant choice on the same task run
+  ---
+  duration_ms: 0.392873
+  type: 'test'
+  ...
+# Subtest: Task completion does not fabricate a strategy if none was selected
+ok 108 - Task completion does not fabricate a strategy if none was selected
+  ---
+  duration_ms: 0.154293
+  type: 'test'
+  ...
+# Subtest: A later unrelated task cannot be attributed to an earlier strategy
+ok 109 - A later unrelated task cannot be attributed to an earlier strategy
+  ---
+  duration_ms: 0.169045
+  type: 'test'
+  ...
+# Subtest: Solution viewing is separately marked on a later successful outcome
+ok 110 - Solution viewing is separately marked on a later successful outcome
+  ---
+  duration_ms: 0.160392
+  type: 'test'
+  ...
+# Subtest: Plans can change without overwriting the original plan
+ok 111 - Plans can change without overwriting the original plan
+  ---
+  duration_ms: 0.318891
+  type: 'test'
+  ...
+# Subtest: Next-session intention comes from an earlier session, not the current one
+ok 112 - Next-session intention comes from an earlier session, not the current one
+  ---
+  duration_ms: 0.134273
+  type: 'test'
+  ...
+# Subtest: Closing review without saving does not fabricate a reflection
+ok 113 - Closing review without saving does not fabricate a reflection
+  ---
+  duration_ms: 0.333764
+  type: 'test'
+  ...
+# Subtest: Reflection is idempotent per session
+ok 114 - Reflection is idempotent per session
+  ---
+  duration_ms: 0.274295
+  type: 'test'
+  ...
+# Subtest: Review keeps normal and challenge attempts separate; encounters are not completed quests
+ok 115 - Review keeps normal and challenge attempts separate; encounters are not completed quests
+  ---
+  duration_ms: 0.292321
+  type: 'test'
+  ...
+# Subtest: Calibration explicitly avoids judging insufficient data
+ok 116 - Calibration explicitly avoids judging insufficient data
+  ---
+  duration_ms: 0.319443
+  type: 'test'
+  ...
+# Subtest: Calibration can distinguish secure core work from difficult transfer
+ok 117 - Calibration can distinguish secure core work from difficult transfer
+  ---
+  duration_ms: 1.04578
+  type: 'test'
+  ...
+# Subtest: Returning to a previously deferred but never started quest is recognized
+ok 118 - Returning to a previously deferred but never started quest is recognized
+  ---
+  duration_ms: 0.398933
+  type: 'test'
+  ...
+# Subtest: Date filter excludes future plans and reflects past navigation support
+ok 119 - Date filter excludes future plans and reflects past navigation support
+  ---
+  duration_ms: 0.15197
+  type: 'test'
+  ...
+# Subtest: New regulation events appear in their own timeline category
+ok 120 - New regulation events appear in their own timeline category
+  ---
+  duration_ms: 0.194804
+  type: 'test'
+  ...
+# Subtest: Schema 2 supports new raw events and continues importing schema 1
+ok 121 - Schema 2 supports new raw events and continues importing schema 1
+  ---
+  duration_ms: 18.701397
+  type: 'test'
+  ...
+# Subtest: Malformed confidence, support levels and unknown strategies are rejected
+ok 122 - Malformed confidence, support levels and unknown strategies are rejected
+  ---
+  duration_ms: 17.725603
+  type: 'test'
+  ...
+# Subtest: Merge treats SRL event IDs as immutable and remains idempotent
+ok 123 - Merge treats SRL event IDs as immutable and remains idempotent
+  ---
+  duration_ms: 27.038691
+  type: 'test'
+  ...
+# Subtest: No global self-regulation score is derived by the dashboard
+ok 124 - No global self-regulation score is derived by the dashboard
+  ---
+  duration_ms: 0.205941
+  type: 'test'
+  ...
+# Subtest: A duplicate task completion does not attribute success to an older unused strategy
+ok 125 - A duplicate task completion does not attribute success to an older unused strategy
+  ---
+  duration_ms: 0.250258
+  type: 'test'
+  ...
+# Subtest: Revealing answers before first attempts cannot produce automatic fading
+ok 126 - Revealing answers before first attempts cannot produce automatic fading
+  ---
+  duration_ms: 6.180866
+  type: 'test'
+  ...
+# Subtest: Strategy outcomes are not inferred across session boundaries
+ok 127 - Strategy outcomes are not inferred across session boundaries
+  ---
+  duration_ms: 0.184329
+  type: 'test'
+  ...
+# Subtest: A later decision to keep the next plan open does not revive an older intention
+ok 128 - A later decision to keep the next plan open does not revive an older intention
+  ---
+  duration_ms: 0.080611
+  type: 'test'
+  ...
+# Subtest: Teacher class view does not label old unobserved regulation histories as zero
+ok 129 - Teacher class view does not label old unobserved regulation histories as zero
+  ---
+  duration_ms: 0.354415
+  type: 'test'
+  ...
+# Subtest: Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+ok 130 - Spielstand-Rundreise erhält Fortschritt, Einstellungen und Position
+  ---
+  duration_ms: 2.143107
+  type: 'test'
+  ...
+# Subtest: Ungültige Daten werden vor einer Übernahme abgelehnt
+ok 131 - Ungültige Daten werden vor einer Übernahme abgelehnt
+  ---
+  duration_ms: 1.552245
+  type: 'test'
+  ...
+# Subtest: Import übernimmt weder HTML noch fremde Felder
+ok 132 - Import übernimmt weder HTML noch fremde Felder
+  ---
+  duration_ms: 0.2251
+  type: 'test'
+  ...
+# Subtest: Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+ok 133 - Speichern, Fortsetzen, Exportieren, Importieren und Rücksichern
+  ---
+  duration_ms: 1.175776
+  type: 'test'
+  ...
+# Subtest: Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+ok 134 - Beschädigter Hauptstand lädt den letzten gültigen Snapshot
+  ---
+  duration_ms: 0.3178
+  type: 'test'
+  ...
+# Subtest: Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+ok 135 - Nicht verfügbarer Gerätespeicher blockiert das Spiel nicht
+  ---
+  duration_ms: 0.230128
+  type: 'test'
+  ...
+# Subtest: Version-1-Migration erhält Bauwerke, startet alte Teilaufgaben neu und öffnet neue Einstiegsquests
+ok 136 - Version-1-Migration erhält Bauwerke, startet alte Teilaufgaben neu und öffnet neue Einstiegsquests
+  ---
+  duration_ms: 0.392884
+  type: 'test'
+  ...
+# Subtest: Fertige Antworten bleiben bis zum ausdrücklichen Bauabschluss als ready erhalten
+ok 137 - Fertige Antworten bleiben bis zum ausdrücklichen Bauabschluss als ready erhalten
+  ---
+  duration_ms: 0.250278
+  type: 'test'
+  ...
+# Subtest: Automatische Migration findet den bisherigen installationsbezogenen Speicher
+ok 138 - Automatische Migration findet den bisherigen installationsbezogenen Speicher
+  ---
+  duration_ms: 0.37759
+  type: 'test'
+  ...
+# Subtest: Alle 83 Wissenskarten haben ein eigenes konfiguriertes, bedienbares Schaubild
+ok 139 - Alle 83 Wissenskarten haben ein eigenes konfiguriertes, bedienbares Schaubild
+  ---
+  duration_ms: 47.064368
+  type: 'test'
+  ...
+# Subtest: Alle Regler-Grenzen und Auswahlwerte ergeben endliche, vollständige Darstellungen
+ok 140 - Alle Regler-Grenzen und Auswahlwerte ergeben endliche, vollständige Darstellungen
+  ---
+  duration_ms: 109.989632
+  type: 'test'
+  ...
+# Subtest: Bündeln und Entbündeln erhalten in jedem Zwischenschritt den passenden Wert
+ok 141 - Bündeln und Entbündeln erhalten in jedem Zwischenschritt den passenden Wert
+  ---
+  duration_ms: 1.200414
+  type: 'test'
+  ...
+# Subtest: Entbündeln über mehrere Nullstellen ist auch außerhalb der Beispiele korrekt
+ok 142 - Entbündeln über mehrere Nullstellen ist auch außerhalb der Beispiele korrekt
+  ---
+  duration_ms: 59.93619
+  type: 'test'
+  ...
+# Subtest: Kaufmännisches Runden: Nachbarn, exakte Mitte und Übertrag werden ganzzahlig gerechnet
+ok 143 - Kaufmännisches Runden: Nachbarn, exakte Mitte und Übertrag werden ganzzahlig gerechnet
+  ---
+  duration_ms: 7.179704
+  type: 'test'
+  ...
+# Subtest: Viertel sind räumlich zusammenhängende 5-mal-5-Quadrate mit exakt 25 Zellen
+ok 144 - Viertel sind räumlich zusammenhängende 5-mal-5-Quadrate mit exakt 25 Zellen
+  ---
+  duration_ms: 1.771957
+  type: 'test'
+  ...
+# Subtest: Rechtecksmodell zeigt für alle 400 Seitenkombinationen die korrekte Fläche
+ok 145 - Rechtecksmodell zeigt für alle 400 Seitenkombinationen die korrekte Fläche
+  ---
+  duration_ms: 177.567645
+  type: 'test'
+  ...
+# Subtest: Tausendstel-Lupe: volle Hundertstel plus Rest statt 1000 gleich großer Zehntel
+ok 146 - Tausendstel-Lupe: volle Hundertstel plus Rest statt 1000 gleich großer Zehntel
+  ---
+  duration_ms: 4.040723
+  type: 'test'
+  ...
+# Subtest: Portionieren zählt nur volle Portionen; der Rest bleibt kleiner als die Portion
+ok 147 - Portionieren zählt nur volle Portionen; der Rest bleibt kleiner als die Portion
+  ---
+  duration_ms: 0.477732
+  type: 'test'
+  ...
+# Subtest: Verteilen: jede zugelassene Empfängerzahl ist exakt darstellbar und passt in die Becher
+ok 148 - Verteilen: jede zugelassene Empfängerzahl ist exakt darstellbar und passt in die Becher
+  ---
+  duration_ms: 5.841673
+  type: 'test'
+  ...
+# Subtest: Zeitmodell hält Stunden und Minuten auseinander
+ok 149 - Zeitmodell hält Stunden und Minuten auseinander
+  ---
+  duration_ms: 2.462079
+  type: 'test'
+  ...
+# Subtest: Potenzen verschieben Stellen, nicht das Komma; alle vier Lernfälle bleiben korrekt
+ok 150 - Potenzen verschieben Stellen, nicht das Komma; alle vier Lernfälle bleiben korrekt
+  ---
+  duration_ms: 0.413014
+  type: 'test'
+  ...
+# Subtest: Szenarien zeigen keine negativen Fehlbeträge oder halbe fertige Gegenstände
+ok 151 - Szenarien zeigen keine negativen Fehlbeträge oder halbe fertige Gegenstände
+  ---
+  duration_ms: 0.624172
+  type: 'test'
+  ...
+# Subtest: Fachlich korrigierte Darstellungen tragen vollständige Einheiten und passende Anzahlen
+ok 152 - Fachlich korrigierte Darstellungen tragen vollständige Einheiten und passende Anzahlen
+  ---
+  duration_ms: 0.56254
+  type: 'test'
+  ...
+# Subtest: Brüche zeigen Zähler und Nenner getrennt; wechselnde Nenner behalten gleich große Teile
+ok 153 - Brüche zeigen Zähler und Nenner getrennt; wechselnde Nenner behalten gleich große Teile
+  ---
+  duration_ms: 1.643702
+  type: 'test'
+  ...
+# Subtest: Sachmodell-Notation vermischt keine dimensionslose Gleichung mit einer Flächeneinheit
+ok 154 - Sachmodell-Notation vermischt keine dimensionslose Gleichung mit einer Flächeneinheit
+  ---
+  duration_ms: 0.637553
+  type: 'test'
+  ...
+# Subtest: Gleichwertige Unterteilungen erhalten die gefärbte Fläche exakt
+ok 155 - Gleichwertige Unterteilungen erhalten die gefärbte Fläche exakt
+  ---
+  duration_ms: 2.061704
+  type: 'test'
+  ...
+# Subtest: 83 interaktive Objekte und endliche 3D-Geometrie
+ok 156 - 83 interaktive Objekte und endliche 3D-Geometrie
+  ---
+  duration_ms: 1.076275
+  type: 'test'
+  ...
+# Subtest: Jeder Lernort liegt auf seinem begehbaren Gelände
+ok 157 - Jeder Lernort liegt auf seinem begehbaren Gelände
+  ---
+  duration_ms: 0.339142
+  type: 'test'
+  ...
+# Subtest: Alle 83 interaktiven Ziele haben einen Weg vom Dorf aus
+ok 158 - Alle 83 interaktiven Ziele haben einen Weg vom Dorf aus
+  ---
+  duration_ms: 8276.879199
+  type: 'test'
+  ...
+# Subtest: Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+ok 159 - Pfade enden in Interaktionsreichweite, nicht mitten im Objekt
+  ---
+  duration_ms: 7746.843423
+  type: 'test'
+  ...
+# Subtest: Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+ok 160 - Die Laufphysik erreicht alle Objekte ohne Hängenbleiben
+  ---
+  duration_ms: 10229.860636
+  type: 'test'
+  ...
+# Subtest: Zusammenhängendes Festland statt Inseln: alle Pfade verlaufen über Land
+ok 161 - Zusammenhängendes Festland statt Inseln: alle Pfade verlaufen über Land
+  ---
+  duration_ms: 1.006801
+  type: 'test'
+  ...
+# Subtest: Bauabschluss enthüllt das echte neue Objekt und beendet den Aufbau genau einmal
+ok 162 - Bauabschluss enthüllt das echte neue Objekt und beendet den Aufbau genau einmal
+  ---
+  duration_ms: 345.501643
+  type: 'test'
+  ...
+# Subtest: Reduzierte Bewegung verkürzt den Aufbau ohne Verlust der Fertigstellung
+ok 163 - Reduzierte Bewegung verkürzt den Aufbau ohne Verlust der Fertigstellung
+  ---
+  duration_ms: 0.713037
+  type: 'test'
+  ...
+# Subtest: Alle 22 gerichteten Wege stoppen die Figur an der richtigen geschlossenen Blockade
+ok 164 - Alle 22 gerichteten Wege stoppen die Figur an der richtigen geschlossenen Blockade
+  ---
+  duration_ms: 1260.724056
+  type: 'test'
+  ...
+# Subtest: Die blockierten Wegquerschnitte können nicht seitlich über begehbares Gras umgangen werden
+ok 165 - Die blockierten Wegquerschnitte können nicht seitlich über begehbares Gras umgangen werden
+  ---
+  duration_ms: 11.757156
+  type: 'test'
+  ...
+# Subtest: Ein Gebietssiegel öffnet alle Source-Gitter; zusätzliche Vorwissenszeichen bleiben separat
+ok 166 - Ein Gebietssiegel öffnet alle Source-Gitter; zusätzliche Vorwissenszeichen bleiben separat
+  ---
+  duration_ms: 0.873669
+  type: 'test'
+  ...
+# Subtest: Gate animation hinges and fades before terminating exactly once
+ok 167 - Gate animation hinges and fades before terminating exactly once
+  ---
+  duration_ms: 0.902403
+  type: 'test'
+  ...
+# Subtest: Meisterkristalle sind vorher unsichtbar und nicht kollidierend; Erfolg verwandelt das Gebiet dauerhaft
+ok 168 - Meisterkristalle sind vorher unsichtbar und nicht kollidierend; Erfolg verwandelt das Gebiet dauerhaft
+  ---
+  duration_ms: 425.900327
+  type: 'test'
+  ...
+# Subtest: Alle Questmodelle zeigen je Zustand genau eine Silhouette; sync erzeugt keine neuen Meshes
+ok 169 - Alle Questmodelle zeigen je Zustand genau eine Silhouette; sync erzeugt keine neuen Meshes
+  ---
+  duration_ms: 3184.602615
+  type: 'test'
+  ...
+# Subtest: Die Abschlussanimation beginnt am sichtbaren Teilaufbau, nicht am zerstörten Anfangsmodell
+ok 170 - Die Abschlussanimation beginnt am sichtbaren Teilaufbau, nicht am zerstörten Anfangsmodell
+  ---
+  duration_ms: 291.735207
+  type: 'test'
+  ...
+1..170
+# tests 170
+# suites 0
+# pass 170
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36436.789256
