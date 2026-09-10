@@ -1,0 +1,7 @@
+{
+ "id":"./", "name":"Kommaland · Dezimalzahlen-Abenteuer", "short_name":"Kommaland",
+ "description":"Eine kleine 3D-Lernwelt über Dezimalzahlen – für die Klassen 5/6.",
+ "lang":"de", "start_url":"./", "scope":"./", "display":"standalone",
+ "background_color":"#e6ecd9", "theme_color":"#365b4f",
+ "icons":[{"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]
+}
