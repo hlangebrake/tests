@@ -1,0 +1,11 @@
+{
+  "name": "kommaland",
+  "version": "5.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Statische 3D-Lernwelt und lokales Lehrkräfte-Dashboard für Dezimalzahlen",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 tests/*.test.js",
+    "serve": "python3 -m http.server 8080"
+  }
+}

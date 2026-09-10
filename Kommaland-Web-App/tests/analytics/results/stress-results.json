@@ -1,0 +1,8 @@
+{
+  "environment": "Node; production modules, in-memory IndexedDB test adapter",
+  "students": 100,
+  "events": 111305,
+  "importSeconds": 5.68,
+  "summarySeconds": 5.92,
+  "residentMemoryMiB": 802
+}

@@ -1,0 +1,13 @@
+{
+  "environment": "Chromium SwiftShader with set_content; in-memory localStorage and IndexedDB API test adapter; workers disabled by harness",
+  "errors": [],
+  "checks": [
+    "12 synthetic learners shown in isolated demo",
+    "Name filter",
+    "Task attempt/help detail",
+    "Class time history",
+    "820px portrait without page-level horizontal overflow",
+    "Student startup requires a name",
+    "Student export includes 2 attempts, 1 hint, 1 example and closed session"
+  ]
+}
