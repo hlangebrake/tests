@@ -1,0 +1,172 @@
+{
+  "modelTypes": 32,
+  "renderedStates": 96,
+  "cameraHeight": 8.8,
+  "viewport": [
+    1200,
+    360
+  ],
+  "models": [
+    {
+      "kind": "lantern",
+      "region": "village",
+      "title": "Eine Laterne in der Mitte"
+    },
+    {
+      "kind": "stones",
+      "region": "village",
+      "title": "Zehn Steine bis zum Ganzen"
+    },
+    {
+      "kind": "fountain",
+      "region": "village",
+      "title": "Der verstummte Brunnen"
+    },
+    {
+      "kind": "garden",
+      "region": "village",
+      "title": "Das Beet der Hundertstel"
+    },
+    {
+      "kind": "house",
+      "region": "village",
+      "title": "Ein Dach für Jori"
+    },
+    {
+      "kind": "crystal",
+      "region": "village",
+      "title": "Der kleine Messkristall"
+    },
+    {
+      "kind": "stable",
+      "region": "village",
+      "title": "Futter für die Dorfponys"
+    },
+    {
+      "kind": "statue",
+      "region": "village",
+      "title": "Das Licht des Dorfes"
+    },
+    {
+      "kind": "deer",
+      "region": "forest",
+      "title": "Ein Pfad für die Rehe"
+    },
+    {
+      "kind": "trail",
+      "region": "forest",
+      "title": "Die Spuren der Waldtiere"
+    },
+    {
+      "kind": "tree",
+      "region": "forest",
+      "title": "Der Rat der alten Eiche"
+    },
+    {
+      "kind": "boat",
+      "region": "harbor",
+      "title": "Leinen los!"
+    },
+    {
+      "kind": "cart",
+      "region": "harbor",
+      "title": "Fracht für die Küstenponys"
+    },
+    {
+      "kind": "tank",
+      "region": "harbor",
+      "title": "Wasser für die Reise"
+    },
+    {
+      "kind": "clock",
+      "region": "harbor",
+      "title": "Der Fahrplan der Fähre"
+    },
+    {
+      "kind": "pavilion",
+      "region": "harbor",
+      "title": "Der neue Lagerraum"
+    },
+    {
+      "kind": "stall",
+      "region": "market",
+      "title": "Ein Korb für das Dorf"
+    },
+    {
+      "kind": "feeding",
+      "region": "market",
+      "title": "Die Futterküche"
+    },
+    {
+      "kind": "banner",
+      "region": "market",
+      "title": "Die Lichtergirlande"
+    },
+    {
+      "kind": "table",
+      "region": "market",
+      "title": "Das kleine Lichterfest"
+    },
+    {
+      "kind": "lumber",
+      "region": "cliffs",
+      "title": "Hilf beim Holzhacken"
+    },
+    {
+      "kind": "camp",
+      "region": "cliffs",
+      "title": "Das Lager der Bergführer"
+    },
+    {
+      "kind": "bridge",
+      "region": "cliffs",
+      "title": "Der sichere Bergsteig"
+    },
+    {
+      "kind": "apiary",
+      "region": "mill",
+      "title": "Die Bienen der Malmühle"
+    },
+    {
+      "kind": "slime",
+      "region": "cave",
+      "title": "Der hungrige Schleimling"
+    },
+    {
+      "kind": "mushroom",
+      "region": "cave",
+      "title": "Die Trankwerkstatt"
+    },
+    {
+      "kind": "crystals",
+      "region": "cave",
+      "title": "Die singenden Kristalle"
+    },
+    {
+      "kind": "boss",
+      "region": "cave",
+      "title": "Der Hüter der Teilgrotten"
+    },
+    {
+      "kind": "chest",
+      "region": "castle",
+      "title": "Die Schatzkammer"
+    },
+    {
+      "kind": "dragon",
+      "region": "castle",
+      "title": "Der kleine Sternendrache"
+    },
+    {
+      "kind": "beacon",
+      "region": "castle",
+      "title": "Das große Sternenlicht"
+    },
+    {
+      "kind": "masterstone",
+      "region": "village",
+      "title": "Die Sternensaat"
+    }
+  ],
+  "errors": []
+}
