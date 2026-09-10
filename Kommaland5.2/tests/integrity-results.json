@@ -1,0 +1,74 @@
+{
+  "syntaxCheckedProductionModules": 43,
+  "missingModuleImports": [],
+  "studentESModuleClosure": 28,
+  "studentModuleClosureCoveredByOfflineCache": true,
+  "standaloneTeacherImportsContained": true,
+  "unchangedCoreFiles": [
+    {
+      "file": "js/content.js",
+      "sha256": "f6aaa1da27b3cbfe5f25118c000bedcbb362931568ffa21ea94febecc2765475",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/lessons.js",
+      "sha256": "5a28fb09a11516abd47e995bfe2d6b713be054871a4a90db67376442f4a00b5e",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/practice.js",
+      "sha256": "ad77d9589e99516a7cbd1b37b3008c5c8a6f5342e1deb84a719bec5af859e419",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/challenges.js",
+      "sha256": "3c6fd7107bf92c358e8f283a8313bba9b573ecfcd7bbc12db9ca710c521b9c50",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/math.js",
+      "sha256": "5a1d4de61eafbf54447fab73ced5865f4f511d1c2c21b3fb3f9aebfaad9488df",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/adventure.js",
+      "sha256": "0a227bc0350e882e9e13e85daef927eff1ea6eefe8c7b38aa9924344784d2891",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/quest-models.js",
+      "sha256": "61e347468e4f9659b4b32dc5cb047bac8c7fb57922b879fcb7a084a3d36fa14e",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/world.js",
+      "sha256": "681e0e6db091c9b7c108a43ddceee7b78cb6d7aa41ecd99b921786f14bf70bd1",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/state.js",
+      "sha256": "99eba17c7c720e2a09f62b9a880f2915c8db0f3891f4efcbca3982e1c464cfb9",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/learning-flow.js",
+      "sha256": "b861ad2a6960eebeabbd62e59966d5b4384276291de7e294e58ad2be042f6908",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/task-widgets.js",
+      "sha256": "51ec9fded1acfef4225b717e93f7263c73ab9dc927aa46616b4adf18328ebe57",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/visuals.js",
+      "sha256": "f947462a57842e9569dfbd9089608497589c58c99b48d6f36c3565289bfb8955",
+      "byteIdenticalTo50": true
+    },
+    {
+      "file": "js/visual-models.js",
+      "sha256": "672db7e3ba73cc0a30d479064b827fa09717128803d97d338cb50d61c123c062",
+      "byteIdenticalTo50": true
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+Kommaland 5.2 · Verifikation vom 2026-09-10
+
+Node:
+- 161 nicht-weltbezogene Tests: PASS, 0 FAIL
+- 15 Welt-/Geometrietests: PASS, 0 FAIL (teure Wegtests separat ausgeführt)
+- Gesamt: 176 PASS, 0 FAIL
+
+Statische Prüfung:
+- 49 JS/MJS-Module: Syntax PASS
+- sw.js: Syntax PASS
+- 114 relative Modulimporte: alle Ziele vorhanden
+
+Chromium + Xvfb Boot-Smoke:
+- Schüler-App: PASS; keine pageerrors; 83 Objekte; 45 Quests
+- Lehrkräfte-Dashboard: PASS; keine pageerrors; Import- und Inhaltsoberfläche vorhanden
+
+Grenzen:
+- Die vollständigen langen Browser-End-to-End-Skripte wurden in dieser Umgebung nicht vollständig erneut ausgeführt.
+- Kein physisches iPad/Safari, keine native IndexedDB-/Offline-Installationsabnahme.

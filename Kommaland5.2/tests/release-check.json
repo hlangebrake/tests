@@ -1,0 +1,16 @@
+{
+  "version": "5.2.0",
+  "syntaxCheckedFiles": 29,
+  "relativeModuleImportsChecked": 74,
+  "javascriptRuntimeModules": 23,
+  "serviceWorkerFileEntries": 36,
+  "quests": 45,
+  "tasks": 393,
+  "lessons": 83,
+  "modelTypes": 32,
+  "nodeTests": 176,
+  "browserBootSmokesWithoutPageErrors": 2,
+  "contentLocks": "pass",
+  "status": "pass",
+  "limits": "Static checks, 176 Node tests and Chromium/Xvfb boot smokes; no complete 5.2 browser E2E, physical iPad/Safari or real offline installation test."
+}
