@@ -1,0 +1,24 @@
+{
+  "app": "Kommaland",
+  "version": "7.2.0",
+  "technicalBase": "7.1",
+  "coreContentVersion": 6,
+  "exchangeSchema": 5,
+  "gameSchema": 3,
+  "difficultyLevels": [
+    1,
+    2,
+    3
+  ],
+  "coreSlots": 77,
+  "selectableVariants": 231,
+  "coreQuests": 16,
+  "challenges": 8,
+  "coreAndChallengeTasks": 101,
+  "optionalPracticeTasks": 72,
+  "openPartnerWorks": 8,
+  "diagnosticCards": 17,
+  "productionDebugHandles": false,
+  "localImportsChecked": 146,
+  "limits": "See TESTS.md. Native iPad/Safari/offline/persistence not tested."
+}
