@@ -1,0 +1,1701 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161310"><meta name="color-scheme" content="dark">
+<title>Die Verschwörung im Senat · V2</title>
+<style>:root {
+  --ink: #1d1915;
+  --paper: #e8d5ae;
+  --paper-light: #f4e6c7;
+  --bronze: #a77a3e;
+  --bronze-light: #d6ad6c;
+  --bronze-dark: #5f4022;
+  --stone: #413d36;
+  --stone-dark: #171512;
+  --wine: #6f2e2e;
+  --wine-deep: #3c1718;
+  --cream: #f6ecd5;
+  --muted: #b7ad9a;
+  --safe: #7f9b78;
+  --danger: #9a5b52;
+  --shadow: 0 18px 55px rgba(0,0,0,.38);
+  --display: Georgia, 'Times New Roman', serif;
+  --body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(15px, 1.25vw, 18px);
+}
+
+* { box-sizing: border-box; }
+html, body, #app { margin: 0; min-height: 100%; width: 100%; }
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
+  font-family: var(--body);
+  color: var(--cream);
+  background: #141210;
+  -webkit-tap-highlight-color: transparent;
+}
+button, input { font: inherit; }
+button { touch-action: manipulation; }
+button:focus-visible, input:focus-visible { outline: 3px solid #f2cf87; outline-offset: 3px; }
+button:disabled { opacity: .4; cursor: not-allowed; }
+
+.primary-btn, .secondary-btn, .danger-quiet, .text-btn {
+  min-height: 48px;
+  border-radius: 8px;
+  padding: .72rem 1.15rem;
+  border: 1px solid transparent;
+  font-weight: 750;
+  cursor: pointer;
+}
+.primary-btn {
+  color: #17110a;
+  background: linear-gradient(#e0b974, #ad7b3e);
+  border-color: #edcf94;
+  box-shadow: inset 0 1px rgba(255,255,255,.35), 0 7px 18px rgba(0,0,0,.28);
+}
+.secondary-btn { color: var(--cream); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.25); }
+.danger-quiet { color: #ffd7ce; background: rgba(116,42,39,.22); border-color: rgba(209,122,104,.45); }
+.text-btn { color: #7a4f24; background: transparent; text-decoration: underline; text-underline-offset: 4px; }
+
+.eyebrow { margin: 0 0 .55rem; text-transform: uppercase; letter-spacing: .19em; font-weight: 800; font-size: .72rem; color: #d5b475; }
+.eyebrow.dark { color: #744c25; }
+
+/* Landing */
+.landing-shell {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  padding: 4vw;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 72% 26%, rgba(182,107,47,.26), transparent 30%),
+    linear-gradient(115deg, rgba(7,7,6,.25), rgba(0,0,0,.76)),
+    repeating-linear-gradient(92deg, #38342e 0 3px, #312e29 3px 8px, #35312b 8px 15px);
+}
+.landing-vignette { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 16vw rgba(0,0,0,.86); }
+.landing-card {
+  width: min(760px, 92vw);
+  padding: clamp(2rem, 5vw, 4.2rem);
+  text-align: center;
+  position: relative;
+  border: 1px solid rgba(224,185,116,.42);
+  background: linear-gradient(rgba(26,21,17,.92), rgba(18,15,13,.94));
+  box-shadow: var(--shadow);
+}
+.landing-card::before, .landing-card::after { content: ''; position: absolute; width: 46px; height: 46px; border-color: var(--bronze); opacity: .6; }
+.landing-card::before { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; }
+.landing-card::after { right: 12px; bottom: 12px; border-right: 2px solid; border-bottom: 2px solid; }
+.spqr-mark { width: 74px; height: 74px; margin: 0 auto 1.1rem; display: grid; place-items: center; border: 2px solid #b98849; border-radius: 50%; color: #ddb975; font: 700 .88rem var(--display); letter-spacing: .06em; box-shadow: inset 0 0 0 7px rgba(185,136,73,.1); }
+.landing-card h1 { margin: 0; font: 700 clamp(2.5rem, 6vw, 5.1rem)/.93 var(--display); letter-spacing: -.04em; }
+.landing-card h1 span { color: #d1a566; }
+.landing-copy { max-width: 610px; margin: 1.45rem auto 1.8rem; color: #d8d0c0; line-height: 1.6; }
+.landing-actions { display: flex; justify-content: center; gap: .8rem; flex-wrap: wrap; }
+.landing-actions button { min-width: 190px; }
+.landing-note { margin: 1.25rem 0 0; font-size: .78rem; color: #8e877b; }
+
+/* App shell */
+.game-shell { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; background: var(--stone-dark); }
+.topbar {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: max(.7rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .7rem max(1rem, env(safe-area-inset-left));
+  background: linear-gradient(#201d19, #151311);
+  border-bottom: 1px solid rgba(212,172,105,.22);
+  z-index: 5;
+}
+.objective-wrap { min-width: 0; display: grid; gap: .2rem; }
+.location-label { color: #d7b374; text-transform: uppercase; letter-spacing: .14em; font-size: .68rem; font-weight: 800; }
+.objective { font-size: .94rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-actions { display: flex; gap: .45rem; }
+.icon-btn {
+  min-width: 62px; min-height: 50px; color: #eee1c8; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.16); border-radius: 8px; cursor: pointer; display: grid; place-items: center; grid-template-columns: auto; padding: .25rem .6rem;
+}
+.icon-btn > span:first-child { font-weight: 900; font-size: 1.15rem; line-height: 1; }
+.icon-label { font-size: .64rem; color: #bdb3a2; }
+.menu-lines { width: 22px; height: 14px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
+.menu-lines::after { content:''; position:absolute; left:0; right:0; top:5px; border-top:2px solid currentColor; }
+
+.world { min-height: 0; position: relative; overflow: hidden; background: #24211c; }
+.scene { min-height: 100%; height: 100%; position: relative; padding: clamp(1.2rem, 2.7vw, 2.6rem); overflow: auto; }
+.inventory-bar {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .65rem max(1rem, env(safe-area-inset-right)) max(.65rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  background: linear-gradient(#171411, #0f0e0d);
+  border-top: 1px solid rgba(212,172,105,.28);
+  z-index: 4;
+}
+.inventory-title { flex: 0 0 auto; text-transform: uppercase; letter-spacing: .17em; font-size: .68rem; color: #a98c5d; font-weight: 850; }
+.inventory-items { display: flex; gap: .55rem; overflow-x: auto; padding: .18rem .1rem; scrollbar-width: thin; }
+.inventory-item { min-height: 58px; min-width: 150px; max-width: 205px; padding: .45rem .65rem; display: grid; grid-template-columns: 34px 1fr; gap: .5rem; align-items: center; color: #e6dbc6; background: #28231d; border: 1px solid #554734; border-radius: 8px; text-align: left; cursor: pointer; font-size: .73rem; }
+.inventory-item.selected { border-color: #d6aa67; box-shadow: inset 0 0 0 1px #d6aa67; }
+.inventory-symbol { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #2b1d0f; background: #b98a4e; font: 800 .72rem var(--display); }
+.inventory-empty { color: #706b62; font-size: .8rem; }
+
+/* Generic scenes */
+.prolog-scene { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(230px, .55fr); gap: 3vw; align-items: center; background: radial-gradient(circle at 35% 40%, rgba(177,105,48,.18), transparent 33%), linear-gradient(110deg,#302a23,#151310); }
+.intercept-table { color: #281e14; width: min(680px, 100%); justify-self: center; padding: clamp(1.7rem,4vw,3.4rem); background: linear-gradient(96deg,#e8d3a9,#d7bd8e); box-shadow: 0 18px 55px #0009, inset 0 0 45px #8e61222b; transform: rotate(-.5deg); position: relative; }
+.intercept-table::after { content:''; position:absolute; inset:10px; border:1px solid rgba(101,65,31,.27); pointer-events:none; }
+.intercept-table h2 { font: 700 clamp(1.55rem,3vw,2.7rem)/1.16 var(--display); margin: 0 0 1rem; }
+.intercept-table p { line-height: 1.55; }
+.seal-mark { position:absolute; right:8%; top:10%; width:68px; height:68px; border-radius:50%; display:grid; place-items:center; background:#7e2c2d; color:#e8c6a0; font:700 1.8rem var(--display); box-shadow:0 4px 9px #0007, inset 0 0 0 5px #4e1b1b55; }
+.story-aside { align-self: end; padding: 1.2rem; border-left: 3px solid #b08449; background: rgba(0,0,0,.28); display:grid; gap:.5rem; color:#d5c9b6; line-height:1.5; }
+.story-aside strong { color:#d6ad6c; text-transform:uppercase; letter-spacing:.13em; font-size:.74rem; }
+
+.forum-scene { display:grid; place-items:center; background: radial-gradient(circle at 50% 0%, rgba(204,152,79,.16), transparent 40%), linear-gradient(#625e56 0 18%, #34312b 18% 100%); }
+.forum-columns::before, .forum-columns::after { content:''; position:absolute; top:8%; bottom:0; width:12%; background:repeating-linear-gradient(90deg,#777269 0 12px,#625e56 12px 18px); opacity:.38; }
+.forum-columns::before { left:3%; } .forum-columns::after { right:3%; }
+.gate-panel { width:min(820px,88vw); padding:clamp(1.25rem,3vw,2.2rem); text-align:center; background:linear-gradient(#2b2925,#1b1916); border:1px solid #75634b; box-shadow:0 18px 70px #000a, inset 0 0 0 7px #0003; position:relative; z-index:1; }
+.gate-heading { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; border-bottom:1px solid #715b3c; padding-bottom:.8rem; margin-bottom:1rem; }
+.gate-heading span { font:700 1.45rem var(--display); letter-spacing:.09em; color:#d3b174; }
+.gate-heading small { color:#8d8476; }
+.stone-clue strong { display:block; font:800 clamp(1.6rem,3vw,2.5rem) var(--display); margin:.3rem 0 .8rem; }
+.stone-clue > span { color:#9e9282; font-size:.75rem; text-transform:uppercase; letter-spacing:.15em; }
+.code-track { display:flex; justify-content:center; gap:.5rem; margin-bottom:1.2rem; }
+.code-slot { width:48px; height:48px; display:grid; place-items:center; border:1px solid #6a5942; background:#15130f; font:700 1.15rem ui-monospace, monospace; color:#dfba7c; }
+.plaque-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.7rem; }
+.latin-plaque { min-height:110px; border:1px solid #746957; color:#eee4d2; background:linear-gradient(#524e46,#393630); display:grid; place-items:center; align-content:center; gap:.3rem; cursor:pointer; box-shadow:inset 0 0 25px #0003; }
+.latin-plaque span { font:700 1rem var(--display); letter-spacing:.08em; }
+.latin-plaque strong { color:#d7b273; font-size:1.7rem; }
+.scene-instruction { margin:1rem 0 0; color:#aea392; font-size:.8rem; }
+.inspect-hotspot { position:absolute; bottom:7%; right:8%; min-width:150px; min-height:48px; color:#26190d; background:#d9bf8b; border:1px solid #f2d8a3; transform:rotate(1deg); box-shadow:0 7px 19px #0008; cursor:pointer; font-weight:750; }
+.shake { animation:shake .28s linear; }
+
+.archive-scene { display:grid; place-items:center; background: linear-gradient(rgba(13,12,10,.35),rgba(13,12,10,.72)), repeating-linear-gradient(90deg,#44372a 0 5px,#3b3026 5px 60px,#322920 60px 65px); }
+.archive-workbench, .wax-tablet-panel { width:min(900px,92vw); padding:clamp(1.2rem,2.5vw,2rem); background:rgba(20,17,13,.9); border:1px solid #6d5637; box-shadow:var(--shadow); }
+.archive-workbench h2, .wax-tablet-panel h2 { font:700 clamp(1.7rem,3vw,2.6rem) var(--display); margin:.2rem 0 .4rem; }
+.loose-tags { min-height:70px; display:flex; gap:.7rem; flex-wrap:wrap; padding:1rem 0; }
+.paper-tag { min-width:120px; min-height:52px; padding:.6rem 1rem; color:#352719; background:#dcc59a; border:1px solid #f0dcaf; box-shadow:0 5px 14px #0005; cursor:pointer; transform:rotate(-1deg); }
+.paper-tag:nth-child(even) { transform:rotate(1.3deg); }
+.paper-tag.selected { outline:3px solid #d3a85f; outline-offset:2px; }
+.shelf-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.65rem; }
+.archive-shelf { min-height:80px; padding:1rem; text-align:left; color:#e7dcc8; background:linear-gradient(#2e261d,#201a15); border:1px solid #65513b; cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
+.archive-shelf span { font:700 1.05rem var(--display); letter-spacing:.08em; }
+.archive-shelf small { color:#887d6c; }
+.archive-shelf.filled { opacity:.52; }
+.wax-tablet-panel { color:#2f2418; background:linear-gradient(#dfc692,#c9aa72); border:8px solid #6e4c2d; box-shadow:var(--shadow), inset 0 0 45px #6c461b33; }
+.seal-form { display:grid; gap:1rem; margin-top:1.2rem; }
+.wax-input { display:grid; grid-template-columns:minmax(180px,.65fr) 1fr; gap:1rem; align-items:center; }
+.wax-input span { font-weight:850; letter-spacing:.08em; }
+.wax-input input, .inline-form input, .practice-card input, .guard-review input { width:100%; min-height:52px; border:1px solid #745738; border-radius:5px; padding:.7rem .85rem; color:#271b10; background:#f2e4c7; }
+.wax-input.solved input { color:#27472f; background:#d8ddbf; }
+
+.messenger-scene { display:grid; place-items:center; background:radial-gradient(circle at 25% 28%,rgba(218,159,80,.14),transparent 24%), linear-gradient(130deg,#30271f,#171411); }
+.dispatch-board { width:min(880px,92vw); padding:clamp(1.2rem,3vw,2.4rem); background:linear-gradient(#c8aa78,#a98555); color:#25190f; border:10px solid #593b24; box-shadow:var(--shadow), inset 0 0 50px #5f391833; }
+.dispatch-copy h2 { margin:.2rem 0 .5rem; font:700 clamp(1.4rem,3vw,2.3rem) var(--display); }
+.order-slots { display:grid; grid-template-columns:repeat(4,1fr); gap:.65rem; margin:1.3rem 0 .9rem; }
+.order-slot { min-height:64px; border:2px dashed #6a4c30; background:rgba(247,227,189,.35); color:#342215; font-weight:800; cursor:pointer; }
+.verb-cards { display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1rem; }
+.verb-card { min-width:130px; min-height:56px; color:#ead8b8; background:#4b3020; border:1px solid #826043; box-shadow:0 4px 10px #0005; cursor:pointer; font-family:var(--display); letter-spacing:.06em; }
+.courier-lock { width:min(850px,92vw); display:grid; grid-template-columns:minmax(220px,.75fr) 1.25fr; gap:2rem; align-items:center; padding:clamp(1.5rem,4vw,3rem); background:#1e1a16; border:1px solid #765737; box-shadow:var(--shadow); }
+.courier-lock h2 { font:700 clamp(1.6rem,3.2vw,2.6rem) var(--display); margin:.2rem 0 .5rem; }
+.bronze-dial { aspect-ratio:1; max-width:280px; margin:auto; border-radius:50%; border:18px solid #6a4828; box-shadow:inset 0 0 0 5px #b6884f, inset 0 0 40px #0007, 0 10px 35px #0008; display:flex; align-items:center; justify-content:space-around; color:#e4c384; background:radial-gradient(circle,#51361f,#241a12); font-family:var(--display); }
+.inline-form { display:flex; gap:.6rem; align-items:center; }
+.inline-form.vertical { flex-direction:column; align-items:stretch; }
+
+.files-scene { background:linear-gradient(rgba(20,17,13,.55),rgba(20,17,13,.8)), repeating-linear-gradient(0deg,#4b3929 0 4px,#3a2c21 4px 45px); }
+.informant-strip { width:min(960px,95vw); margin:0 auto 1.3rem; padding:1rem 1.2rem; display:flex; gap:1rem; align-items:center; color:#302216; background:#e1cda5; border-left:5px solid #7b2e2e; box-shadow:0 8px 25px #0007; }
+.informant-strip strong { flex:0 0 auto; text-transform:uppercase; letter-spacing:.1em; font-size:.75rem; }
+.dossier-grid { width:min(1050px,96vw); margin:auto; display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.dossier { min-width:0; display:grid; gap:.5rem; }
+.dossier-open { min-height:300px; position:relative; padding:1rem; color:#332316; background:linear-gradient(98deg,#d4b989,#bc9560); border:1px solid #ead0a0; box-shadow:0 14px 30px #0007; cursor:pointer; text-align:left; overflow:hidden; }
+.dossier-tab { display:block; font-size:.62rem; letter-spacing:.11em; font-weight:800; color:#6c4122; }
+.portrait-silhouette, .portrait-large { display:block; width:80px; height:100px; margin:2rem auto 1.2rem; border-radius:50% 50% 42% 42%; background:radial-gradient(circle at 50% 28%,#5a4939 0 24%,transparent 25%), linear-gradient(90deg,transparent 20%,#5a4939 20% 80%,transparent 80%); opacity:.75; }
+.dossier-open strong { display:block; font:700 1.5rem var(--display); text-align:center; }
+.dossier-open small { display:block; text-align:center; margin-top:.3rem; color:#6d563e; }
+.mark-suspect { min-height:48px; color:#e9d7b8; background:#251c16; border:1px solid #705438; cursor:pointer; }
+.dossier-inspection { color:#2d2015; max-width:780px; margin:auto; padding:1.2rem; background:#e1c89b; }
+.portrait-large { width:120px; height:150px; }
+.trait-list { display:grid; grid-template-columns:1fr 1fr; gap:.55rem; padding:1rem; background:#c7aa78; }
+.trait-list span { color:#6e4c2e; font-size:.75rem; letter-spacing:.12em; }
+.trait-list strong { font-family:var(--display); }
+
+.senate-scene { display:grid; place-items:center; background:radial-gradient(circle at 50% 12%,rgba(226,182,109,.18),transparent 35%), linear-gradient(#4b4944 0 25%,#26231f 25% 100%); }
+.senate-depth { position:absolute; left:7%; right:7%; top:4%; height:30%; border-radius:50% 50% 0 0; border:2px solid #706d65; opacity:.35; }
+.senate-mechanism { width:min(920px,92vw); padding:clamp(1.5rem,3vw,2.6rem); text-align:center; position:relative; z-index:1; background:linear-gradient(#251f19,#171310); border:1px solid #796042; box-shadow:var(--shadow); }
+.senate-mechanism h2 { font:700 clamp(1.5rem,3.2vw,2.5rem) var(--display); }
+.lever-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin:1.4rem 0; }
+.bronze-lever { min-height:160px; padding:1rem; color:#eddcbd; background:linear-gradient(#493421,#291d13); border:1px solid #8c6841; cursor:pointer; display:grid; place-items:center; gap:.8rem; }
+.lever-handle { display:block; width:32px; height:72px; border-radius:16px; background:linear-gradient(90deg,#5d3b1f,#c09152,#644123); box-shadow:0 8px 14px #0007; transform:rotate(-7deg); transform-origin:bottom; }
+.bronze-lever strong { font:700 .92rem var(--display); letter-spacing:.06em; }
+.mechanism-progress { display:flex; justify-content:center; gap:.7rem; }
+.mechanism-light { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:#3f3327; border:1px solid #71583b; color:#786a58; }
+.mechanism-light.on { color:#2d2112; background:#d0a35d; box-shadow:0 0 18px #c69348aa; }
+
+.final-scene { display:grid; place-items:center; background:radial-gradient(circle at 50% 20%,rgba(162,88,44,.2),transparent 30%), linear-gradient(130deg,#261b16,#0e0c0a); }
+.cipher-desk, .final-document { width:min(1000px,94vw); padding:clamp(1.3rem,3vw,2.5rem); color:#2b2016; background:linear-gradient(96deg,#ead9b6,#cfb181); box-shadow:0 18px 60px #000b, inset 0 0 65px #8f5b2633; }
+.cipher-desk h2, .final-document h2 { margin:.2rem 0 1rem; font:700 clamp(1.5rem,3vw,2.5rem) var(--display); }
+.cipher-layout { display:grid; grid-template-columns:1.3fr .7fr; gap:1rem; }
+.meaning-list { display:grid; grid-template-columns:repeat(2,1fr); gap:.6rem; }
+.meaning-slot { min-height:72px; padding:.7rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; color:#3a2a1c; background:rgba(255,255,255,.25); border:1px dashed #866342; cursor:pointer; text-align:left; }
+.meaning-slot strong { font-family:var(--display); color:#793f2f; }
+.meaning-slot.filled { background:#d7d7b5; border-style:solid; }
+.word-bank { align-content:start; display:flex; flex-wrap:wrap; gap:.55rem; }
+.wax-chip { min-width:105px; min-height:52px; padding:.5rem .8rem; border-radius:22px; color:#f1d0ad; background:#713133; border:2px solid #4b1e20; box-shadow:inset 0 0 0 4px #8d464766, 0 5px 12px #0005; cursor:pointer; font-family:var(--display); }
+.wax-chip.selected { outline:4px solid #7a5228; outline-offset:3px; }
+.solved-final .final-document { max-width:760px; }
+
+.transition-scene { display:grid; place-items:center; background:radial-gradient(circle at 50% 40%,rgba(177,124,67,.18),transparent 32%),linear-gradient(#2f2a23,#151310); }
+.transition-card { width:min(620px,90vw); text-align:center; padding:2.5rem; border:1px solid #6d583d; background:rgba(22,18,14,.9); box-shadow:var(--shadow); }
+.transition-card h2 { font:700 2rem var(--display); margin:.3rem 0 .6rem; }
+.transition-card p { color:#c2b7a5; line-height:1.55; }
+.success-glyph { width:65px; height:65px; margin:auto; border-radius:50%; display:grid; place-items:center; color:#24190f; background:#c39451; font-size:2rem; }
+
+/* Results */
+.results-scene { min-height:100%; overflow:auto; padding:clamp(1.2rem,3vw,2.6rem); background:linear-gradient(#201914,#100f0d); }
+.mission-banner { width:min(1050px,96vw); margin:0 auto 1.1rem; padding:1.8rem 2rem; border:1px solid #6e5636; background:radial-gradient(circle at 90% 50%,rgba(164,99,44,.2),transparent 30%),#211b16; }
+.mission-banner h1 { margin:.1rem 0 .3rem; font:700 clamp(2rem,4vw,3.5rem) var(--display); color:#e2c08a; }
+.mission-banner p:last-child { color:#d1c7b7; }
+.analysis-panel { width:min(1050px,96vw); margin:auto; }
+.analysis-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:.7rem; margin-bottom:1rem; }
+.analysis-summary > div { padding:1rem; border:1px solid #4a4034; background:#1d1a17; display:grid; gap:.2rem; }
+.analysis-summary strong { font:700 1.8rem var(--display); color:#dbb677; }
+.analysis-summary span { color:#9b9285; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; }
+.status-columns { display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; }
+.status-column { min-height:170px; padding:1rem; border:1px solid #443b32; background:#181614; }
+.status-column h3 { margin:0 0 .7rem; font-size:.75rem; letter-spacing:.14em; }
+.status-column.safe h3 { color:#a9c2a1; } .status-column.unsure h3 { color:#d6b876; } .status-column.practice h3 { color:#d39d8d; }
+.status-word-list { display:flex; flex-wrap:wrap; gap:.4rem; }
+.status-word-list button, .status-word-list span { min-height:34px; padding:.35rem .55rem; color:#d9cfbd; background:#28231f; border:1px solid #4d4338; border-radius:4px; }
+.results-actions { display:flex; gap:.7rem; margin-top:1rem; flex-wrap:wrap; }
+
+/* Inspection */
+.inspection-overlay { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:max(1rem,env(safe-area-inset-top)) max(1rem,env(safe-area-inset-right)) max(1rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left)); opacity:0; transition:opacity .16s ease; }
+.inspection-overlay.open { opacity:1; }
+.inspection-backdrop { position:absolute; inset:0; background:rgba(5,4,3,.78); backdrop-filter:blur(3px); }
+.inspection-card { width:min(980px,96vw); max-height:92dvh; overflow:auto; position:relative; background:#e3cfaa; color:#271c12; box-shadow:0 24px 70px #000c; border:1px solid #b38a53; }
+.inspection-card > header { position:sticky; top:0; z-index:2; min-height:62px; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.8rem 1rem; color:#eee1ca; background:#211a14; border-bottom:1px solid #745735; }
+.inspection-card > header h1 { margin:0; font:700 1.35rem var(--display); }
+.close-btn { width:46px; height:46px; border-radius:50%; color:#e7d9c2; background:transparent; border:1px solid #6a5a49; cursor:pointer; font-size:1.5rem; }
+.inspection-content { padding:clamp(1rem,3vw,2rem); }
+.object-inspection { text-align:center; }
+.large-object-token { width:180px; height:180px; margin:1rem auto; border-radius:50%; display:grid; place-items:center; color:#35210e; background:radial-gradient(circle,#e1bb7d,#8d5d29); border:8px double #6e431d; box-shadow:0 16px 35px #0005; font:800 1.2rem var(--display); }
+.parchment-document { max-width:720px; margin:0 auto 1rem; padding:2rem; position:relative; background:#f0ddb7; border:1px solid #be9760; box-shadow:inset 0 0 40px #9b682b2d; }
+.parchment-document .wax-seal { float:right; width:68px; height:68px; border-radius:50%; display:grid; place-items:center; color:#e0b38f; background:#7b2f31; font:700 1.5rem var(--display); }
+.script-line { font-family:var(--display); font-size:1.15rem; }
+.cipher-line { padding:1rem; border:1px dashed #8c6c45; font-weight:850; letter-spacing:.08em; }
+.hint-panel { max-width:650px; margin:auto; text-align:center; }
+.hint-number { width:58px; height:58px; margin:auto; border-radius:50%; display:grid; place-items:center; color:#f0dbb7; background:#6b4628; font:700 1.4rem var(--display); }
+.hint-panel h2 { font:700 1.8rem var(--display); margin:.7rem 0; }
+.hint-panel p { line-height:1.6; }
+.hint-actions { display:flex; justify-content:center; gap:.6rem; flex-wrap:wrap; }
+.menu-panel { max-width:620px; margin:auto; display:grid; gap:.8rem; }
+.menu-stat { display:flex; justify-content:space-between; gap:1rem; padding:.9rem 0; border-bottom:1px solid #af9166; }
+.toggle-row { min-height:58px; display:flex; align-items:center; gap:1rem; cursor:pointer; }
+.toggle-row input { position:absolute; opacity:0; pointer-events:none; }
+.switch { margin-left:auto; width:54px; height:30px; border-radius:16px; padding:3px; background:#8b775f; transition:.2s; }
+.switch::after { content:''; display:block; width:24px; height:24px; border-radius:50%; background:#f4ead7; transition:.2s; }
+.toggle-row input:checked + .switch { background:#815829; }
+.toggle-row input:checked + .switch::after { transform:translateX(24px); }
+.practice-card, .guard-review { max-width:650px; margin:auto; }
+.practice-card h2 { font:700 2.2rem var(--display); }
+.practice-card form { display:grid; gap:.7rem; }
+.practice-card label { display:grid; gap:.4rem; }
+.practice-feedback, .review-feedback { min-height:1.5em; font-weight:650; }
+.guard-emblem { width:70px; height:70px; margin:0 auto 1rem; border-radius:50%; display:grid; place-items:center; color:#f1dfbd; background:#5a3a24; font:700 .8rem var(--display); }
+.guard-review { text-align:center; }
+
+.toast-root { position:fixed; left:50%; bottom:calc(104px + env(safe-area-inset-bottom)); z-index:70; transform:translateX(-50%); width:min(680px,88vw); pointer-events:none; }
+.toast { padding:.8rem 1rem; color:#f4ead9; background:#171411ee; border:1px solid #846844; border-radius:7px; text-align:center; box-shadow:0 12px 35px #0009; animation:toast-in .18s ease-out; }
+
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+@keyframes toast-in { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)} }
+
+@media (max-width: 900px) {
+  .dossier-grid { grid-template-columns:repeat(2,1fr); }
+  .dossier-open { min-height:230px; }
+  .prolog-scene { grid-template-columns:1fr; }
+  .story-aside { align-self:auto; }
+  .cipher-layout { grid-template-columns:1fr; }
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  .topbar { min-height:68px; }
+  .inventory-bar { min-height:86px; }
+  .scene { padding:1rem; }
+  .plaque-grid, .lever-row { grid-template-columns:repeat(2,1fr); }
+  .latin-plaque { min-height:90px; }
+  .courier-lock { grid-template-columns:1fr; }
+  .bronze-dial { max-width:190px; }
+  .order-slots { grid-template-columns:repeat(2,1fr); }
+  .analysis-summary { grid-template-columns:repeat(2,1fr); }
+  .status-columns { grid-template-columns:1fr; }
+}
+
+@media (max-width: 620px) {
+  :root { font-size:15px; }
+  .icon-label { display:none; }
+  .icon-btn { min-width:50px; }
+  .objective { max-width:65vw; }
+  .inventory-title { display:none; }
+  .inventory-item { min-width:132px; }
+  .dossier-grid { grid-template-columns:1fr; }
+  .dossier-open { min-height:180px; }
+  .portrait-silhouette { margin:.8rem auto; height:70px; }
+  .informant-strip { align-items:flex-start; flex-direction:column; }
+  .meaning-list { grid-template-columns:1fr; }
+  .wax-input { grid-template-columns:1fr; gap:.35rem; }
+  .inline-form { flex-direction:column; align-items:stretch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+
+/* V2 extends the original material palette and scene backgrounds. */
+:root { font-size:16px; --body-leading:1.48; }
+html { color-scheme:dark; }
+body { overscroll-behavior-y:none; }
+button { white-space:normal; }
+button, input, a, summary { -webkit-tap-highlight-color:transparent; }
+input { min-height:48px; min-width:0; font-size:16px; border-radius:5px; }
+button:focus-visible, input:focus-visible { outline:3px solid #fff2ab; outline-offset:3px; }
+[hidden] { display:none !important; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.game-shell { height:100dvh; min-height:100dvh; grid-template-rows:auto minmax(0,1fr) auto; }
+.topbar { min-height:66px; padding-top:max(.45rem,env(safe-area-inset-top)); padding-bottom:.45rem; }
+.topbar .objective { white-space:normal; max-width:none; font-size:.94rem; }
+.top-actions { flex-shrink:0; }
+.icon-btn { min-height:48px; min-width:56px; }
+.icon-label { color:#dbccb4; }
+.inventory-bar { min-height:64px; gap:.8rem; padding-top:.35rem; padding-bottom:max(.35rem,env(safe-area-inset-bottom)); }
+.inventory-items { flex:1; min-width:0; display:flex; gap:.45rem; overflow:visible; padding:.15rem; }
+.inventory-item { flex:1; min-width:0; max-width:175px; min-height:48px; padding:.35rem .5rem; font-size:.75rem; gap:.4rem; overflow-wrap:anywhere; }
+.inventory-symbol { width:30px; height:30px; }
+.inventory-title { color:#d1ac74; }
+.world { isolation:isolate; }
+.scene { overscroll-behavior:contain; scrollbar-color:#a88350 #241d16; }
+.operation-scene { display:block; padding:1.2rem clamp(1rem,2.4vw,2.3rem) 1.6rem; height:100%; }
+.operation-wrap { max-width:1350px; margin:0 auto; position:relative; z-index:1; }
+.operation-heading { display:flex; gap:1.2rem; align-items:flex-start; margin-bottom:1rem; }
+.operation-heading > div { min-width:0; flex:1; }
+.operation-heading h1 { margin:.15rem 0 .35rem; font:700 clamp(1.65rem,2.7vw,2.55rem)/1.12 var(--display); text-wrap:balance; }
+.operation-heading p:last-child { margin:.3rem 0 0; max-width:105ch; color:#e2d8c7; font-size:.9rem; line-height:1.45; }
+.chapter-seal { width:62px; height:62px; flex-shrink:0; border:2px solid #ba975f; outline:1px solid #81633e; outline-offset:4px; border-radius:50%; display:grid; place-items:center; margin:.3rem .5rem; font:700 1.4rem var(--display); color:#e4c58c; background:#342619; }
+.operation-layout { display:grid; grid-template-columns:minmax(255px,.85fr) minmax(0,1.65fr); gap:1.2rem; align-items:start; }
+.document-column { min-width:0; }
+.source-sheet { background:linear-gradient(103deg,#f0ddb7,#d4b68a); color:#261c13; padding:1.25rem 1.3rem; border:1px solid #b59870; box-shadow:0 9px 22px #0005, inset 0 0 30px #af884e22; position:relative; overflow-wrap:anywhere; }
+.sheet-pin { position:absolute; right:1rem; top:.8rem; width:10px; height:10px; border-radius:50%; background:#705632; box-shadow:inset 1px 1px 2px #ecd7ac, 1px 2px 2px #0008; }
+.source-sheet h2 { font:700 1.23rem/1.2 var(--display); margin:.3rem 0 .85rem; }
+.source-line { border-top:1px solid #93734355; padding:.6rem 0; }
+.source-line > span { display:block; font-size:.65rem; font-weight:850; text-transform:uppercase; letter-spacing:.12em; color:#66451f; }
+.source-line p { margin:.2rem 0 0; font:500 .95rem/1.45 var(--display); color:#23180d; }
+.document-footnote { border-top:1px solid #96744966; padding-top:.6rem; font-size:.8rem; line-height:1.5; margin:.45rem 0; }
+.reading-key { display:flex; flex-direction:column; gap:.2rem; border-top:1px dashed #86683c99; margin-top:.7rem; padding-top:.7rem; font-size:.75rem; line-height:1.45; }
+.source-sheet .reading-key strong { font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; }
+.document-inspect { width:100%; margin-top:.65rem; min-height:44px; font-size:.85rem; }
+.operation-board { min-width:0; background:linear-gradient(130deg,#2e241c,#1d1813); border:1px solid #8b6e48; box-shadow:inset 0 0 0 5px #0003, 0 14px 28px #0005; padding:1.1rem; }
+.station-tabs { display:flex; flex-wrap:wrap; gap:.4rem; padding-bottom:.8rem; border-bottom:1px solid #655035; margin-bottom:1rem; }
+.station-tab { flex:1; min-width:70px; min-height:44px; padding:.5rem .6rem; text-align:left; display:flex; justify-content:space-between; align-items:center; gap:.4rem; color:#eadcc5; background:#403122; border:1px solid #715538; border-radius:3px; cursor:pointer; font-size:.78rem; }
+.station-tab.active { color:#261b0e; border-color:#efc98a; background:#d1aa70; box-shadow:inset 0 -3px #8b5728; font-weight:800; }
+.station-marker { font-size:.88rem; }
+.stage-body h2, .case-group legend { color:#f5e6ca; font:700 1.25rem/1.3 var(--display); margin:0 0 .45rem; padding:0; width:100%; }
+.stage-body h2:focus, .case-group legend:focus { outline:none; }
+.case-group { margin:0; padding:0; border:0; min-width:0; }
+.interaction-caption { color:#c6bba7; font-size:.77rem; margin:.35rem 0 .9rem; line-height:1.45; }
+.case-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; align-items:stretch; }
+.case-option { position:relative; min-height:135px; display:flex; align-items:flex-start; gap:.65rem; padding:1rem .8rem; border:1px solid #b69a6d; border-radius:3px; color:#291e13; background:linear-gradient(105deg,#e6cfaa,#ccb18a); text-align:left; cursor:pointer; box-shadow:0 4px 9px #0005; }
+.case-option::after { content:''; position:absolute; inset:5px; pointer-events:none; border:1px solid #8e6a3430; }
+.case-option.selected { border:3px solid #f2dca2; padding:calc(1rem - 2px) calc(.8rem - 2px); background:linear-gradient(105deg,#f5e5c4,#e3c898); box-shadow:0 0 0 2px #8f673d, 0 4px 12px #0005; }
+.case-option:disabled { opacity:1; cursor:default; }
+.option-identity { margin-top:.2rem; display:grid; place-items:center; flex:0 0 28px; width:28px; height:32px; border:1px solid #856746; border-radius:45% 45% 15% 15%; color:#e8d5ad; background:#6d4d30; font:700 .86rem var(--display); }
+.option-copy { display:grid; gap:.45rem; min-width:0; flex:1; padding-right:.7rem; }
+.option-copy strong { font:700 1rem/1.2 var(--display); overflow-wrap:anywhere; }
+.option-copy > span { font-size:.84rem; line-height:1.46; }
+.choice-state { position:absolute; top:.4rem; right:.4rem; font-size:.82rem; font-weight:900; color:#61401e; }
+.register-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.register-entry { display:flex; gap:.55rem; min-width:0; }
+.entry-number { flex-shrink:0; font:700 .85rem var(--display); color:#d7b47b; padding-top:.25rem; }
+.entry-body { display:flex; flex-direction:column; flex:1; gap:.5rem; min-width:0; }
+.entry-body > span { color:#eae0d0; font-size:.84rem; line-height:1.5; min-height:3.6em; }
+.register-entry input { border:1px solid #b18b58; width:100%; padding:.65rem .75rem; background:#f3e5c9; color:#251a0e; font-size:1rem; letter-spacing:.025em; }
+.register-entry input:focus-visible, .source-sheet button:focus-visible { outline-color:#a95220; }
+.register-entry input[aria-invalid=true] { border:2px solid #e7a993; }
+.register-entry input[readonly] { background:#d6d9bd; border-color:#afb893; color:#243024; }
+.entry-body small { font-size:.72rem; line-height:1.35; color:#ddc89f; min-height:1em; }
+.register-entry.secured .entry-body small { color:#d4e2c6; }
+.operation-feedback { min-height:1.5em; font-size:.82rem; line-height:1.45; color:#efd4a7; margin:.9rem 0 .6rem; }
+.operation-controls { display:flex; justify-content:space-between; gap:.8rem; align-items:center; border-top:1px solid #665035; padding-top:.85rem; }
+.operation-controls > span { color:#cbbda6; font-size:.74rem; line-height:1.45; max-width:29ch; }
+.control-buttons { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+.operation-controls button { font-size:.82rem; min-height:46px; padding:.65rem .85rem; }
+.operation-controls .primary-btn:disabled { opacity:.6; }
+.found-item { display:inline-block; padding:.65rem .8rem; border:1px solid #af8856; color:#f0d8ad !important; font-size:.85rem; animation:found-item .35s ease-out; }
+@keyframes found-item { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+.transition-card { width:min(720px,92vw); }
+.transition-card .success-glyph { margin-bottom:1rem; }
+.transition-card .primary-btn { margin-top:.6rem; }
+.intercept-table .seal-mark { position:relative; top:auto; right:auto; float:right; margin:0 0 1rem 1rem; }
+.story-aside { align-self:center; font-size:.92rem; }
+.plain-toggle { display:flex; align-items:center; gap:.7rem; min-height:48px; padding:.55rem 0; line-height:1.5; cursor:pointer; }
+.plain-toggle input { width:24px; height:24px; min-height:24px; flex-shrink:0; accent-color:#ab7841; }
+.plain-toggle:focus-within { outline:3px solid #946533; outline-offset:3px; }
+.timing-brief { max-width:740px; position:relative; padding:2rem 2.5rem; background:linear-gradient(#2f241c,#171310); border:1px solid #a27b46; box-shadow:var(--shadow); line-height:1.6; }
+.timing-brief h1, .timed-header h1 { font:700 clamp(1.8rem,3vw,2.7rem)/1.12 var(--display); margin:.2rem 0 .8rem; }
+.timing-brief > p { color:#e1d2bc; }
+.timing-seal { float:right; display:grid; place-items:center; width:80px; height:80px; margin:0 0 1rem 1rem; border:3px double #d2a161; border-radius:50%; font:700 2rem var(--display); color:#e9c48e; }
+.timed-wrap { max-width:1020px; margin:0 auto; position:relative; }
+.timed-header { display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:1.1rem; }
+.timer-display { font:700 1.5rem var(--display); padding:.85rem 1rem; border:1px solid #d2aa70; background:#211a12; min-width:110px; text-align:center; max-width:270px; }
+.timer-low { border:2px solid #f5ba99; color:#ffd5b0; }
+.timed-board { padding:1.4rem; }
+.timed-board .case-option { min-height:135px; }
+.timed-board .reading-key { color:#e6d4b8; }
+.timed-board .operation-controls { justify-content:space-between; }
+.inspection-card { max-height:calc(100dvh - 2rem); }
+.inspection-card .secondary-btn { color:#302116; border-color:#896b46; background:#c8aa7c55; }
+.inspection-card .danger-quiet { color:#592522; background:#c3867033; border-color:#965949; }
+.inspection-card button:focus-visible, .inspection-card input:focus-visible { outline-color:#86421e; }
+.inspection-card > header button:focus-visible { outline-color:#f6d08c; }
+.inspection-card > header { z-index:3; }
+.inspection-content .source-sheet { max-width:780px; margin:auto; padding:2rem; }
+.inspection-content .source-line p { font-size:1.2rem; }
+.object-inspection p { font-size:1.1rem; line-height:1.65; max-width:640px; margin:1rem auto; }
+.revealed-hints { text-align:left; margin:1rem 0; }
+.revealed-hints article { padding:.7rem 1rem; border:1px solid #aa8554; margin-bottom:.7rem; background:#f4dfb377; }
+.revealed-hints article p { margin:.4rem 0; }
+.menu-panel p { line-height:1.55; margin:.2rem 0; }
+.menu-file-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; }
+.migration-note { border:1px solid #ae8957; padding:.8rem 1rem; font-size:.84rem; line-height:1.5; color:#f4ddae; background:#49332166; }
+.landing-note { color:#c1b39e; line-height:1.5; }
+.landing-import { color:#e6c895; margin-top:.6rem; }
+.storage-warning { padding:.7rem 1rem; background:#542e21; border:1px solid #e3b385; color:#fff0cf; font-size:.85rem; line-height:1.4; }
+.floating-warning { position:fixed; left:1rem; right:1rem; bottom:72px; z-index:80; }
+.toast-root { bottom:calc(78px + env(safe-area-inset-bottom)); }
+.results-scene { height:100%; }
+.analysis-panel > h2 { font:700 1.5rem var(--display); color:#ead3ab; }
+.analysis-summary span { color:#d1c4b0; }
+.status-columns { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.status-column { min-height:140px; padding:.9rem; }
+.status-column h3 { font-size:.72rem; color:#ddd0b9; }
+.status-word-list button { min-height:44px; cursor:pointer; }
+.diagnostic-note { font-size:.87rem; line-height:1.6; color:#d4c7b3; }
+.mission-metrics { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin:1rem 0; font-size:.82rem; line-height:1.5; color:#decdb1; }
+.stats-detail { max-width:760px; margin:auto; line-height:1.6; }
+.stats-detail h2 { font:700 2rem var(--display); margin:.3rem 0; }
+.detail-stat { display:flex; justify-content:space-between; gap:1rem; border-top:1px solid #9b7a4f; padding:.55rem 0; font-size:.85rem; }
+.event-list { display:grid; gap:.65rem; }
+.event-list article { padding:.75rem 1rem; background:#f3dfba77; border:1px solid #af8d5c; display:grid; gap:.1rem; font-size:.84rem; }
+.legacy-note { margin-top:1rem; border-top:2px solid #866743; }
+.practice-actions { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1rem; }
+.shown-answer { padding:1rem; background:#d6b98b; border:1px solid #9b7545; line-height:1.5; }
+.practice-card p { line-height:1.55; }
+@media(min-width:1600px){ :root{font-size:18px;} }
+@media(max-width:1100px){
+  .operation-layout{grid-template-columns:minmax(225px,.7fr) minmax(0,1.3fr);gap:.9rem;}
+  .case-option{gap:.45rem;padding:.85rem .7rem;}
+  .case-option.selected{padding:calc(.85rem - 2px) calc(.7rem - 2px);}
+  .option-identity{display:none;}
+  .operation-controls{align-items:flex-start;}
+  .control-buttons{flex:1;}
+  .operation-controls>span{max-width:21ch;}
+  .source-sheet{padding:1.1rem;}
+}
+@media(max-width:850px){
+  .operation-layout{grid-template-columns:1fr;}
+  .document-column{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:.7rem;}
+  .document-inspect{max-width:145px;font-size:.8rem;}
+  .source-sheet{padding:1.2rem;}
+  .operation-heading{gap:.6rem;}
+  .source-line p{font-size:1rem;}
+  .operation-controls>span{max-width:40ch;}
+  .status-columns{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .analysis-summary{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .operation-scene{padding:1rem;}
+  .case-option{min-height:120px;}
+}
+@media(max-width:620px){
+  :root{font-size:16px;}
+  .topbar{padding:.5rem .65rem;gap:.55rem;}
+  .objective{font-size:.8rem !important;line-height:1.35;}
+  .location-label{font-size:.61rem;letter-spacing:.09em;}
+  .icon-btn{min-width:44px;min-height:44px;}
+  .icon-label{display:none;}
+  .inventory-bar{gap:0;padding-left:.7rem;padding-right:.7rem;min-height:60px;}
+  .inventory-item{display:grid;grid-template-columns:1fr;place-items:center;min-height:48px;max-width:none;}
+  .inventory-item>span:last-child{display:none;}
+  .inventory-title{display:none;}
+  .inventory-symbol{width:32px;height:32px;}
+  .chapter-seal{display:none;}
+  .document-column{display:block;}
+  .document-inspect{max-width:none;}
+  .case-options,.register-fields{grid-template-columns:1fr;}
+  .case-option{min-height:98px;}
+  .case-option .option-copy>span{font-size:.87rem;}
+  .operation-controls{display:grid;}
+  .operation-controls>span{max-width:none;}
+  .control-buttons{justify-content:stretch;}
+  .control-buttons button{flex:1;}
+  .source-line p{font-size:.97rem;}
+  .entry-body>span{min-height:0;}
+  .operation-board{padding:.85rem;}
+  .station-tab{min-width:64px;font-size:.74rem;}
+  .timing-brief{padding:1.25rem;}
+  .timed-header{align-items:flex-start;}
+  .timer-display{min-width:82px;padding:.65rem;font-size:1rem;max-width:130px;}
+  .timed-board{padding:.85rem;}
+  .timed-board .operation-controls{display:flex;flex-wrap:wrap;}
+  .inspection-overlay{padding:.5rem;}
+  .inspection-card{max-height:calc(100dvh - 1rem);width:100%;}
+  .inspection-content{padding:1rem;}
+  .inspection-content .source-sheet{padding:1.1rem;}
+  .inspection-card>header h1{font-size:1.15rem;}
+  .inspection-card .close-btn{flex-shrink:0;}
+  .detail-stat{display:grid;gap:.1rem;}
+  .status-columns{grid-template-columns:1fr;}
+  .landing-card{padding:2rem 1.3rem;}
+  .landing-card h1{font-size:2.6rem;}
+  .landing-copy{font-size:.94rem;}
+  .menu-file-actions{grid-template-columns:1fr;}
+  .transition-card{padding:1.6rem;}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important;}
+}
+/* Keep the action reachable while a long register scrolls inside the world. */
+.operation-controls { position:sticky; bottom:-1.1rem; z-index:2; background:#251d16; margin-left:-.2rem; margin-right:-.2rem; padding:.8rem .2rem; box-shadow:0 -8px 16px #251d160d; }
+.room-forum .case-option { min-height:120px; padding-top:.75rem; padding-bottom:.75rem; }
+.room-forum .case-option.selected { padding-top:calc(.75rem - 2px); padding-bottom:calc(.75rem - 2px); }
+@media(min-width:1000px){
+  .room-archive .register-fields { grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem .8rem; }
+  .room-archive .entry-body > span { min-height:6em; }
+}
+.scene-architecture { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.room-forum .scene-architecture::before,.room-forum .scene-architecture::after { content:'';position:absolute;top:4%;bottom:0;width:9%;background:repeating-linear-gradient(90deg,#979084 0 9px,#655f54 9px 14px);opacity:.11; }
+.room-forum .scene-architecture::before { left:2%; }
+.room-forum .scene-architecture::after { right:2%; }
+.operation-board > .operation-feedback { border-left:2px solid #c39a5e; background:#4b3823; padding:.55rem .75rem; margin:0 0 .8rem; color:#f4ddb5; min-height:0; }
+.inventory-symbol { white-space:nowrap; overflow-wrap:normal; font-size:.65rem; }
+.solution-transcript { max-width:760px; margin:auto; line-height:1.5; }
+.solution-transcript h2 { font:700 1.65rem var(--display); }
+.solution-transcript article { background:#f2ddb277; padding:.8rem 1rem; margin:.7rem 0; border:1px solid #ab8755; }
+.solution-transcript article strong { font-size:.86rem; }
+.solution-transcript article p { margin:.35rem 0 0; font-size:1rem; }
+.solution-replay { display:block; margin:.8rem auto 0; }
+</style></head><body><div id="app"></div>
+<script>(()=>{'use strict';
+// src/vocabulary.js
+const VOCABULARY = [
+  { id: 'gravis', latin: 'gravis', forms: ['gravis', 'grave'], german: ['schwer', 'charakterfest', 'ernst'], type: 'adjective' },
+  { id: 'comes', latin: 'comes', forms: ['comes', 'comitis'], german: ['begleiter', 'der begleiter'], type: 'noun' },
+  { id: 'provincia', latin: 'provincia', forms: ['provincia'], german: ['provinz', 'die provinz'], type: 'noun' },
+  { id: 'grandis', latin: 'grandis', forms: ['grandis', 'grande'], german: ['groß', 'gross', 'bedeutend'], type: 'adjective' },
+  { id: 'mos', latin: 'mos', forms: ['mos', 'moris'], german: ['sitte', 'brauch', 'die sitte', 'der brauch'], type: 'noun' },
+  { id: 'illustris', latin: 'illustris', forms: ['illustris', 'illustre'], german: ['bekannt', 'berühmt', 'beruehmt'], type: 'adjective' },
+  { id: 'cognoscere', latin: 'cognoscere', forms: ['cognoscere'], german: ['erfahren', 'erkennen', 'kennenlernen'], type: 'verb' },
+  { id: 'varius', latin: 'varius', forms: ['varius', 'varia', 'varium'], german: ['verschieden', 'verschiedenartig'], type: 'adjective' },
+  { id: 'dividere', latin: 'dividere', forms: ['dividere'], german: ['teilen', 'unterteilen'], type: 'verb' },
+  { id: 'omnis', latin: 'omnis', forms: ['omnis', 'omne'], german: ['jeder', 'ganz', 'alle'], type: 'adjective' },
+  { id: 'singularis', latin: 'singularis', forms: ['singularis', 'singulare'], german: ['einzigartig'], type: 'adjective' },
+  { id: 'velut', latin: 'velut', forms: ['velut'], german: ['wie zum beispiel'], type: 'adverb' },
+  { id: 'vas', latin: 'vas', forms: ['vas', 'vasis'], german: ['gefäß', 'gefaess', 'das gefäß', 'das gefaess'], type: 'noun' },
+  { id: 'praebere', latin: 'praebere', forms: ['praebere'], german: ['bieten', 'gewähren', 'gewaehren', 'anbieten'], type: 'verb' },
+  { id: 'ubi', latin: 'ubi', forms: ['ubi'], german: ['als', 'sobald'], type: 'conjunction' },
+  { id: 'regius', latin: 'regius', forms: ['regius', 'regia', 'regium'], german: ['königlich', 'koeniglich'], type: 'adjective' },
+  { id: 'audax', latin: 'audax', forms: ['audax'], german: ['wagemutig', 'frech'], type: 'adjective' },
+  { id: 'audere', latin: 'audere', forms: ['audere'], german: ['wagen'], type: 'verb' },
+  { id: 'agere', latin: 'agere', forms: ['agere'], german: ['tun', 'handeln'], type: 'verb' },
+  { id: 'alius', latin: 'alius', forms: ['alius', 'alia', 'aliud'], german: ['ein anderer'], type: 'pronoun' },
+  { id: 'modus', latin: 'modus', forms: ['modus'], german: ['art', 'weise', 'die art', 'die weise'], type: 'noun' },
+  { id: 'mittere', latin: 'mittere', forms: ['mittere'], german: ['schicken', 'wegschicken'], type: 'verb' },
+  { id: 'felix', latin: 'felix', forms: ['felix'], german: ['glücklich', 'gluecklich'], type: 'adjective' },
+  { id: 'ingens', latin: 'ingens', forms: ['ingens'], german: ['ungeheuer groß', 'ungeheuer gross'], type: 'adjective' },
+  { id: 'celer', latin: 'celer', forms: ['celer', 'celeris', 'celere'], german: ['schnell'], type: 'adjective' },
+  { id: 'acer', latin: 'acer', forms: ['acer', 'acris', 'acre'], german: ['energisch', 'heftig', 'scharf'], type: 'adjective' },
+  { id: 'sibi', latin: 'sibi', forms: ['sibi'], german: ['sich'], type: 'pronoun' },
+  { id: 'parare', latin: 'parare', forms: ['parare'], german: ['vorbereiten', 'zubereiten', 'sich vorbereiten', 'verschaffen'], type: 'verb' }
+];
+
+const VOCAB_BY_ID = Object.fromEntries(VOCABULARY.map(v => [v.id, v]));
+
+function normalizeAnswer(value = '') {
+  return String(value ?? '')
+    .toLocaleLowerCase('de-DE')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ß/g, 'ss')
+    .replace(/[.,;:!?()[\]{}]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isCorrectAnswer(wordId, direction, answer) {
+  const word = VOCAB_BY_ID[wordId];
+  if (!word) return false;
+  const normalized = normalizeAnswer(answer);
+  const accepted = direction === 'g2l' ? word.forms : word.german;
+  return accepted.some(v => normalizeAnswer(v) === normalized);
+}
+
+
+// src/diagnostics.js
+
+const STATUS = { SAFE: 'SICHER', UNSURE: 'UNSICHER', NOT_MASTERED: 'NICHT BEHERRSCHT', UNTESTED: 'NOCH NICHT GEPRÜFT' };
+const METHOD_WEIGHTS = { active: 3, application: 2, recognition: 1 };
+const tally = () => ({ attempts: 0, correct: 0, incorrect: 0, unaidedCorrect: 0, unresolved: 0, totalResponseMs: 0 });
+
+function blankWordStats() {
+  return { encounters: 0, correct: 0, incorrect: 0, unresolved: 0, unaidedCorrect: 0, hints: 0, exposures: 0,
+    totalResponseMs: 0, timedErrors: 0, timedUnresolved: 0, weightedEvidence: 0, lastSeenAt: null,
+    directions: { l2g: tally(), g2l: tally() }, methods: { active: tally(), recognition: tally(), application: tally() },
+    events: [], status: STATUS.UNTESTED };
+}
+function createDiagnostics() { return Object.fromEntries(VOCABULARY.map(v => [v.id, blankWordStats()])); }
+
+// A selected answer is never silently promoted to free recall. Immediate corrections
+// and repetitions of the same item cannot manufacture independent mastery evidence.
+function calculateStatus(stats) {
+  const attempts = (stats?.events || []).filter(e => e.outcome !== 'exposure');
+  if (!attempts.length) return STATUS.UNTESTED;
+  const independent = attempts.filter(e => e.outcome === 'correct' && !e.usedHint && !e.retry);
+  const unique = [...new Map(independent.map(e => [`${e.context}:${e.item}:${e.direction}`, e])).values()];
+  const active = unique.filter(e => e.method === 'active');
+  const bothActive = ['l2g', 'g2l'].every(d => active.some(e => e.direction === d));
+  const hasTransfer = unique.some(e => e.method === 'application');
+  const contexts = new Set(active.map(e => e.context));
+  let lastError = -1;
+  attempts.forEach((e,i) => { if (e.outcome === 'incorrect' || e.outcome === 'unresolved') lastError=i; });
+  const recovered = lastError < 0 || new Set(attempts.slice(lastError + 1)
+    .filter(e => e.outcome === 'correct' && !e.usedHint && !e.retry).map(e => e.context)).size >= 2;
+  if (bothActive && hasTransfer && contexts.size >= 2 && recovered) return STATUS.SAFE;
+  const recent = attempts.filter(e => e.outcome !== 'unresolved').slice(-5);
+  if (recent.filter(e => e.outcome === 'incorrect').length >= 2 && recent.filter(e => e.outcome === 'correct' && !e.usedHint).length < 2) return STATUS.NOT_MASTERED;
+  return STATUS.UNSURE;
+}
+
+function recordAttempt(diagnostics, wordId, options = {}) {
+  if (!VOCABULARY.some(v => v.id === wordId)) return null;
+  const s = diagnostics[wordId] || blankWordStats();
+  const direction = options.direction === 'g2l' ? 'g2l' : 'l2g';
+  const method = ['active','recognition','application'].includes(options.method) ? options.method : 'application';
+  const outcome = options.outcome || (options.correct === null ? 'unresolved' : options.correct ? 'correct' : 'incorrect');
+  const responseMs = Math.max(0, Math.min(3600000, Math.round(Number(options.responseMs) || 0)));
+  const context = options.context || 'unknown';
+  const item = options.item || wordId;
+  const already = s.events.some(e => e.context === context && e.item === item && e.outcome !== 'exposure');
+  const e = { context, item, direction, method, outcome, responseMs,
+    usedHint: !!options.usedHint, hintLevel: options.hintLevel || 0,
+    retry: !!options.retry || already, timed: !!options.timed, pooled: !!options.pooled,
+    reason: options.reason || '', at: new Date().toISOString() };
+  s.events.push(e);
+  s.lastSeenAt = e.at;
+  if (outcome === 'exposure') { s.exposures++; }
+  else {
+    s.encounters++;
+    s.totalResponseMs += responseMs;
+    const buckets = [s, s.directions[direction], s.methods[method]];
+    for (const b of buckets) {
+      if (b !== s) { b.attempts++; b.totalResponseMs += responseMs; }
+      if (outcome === 'correct') { b.correct++; if (!e.usedHint) b.unaidedCorrect++; }
+      if (outcome === 'incorrect') b.incorrect++;
+      if (outcome === 'unresolved') b.unresolved++;
+    }
+    if (outcome === 'incorrect' && e.timed) s.timedErrors++;
+    if (outcome === 'unresolved' && e.timed) s.timedUnresolved++;
+    if (outcome === 'correct' && !e.usedHint && !e.retry) s.weightedEvidence += METHOD_WEIGHTS[method];
+  }
+  s.status = calculateStatus(s);
+  diagnostics[wordId] = s;
+  return s;
+}
+function markHint(diagnostics, wordIds = []) {
+  for (const id of new Set(wordIds)) if (diagnostics[id]) diagnostics[id].hints++;
+}
+function summarizeDiagnostics(diagnostics) {
+  const groups = Object.fromEntries(Object.values(STATUS).map(v => [v, []]));
+  for (const word of VOCABULARY) {
+    const stats = diagnostics[word.id] || blankWordStats();
+    stats.status = calculateStatus(stats);
+    groups[stats.status].push({ ...word, stats });
+  }
+  return groups;
+}
+function needsReview(s) { return calculateStatus(s) !== STATUS.SAFE; }
+
+
+// src/state.js
+
+const ROOM_ORDER = ['prolog','forum','archive','messengers','files','senate','final','results'];
+const ROOM_PUZZLES = { forum: 'forumPass', archive: 'archiveRegister', messengers: 'courierOrder', files: 'dossierInquiry', senate: 'senateSignal', final: 'finalDispatch' };
+function createInitialState() {
+  return { version: 2, started: false, completed: false, currentRoom: 'prolog', solvedPuzzles: [], inventory: [],
+    puzzleData: {}, hintsUsed: {}, reviewQueue: [], diagnostics: createDiagnostics(),
+    startedAt: null, accumulatedSeconds: 0, soundEnabled: true, timePressure: true,
+    selectedInventoryItem: null, seed: Math.floor(Math.random() * 0x7fffffff), legacy: null, migrationNotice: '',
+    practice: null, practiceRuns: 0 };
+}
+function addInventory(state, id) { if (!state.inventory.includes(id)) state.inventory.push(id); }
+function solvePuzzle(state, id) { if (!state.solvedPuzzles.includes(id)) state.solvedPuzzles.push(id); }
+function isSolved(state, id) { return state.solvedPuzzles.includes(id); }
+function queueReview(state, id) { if (!state.reviewQueue.includes(id)) state.reviewQueue.push(id); }
+
+
+// src/persistence.js
+
+
+
+const STORAGE_KEY = 'roman-escape-state-v2';
+const LEGACY_KEY = 'roman-escape-state-v1';
+let storageNotice = '';
+const object = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const safeNumber = v => Number.isFinite(v) && v >= 0 ? v : 0;
+const oldPuzzles = { forum: ['forumLock'], archive: ['archiveShelves','archiveSeals'], messengers: ['messengerOrder','messengerPassword'], files: ['suspect'], senate: ['senateTable'], final: ['finalCipher'] };
+const itemIds = ['interceptedNote','cipherLens','courierToken','suspectSeal','senateSeal'];
+
+function migrateV1(old) {
+  const s = createInitialState();
+  s.started = !!old.started;
+  s.completed = !!old.completed;
+  s.currentRoom = s.completed ? 'results' : ROOM_ORDER.includes(old.currentRoom) ? old.currentRoom : 'prolog';
+  s.accumulatedSeconds = safeNumber(old.accumulatedSeconds);
+  s.startedAt = old.startedAt || null;
+  s.soundEnabled = old.soundEnabled !== false;
+  s.inventory = Array.isArray(old.inventory) ? [...new Set(old.inventory.filter(v => itemIds.includes(v)))] : [];
+  const oldSolved = Array.isArray(old.solvedPuzzles) ? old.solvedPuzzles : [];
+  for (const [room, ids] of Object.entries(oldPuzzles)) {
+    if (ids.every(id => oldSolved.includes(id)) || ROOM_ORDER.indexOf(room) < ROOM_ORDER.indexOf(s.currentRoom)) s.solvedPuzzles.push(ROOM_PUZZLES[room]);
+  }
+  s.legacy = { source: 'V1', importedAt: new Date().toISOString(), diagnostics: object(old.diagnostics) ? old.diagnostics : {}, hintsUsed: old.hintsUsed || {} };
+  s.migrationNotice = 'V1 übernommen: abgeschlossene Räume und Inventar bleiben erhalten. Ein begonnenes Rätsel startet als V2 neu. Alte Lernwerte stehen separat in der Historie.';
+  return s;
+}
+function validateState(raw) {
+  if (!object(raw) || ![1,2].includes(raw.version)) throw new Error('Kein unterstützter Spielstand (V1 oder V2).');
+  if (raw.version === 1) return migrateV1(raw);
+  const base = createInitialState();
+  const s = { ...base, ...raw };
+  s.version = 2;
+  s.started = !!raw.started;
+  s.completed = !!raw.completed;
+  s.currentRoom = s.completed ? 'results' : ROOM_ORDER.includes(raw.currentRoom) ? raw.currentRoom : 'prolog';
+  s.solvedPuzzles = Array.isArray(raw.solvedPuzzles) ? [...new Set(raw.solvedPuzzles.filter(v => Object.values(ROOM_PUZZLES).includes(v)))] : [];
+  s.inventory = Array.isArray(raw.inventory) ? [...new Set(raw.inventory.filter(v => itemIds.includes(v)))] : [];
+  s.puzzleData = object(raw.puzzleData) ? raw.puzzleData : {};
+  for (const [key, val] of Object.entries(s.puzzleData)) if (!object(val) || !Object.values(ROOM_PUZZLES).includes(key)) delete s.puzzleData[key];
+  s.hintsUsed = object(raw.hintsUsed) ? Object.fromEntries(Object.entries(raw.hintsUsed).filter(([key]) => Object.values(ROOM_PUZZLES).includes(key)).map(([key,v]) => [key, Math.min(3, Math.floor(safeNumber(v)))])) : {};
+  s.reviewQueue = Array.isArray(raw.reviewQueue) ? [...new Set(raw.reviewQueue.filter(id => VOCABULARY.some(w => w.id === id)))] : [];
+  s.diagnostics = Object.fromEntries(VOCABULARY.map(w => {
+    const def = blankWordStats(); const data = raw.diagnostics?.[w.id];
+    if (!object(data) || !Array.isArray(data.events)) return [w.id, def];
+    const stats = { ...def, ...data, directions: { ...def.directions, ...data.directions }, methods: { ...def.methods, ...data.methods } };
+    for (const family of ['directions','methods']) for (const key of Object.keys(def[family])) {
+      stats[family][key] = { ...def[family][key], ...(object(data[family]?.[key]) ? data[family][key] : {}) };
+      for (const field of Object.keys(def[family][key])) stats[family][key][field] = safeNumber(stats[family][key][field]);
+    }
+    for (const k of ['encounters','correct','incorrect','unresolved','unaidedCorrect','hints','exposures','totalResponseMs','timedErrors','timedUnresolved']) stats[k] = safeNumber(stats[k]);
+    stats.events = data.events.filter(e => object(e) && ['correct','incorrect','unresolved','exposure'].includes(e.outcome));
+    stats.status = calculateStatus(stats); return [w.id, stats];
+  }));
+  s.accumulatedSeconds = safeNumber(raw.accumulatedSeconds);
+  s.seed = safeNumber(raw.seed) || base.seed;
+  s.practiceRuns = safeNumber(raw.practiceRuns);
+  if (!object(s.practice) || !Array.isArray(s.practice.items)) s.practice = null;
+  else {
+    s.practice.items=s.practice.items.filter(item=>object(item)&&VOCABULARY.some(w=>w.id===item.id)&&['l2g','g2l'].includes(item.direction)).slice(0,8).map(item=>({...item,answer:String(item.answer||'').slice(0,120),responseMs:safeNumber(item.responseMs),attempts:safeNumber(item.attempts),helped:!!item.helped,done:!!item.done}));
+    s.practice.index=Math.min(s.practice.items.length,Math.floor(safeNumber(s.practice.index)));
+    s.practice.run=safeNumber(s.practice.run);
+  }
+  return s;
+}
+function loadState() {
+  storageNotice = '';
+  try {
+    const v2 = localStorage.getItem(STORAGE_KEY);
+    if (v2) return validateState(JSON.parse(v2));
+    const v1 = localStorage.getItem(LEGACY_KEY);
+    return v1 ? migrateV1(JSON.parse(v1)) : null;
+  } catch (e) {
+    storageNotice = 'Der lokale Spielstand konnte nicht gelesen werden. Er wurde nicht überschrieben. Eine Sicherungsdatei kann über „Spielstand laden“ importiert werden.';
+    return null;
+  }
+}
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); storageNotice = ''; return true; }
+  catch { storageNotice = 'Automatisches Speichern ist in diesem Browser nicht verfügbar. Sichere deinen Stand über Menü → Spielstand sichern.'; return false; }
+}
+function clearState() { try { localStorage.removeItem(STORAGE_KEY); } catch { /* Explicit new games still work without storage. */ } }
+
+
+// src/puzzles.js
+
+const L = (...ids) => ids.map(id => VOCAB_BY_ID[id].latin.toUpperCase()).join(' · ');
+const opt = (id, title, text, contradicts = []) => ({ id, title, text, contradicts });
+const field = (id, word, prompt, direction = 'g2l', accepted = null) => ({ id, word, prompt, direction, accepted });
+const group = (id, title, wordIds, correct, options, direction = 'l2g') => ({ id, title, wordIds, correct, options, direction, method: 'application' });
+
+const PUZZLES = {
+  forumPass: {
+    id: 'forumPass', room: 'forum', title: 'Der richtige Wachmann', kicker: 'I · Wachwechsel',
+    story: 'Nur einer der vier Männer gehört zum Informanten. Gib ihm die abgefangene Nachricht; der falsche Empfänger würde sie weiterreichen.',
+    sourceTitle: 'Rückseite der Nachricht',
+    source: [{ label: 'Gesucht', text: `${L('celer','audax')} · non ${L('felix')}` }],
+    footer: 'Die Verhaltensnotizen stammen vom Torposten. Alle drei Bedingungen müssen zugleich gelten.',
+    fields: [], groups: [group('guard', 'Wem vertraust du die Nachricht an?', ['celer','audax','felix'], 'severus', [
+      opt('varro','Varro','Erreicht das Tor vor allen anderen. Meidet jeden riskanten Schritt. Ist über eine verlorene Stelle bedrückt.', ['audax']),
+      opt('severus','Severus','Erreicht das Tor vor allen anderen. Geht trotz drohender Verhaftung ins Archiv. Ist über eine verlorene Stelle bedrückt.'),
+      opt('rufus','Rufus','Erreicht das Tor vor allen anderen. Geht trotz drohender Verhaftung ins Archiv. Ist mit seinem Leben rundum zufrieden.', ['felix']),
+      opt('titus','Titus','Braucht für den Weg länger als die anderen. Geht trotz drohender Verhaftung ins Archiv. Ist über eine verlorene Stelle bedrückt.', ['celer'])
+    ])],
+    hints: ['Vergleiche nicht die Namen, sondern die drei Bedingungen. Jede Akte passt zu einem Teil.', 'Die letzte Eigenschaft wird ausdrücklich verneint. Ein passender Mann muss auch die beiden anderen Bedingungen erfüllen.', 'CELER heißt schnell, AUDAX wagemutig, FELIX glücklich. Gesucht ist Severus: schnell und wagemutig, aber nicht glücklich.'],
+    reward: null, success: 'Severus öffnet den Seiteneingang.', aftermath: '„Die Nachricht wurde im Archiv abgeschrieben. Im Register fehlt genau diese Versandakte.“', next: 'archive', nextLabel: 'Das Archiv betreten'
+  },
+  archiveRegister: {
+    id:'archiveRegister', room:'archive', title:'Das ausradierte Register', kicker:'II · Archiv',
+    story:'Sechs Registerwörter wurden abgekratzt. Stelle sie aus den erhaltenen Sachvermerken wieder her. Die Wörter sind der Inhalt des Registers, kein Kennwort.',
+    sourceTitle:'Versandakte · erhaltene Randnotiz',
+    source:[{label:'Zeuge',text:'Ein zweiter Mann war dabei. Seine Rolle, das Zielgebiet und der übliche Ablauf wurden im Register festgehalten.'},{label:'Gegenstand',text:'Die Sendung lag in einem Behälter. Der Abdruck war vielen vertraut; nur der Behälter selbst war unverwechselbar.'}],
+    footer:'Schreibe die lateinischen Wörterbuchformen. Keine Wortliste, keine zusätzlichen Endungen nötig.',
+    fields:[
+      field('companion','comes','Nicht der Auftraggeber: Wie heißt die Person, die jemanden begleitet?'),
+      field('territory','provincia','Das eroberte Gebiet wird von Rom verwaltet. Welcher lateinische Registerbegriff bezeichnet dieses Gebiet?'),
+      field('custom','mos','Der Ablauf ist überlieferte Sitte, kein neuer Befehl. Welches lateinische Stichwort gehört hierher?'),
+      field('vessel','vas','Der Brief steckte in einem Gefäß. Welches lateinische Wort bezeichnet den Behälter?'),
+      field('unique','singularis','Nicht bloß auffällig oder groß: Das Stück ist einzigartig. Welches Adjektiv kennzeichnet es?'),
+      field('known','illustris','Den Siegelabdruck kennt man weithin. Gesucht ist „bekannt / berühmt“, nicht „einzigartig“.')
+    ],groups:[],
+    hints:['Die ersten vier Einträge benennen eine Rolle, ein Gebiet, einen Brauch und einen Gegenstand. Die letzten zwei beschreiben Eigenschaften.', 'Unterscheide vor allem: bekannt ist nicht dasselbe wie einzigartig. Trage echte Wörter ein, keine Anfangsbuchstaben.', 'Die sechs Einträge lauten COMES · PROVINCIA · MOS · VAS · SINGULARIS · ILLUSTRIS.'],
+    reward:'cipherLens',success:'Die Versandakte ist wieder lesbar.',aftermath:'Eine bronzene Lesescheibe liegt zwischen den Blättern. Unter ihr wird der echte Kurierauftrag sichtbar. Der bekannte Siegelabdruck gehört offenbar nicht nur einer Person.',next:'messengers',nextLabel:'Zur Botenzentrale'
+  },
+  courierOrder: {
+    id:'courierOrder',room:'messengers',title:'Eine Sendung. Kein falscher Bote.',kicker:'III · Botenzentrale',
+    story:'Die Lesescheibe legt den Originalauftrag frei. Stelle die Sendung zusammen und vervollständige zwei beschädigte Arbeitsvermerke. Erst dann verlässt sie den Hof.',
+    sourceTitle:'Originalauftrag unter der Lesescheibe',
+    source:[{label:'Person',text:`${L('comes')}: ${L('celer','audax')} · non ${L('felix')}`},{label:'Fracht',text:L('vas','singularis')},{label:'Ziel',text:L('provincia')},{label:'Handlung',text:L('mittere')}],
+    footer:'Person → Fracht → Ziel → Handlung. Antippen wählt nur aus; ausgeführt wird erst der vollständige Auftrag.',
+    fields:[field('prepare','parare','Arbeitsvermerk: Die Fracht zunächst für die Reise herrichten, noch nicht versenden. Gesuchtes Verb?'),field('dare','audere','Entscheidungsvermerk: Den gefährlichen Durchgang trotz ungewissen Ausgangs wagen. Gesuchtes Verb?')],
+    groups:[
+      group('courier','Person wählen',['comes','celer','audax','felix'],'aelia',[
+        opt('naso','Naso · Begleiter','Ist sofort reisefertig und nimmt das Risiko auf sich. Er ist mit seinem Leben rundum zufrieden.', ['felix']),
+        opt('aelia','Aelia · Begleiterin','Ist sofort reisefertig und nimmt das Risiko auf sich. Über ihren gescheiterten Plan ist sie unglücklich.'),
+        opt('dama','Dama · Begleiter','Ist sofort reisefertig, lehnt aber jeden gefährlichen Weg ab. Sein gescheiterter Plan bedrückt ihn.', ['audax']),
+        opt('livia','Livia · Begleiterin','Braucht noch sehr lange bis zur Abreise und nimmt das Risiko auf sich. Ihr gescheiterter Plan bedrückt sie.', ['celer'])
+      ]),
+      group('cargo','Fracht wählen',['vas','singularis'],'vessel',[
+        opt('scroll','Unverwechselbare Schriftrolle','Einmaliges Stück aus der Sammlung.', ['vas']),
+        opt('vessel','Unverwechselbares Tongefäß','Das einzige Stück mit dieser Form.'),
+        opt('mass','Großes Tongefäß','Eine von mehreren gleichen Vorratsformen.', ['singularis']),
+        opt('box','Unverwechselbares Holzbrett','Einmaliges Schreibbrett aus dem Archiv.', ['vas'])
+      ]),
+      group('destination','Ziel wählen',['provincia'],'territory',[
+        opt('house','Stadthaus','Privates Haus des Auftraggebers in Rom.', ['provincia']),
+        opt('territory','Verwaltetes Gebiet','Das unter römischer Verwaltung stehende eroberte Gebiet.'),
+        opt('camp','Feldlager','Vorübergehender Aufenthaltsort der Truppe.', ['provincia']),
+        opt('square','Marktplatz','Öffentlicher Platz mitten in der Stadt.', ['provincia'])
+      ]),
+      group('action','Handlung wählen',['mittere'],'send',[
+        opt('offer','Zur Verfügung stellen','Die Fracht zur Einsicht anbieten, hier im Hof.', ['mittere']),
+        opt('prepare','Reisefertig herrichten','Die Fracht packen, aber im Hof behalten.', ['mittere']),
+        opt('send','Auf den Weg schicken','Den Boten mit der Fracht zum gewählten Ziel entsenden.'),
+        opt('divide','Aufteilen','Die Fracht unter zwei wartenden Boten verteilen.', ['mittere'])
+      ])
+    ],
+    hints:['Lies jede Zeile als eigene Bedingung. Ähnliche Personen oder wertvolle Gegenstände sind nicht automatisch die richtigen.', 'Bei der Fracht müssen sowohl die Art des Gegenstands als auch seine Besonderheit stimmen. MITTERE ist nicht bloß eine Vorbereitung.', 'Wähle Aelia, das unverwechselbare Tongefäß, das verwaltete Gebiet und „Auf den Weg schicken“. Die Vermerke heißen PARARE und AUDERE.'],
+    reward:'courierToken',success:'Aelia trägt die Sendung hinaus.',aftermath:'Im zurückbleibenden Versandbeleg steht: „Das Siegel ist bekannt, also muss es eindeutig sein.“ Die Behauptung wirkt verdächtig. Der Beleg führt zu den Geheimakten.',next:'files',nextLabel:'Die Geheimakten prüfen'
+  },
+  dossierInquiry:{
+    id:'dossierInquiry',room:'files',title:'Ein bekannter Abdruck beweist nichts allein.',kicker:'IV · Geheimakten',
+    story:'Ein Schreiber behauptet, der Siegelabdruck allein überführe Lucius. Prüfe seinen Schluss am Original. Erst Rang und Begleitung können die Person eingrenzen.',
+    sourceTitle:'Original des Zeugen · nicht die Abschrift',
+    source:[{label:'Auftraggeber',text:`${L('gravis')} · non ${L('regius')}`},{label:'Sein COMES',text:L('ingens','acer')},{label:'Siegel',text:`${L('illustris')} · non ${L('singularis')}`},{label:'Schreiber folgert',text:'„Dieser Abdruck kann nur einem einzigen Besitzer gehören. Deshalb stammt die Nachricht ohne weiteren Vergleich von Lucius.“'}],
+    footer:'GRAVIS beschreibt hier die Haltung in einer Beratung, nicht ein Körpergewicht. ACER beschreibt das Auftreten des Begleiters.',
+    fields:[field('bearing','gravis','Welches deutsche Merkmal drückt GRAVIS in dieser Beschreibung der Haltung aus?', 'l2g',['ernst','charakterfest']),field('manner','acer','Wie tritt der Begleiter laut ACER auf? Gib eine passende deutsche Bedeutung ein.', 'l2g')],
+    groups:[
+      group('interpretation','Welche berichtigte Schlussfolgerung trägt?',['illustris','singularis'],'compare',[
+        opt('unique','Der Abdruck ist einmalig.','Nur die Begleitung muss jetzt noch bestätigt werden.', ['illustris','singularis']),
+        opt('compare','Der Abdruck ist bekannt, aber nicht einzigartig.','Er reicht allein nicht aus; vergleiche zusätzlich Rang und Begleitung.'),
+        opt('unknown','Der Abdruck ist unbekannt, aber einmalig.','Nur ein Abgleich mit dem Siegelbesitzer kann weiterhelfen.', ['illustris','singularis']),
+        opt('ignore','Der Abdruck ist unbekannt und nicht einzigartig.','Seine Herkunft kann deshalb gar nicht untersucht werden.', ['illustris'])
+      ]),
+      group('suspect','Welche Akte passt zum Original?',['regius','ingens','acer','comes','gravis'],'lucius',[
+        opt('cassius','Cassius','Berät besonnen. Kein Hofamt. Sein Begleiter überragt alle deutlich, zieht sich im Streit jedoch zurück.', ['acer']),
+        opt('lucius','Lucius','Berät besonnen. Kein Hofamt. Sein Begleiter überragt alle deutlich und tritt im Streit entschlossen auf.'),
+        opt('marcus','Marcus','Berät besonnen. Königlicher Beauftragter. Sein Begleiter überragt alle deutlich und tritt im Streit entschlossen auf.', ['regius']),
+        opt('titus','Titus','Berät besonnen. Kein Hofamt. Sein Begleiter ist nur etwas größer als üblich und tritt im Streit entschlossen auf.', ['ingens'])
+      ])
+    ],
+    hints:['Der Schreiber behauptet mehr, als der erste Teil der Quelle hergibt. Suche nicht nur einen Übersetzungsfehler, sondern einen falschen Schluss.', 'ILLUSTRIS und SINGULARIS sind keine Synonyme. Prüfe bei den Personen dann Rang, Größenangabe und Auftreten getrennt.', 'ILLUSTRIS heißt bekannt, SINGULARIS einzigartig. GRAVIS bedeutet hier ernst/charakterfest; ACER energisch/heftig. Der Abdruck reicht nicht aus. Nur Lucius hat keinen königlichen Rang und einen ungeheuer großen, energischen Begleiter.'],
+    reward:'suspectSeal',success:'Die Zeugenaussage belastet Lucius.',aftermath:'Nicht der verbreitete Abdruck allein, sondern die übereinstimmende Beschreibung identifiziert ihn. Eine Randanweisung zeigt: Er will Hilfe nur für sich. Jetzt müssen die Beweise in den Senat.',next:'senate',nextLabel:'Zum Senat'
+  },
+  senateSignal:{
+    id:'senateSignal',room:'senate',title:'Die Schritte im Seitengang',kicker:'V · Senat',
+    story:'Die Wache kehrt zurück. Bringe drei Anweisungen in Ordnung, solange der Seitengang frei ist. Du kennst die Bedienung: Auftrag lesen, Handlung antippen, ausführen.',
+    sourceTitle:'Einsatztafel',source:[],footer:'Ein Zeitablauf sperrt dich nicht aus. Die Wache zieht vorbei; du setzt ohne Zeitlimit fort.',
+    fields:[], timedSeconds:55,
+    groups:[
+      group('stock','Bestand: OMNIS · VAS. Auftrag: DIVIDERE.',['omnis','vas','dividere'],'all',[
+        opt('one','Nur eines verteilen','Ein Gefäß unter zwei Beweisgruppen aufteilen; die übrigen behalten.', ['omnis']),
+        opt('all','Den ganzen Bestand verteilen','Alle Gefäße auf zwei Beweisgruppen aufteilen.'),
+        opt('pack','Den ganzen Bestand herrichten','Alle Gefäße für die Abreise packen; noch keines verteilen.', ['dividere']),
+        opt('scrolls','Die Schriftrollen verteilen','Alle Schriftrollen auf zwei Beweisgruppen aufteilen.', ['vas'])
+      ]),
+      group('support',`Fracht: ${L('parare')}. Risiko: ${L('audere')}. Hilfe: ${L('praebere')} → ${L('alius')}, nicht ${L('sibi')}.`,['parare','audere','praebere','alius','sibi'],'other',[
+        opt('self','Bereitstellen und riskieren','Die Fracht herrichten, den riskanten Weg wagen und Hilfe für sich selbst beanspruchen.', ['alius','sibi','praebere']),
+        opt('other','Bereitstellen und riskieren','Die Fracht herrichten, den riskanten Weg wagen und einem anderen Hilfe anbieten.'),
+        opt('ship','Abschicken und riskieren','Die Fracht sofort abschicken, den riskanten Weg wagen und einem anderen Hilfe anbieten.', ['parare']),
+        opt('avoid','Bereitstellen und absichern','Die Fracht herrichten, jedes Risiko meiden und einem anderen Hilfe anbieten.', ['audere'])
+      ]),
+      group('investigate','Erst die neue Information erfahren, danach handeln. Welche beiden Verben halten das fest?',['cognoscere','agere'],'learnact',[
+        opt('prepareact',L('parare','agere'),'Erster Vermerk → zweiter Vermerk', ['cognoscere']),
+        opt('learnact',L('cognoscere','agere'),'Erster Vermerk → zweiter Vermerk'),
+        opt('learnsend',L('cognoscere','mittere'),'Erster Vermerk → zweiter Vermerk', ['agere']),
+        opt('actlearn',L('agere','cognoscere'),'Erster Vermerk → zweiter Vermerk', ['cognoscere','agere'])
+      ],'g2l')
+    ],
+    hints:['Lies auch den Umfang und den Empfänger der Anweisung. Eine passende Tätigkeit allein genügt nicht.', 'Prüfe besonders OMNIS sowie den Gegensatz ALIUS / SIBI. Bei der letzten Notiz muss die Information vor der Handlung stehen.', 'Verteile alle Gefäße. Richte die Fracht her, wage den Weg und biete einem anderen Hilfe an. Die letzte Folge heißt COGNOSCERE → AGERE.'],
+    reward:'senateSeal',success:'Die Beweisgruppen sind vorbereitet.',aftermath:'Die Wache geht vorüber. Das Senatssiegel bestätigt den Empfangsweg. Lucius lässt einen letzten falschen Transportauftrag verbreiten – nur der rekonstruierte Originalauftrag darf ausgeführt werden.',next:'final',nextLabel:'Den Originalauftrag sichern'
+  },
+  finalDispatch:{
+    id:'finalDispatch',room:'final',title:'Die letzte Übergabe',kicker:'VI · Beweistransport',
+    story:'Die echte Anweisung wurde beschädigt. Ergänze zuerst die fehlenden Personenmerkmale. Stelle dann den Beweistransport anhand aller vier Teile zusammen.',
+    sourceTitle:'Originalauftrag · vier zusammengehörige Teile',
+    source:[
+      {label:'Empfänger der Fracht',text:'COMES: [deine drei rekonstruierten Merkmale; das dritte wird verneint]'},
+      {label:'Behälter und Inhalt',text:`${L('vas')}: ${L('singularis')}, nicht bloß ${L('grandis')}. Inhalt: ${L('omnis')} Akten.`},
+      {label:'Weg',text:`Bisheriger ${L('mos')}: immer das Westtor. Jetzt: ${L('alius','modus')}; ${L('varius')} Wege, ${L('velut')} Osttor.`},
+      {label:'Übergabe',text:`${L('ubi')} Glockenzeichen: den Befund ${L('cognoscere')}, danach ${L('agere')}.`},
+      {label:'Deutscher Arbeitsvermerk',text:'Das Beweismaterial zunächst in Zeugensätze unterteilen; anschließend dem Senat zur Einsicht anbieten. Die beiden Verben müssen auf der Übergabetafel lateinisch stehen.'}
+    ],
+    footer:'Die Zielstelle ist der Senat. Ein Beispiel ist nicht automatisch der einzig erlaubte Weg. Eine bestätigte Auswahl allein führt noch keine Übergabe aus.',
+    fields:[], groups:[],
+    hints:['Lies Behälter, Umfang, Weg und Übergabe als getrennte Bedingungen. Große Gegenstände oder vertraute Wege können trotzdem falsch sein.', 'Unterscheide GRANDIS von SINGULARIS, OMNIS von nur einem Teil und VELUT von einer verbindlichen Einzelroute. Bei UBI entscheidet das Glockenzeichen über den Zeitpunkt.', 'Wähle die Person mit allen rekonstruierten Merkmalen, das unverwechselbare Gefäß mit allen Akten, das geänderte Verfahren mit mehreren erlaubten Wegen und die Übergabe beim Glockenzeichen: erst den Befund erfahren, danach DIVIDERE → PRAEBERE.'],
+    reward:null,success:'Die Beweise erreichen den Senat.',aftermath:'Lucius kann die Nachricht nicht mehr austauschen. Der Zeugenbericht und der richtige Auftrag werden gemeinsam verlesen. Die Verschwörung wurde rechtzeitig aufgedeckt.',next:'results',nextLabel:'Mission abschließen'
+  }
+};
+
+function finalDefinition(variant = 'swift') {
+  const steady = variant === 'steady';
+  const personWords = steady ? ['gravis','acer','regius'] : ['celer','audax','felix'];
+  const fields = steady ? [
+    field('trait1','gravis','Der Begleiter soll mit innerer Festigkeit beraten, nicht leichtfertig. Gesucht ist das lateinische Adjektiv für „ernst / charakterfest“.'),
+    field('trait2','acer','Sein Auftreten soll energisch sein. Welches lateinische Adjektiv fehlt?'),
+    field('trait3','regius','Er darf kein königlicher Beauftragter sein. Welches Adjektiv muss hinter NON stehen?')
+  ] : [
+    field('trait1','celer','Der Begleiter soll keine Zeit verlieren und schnell sein. Welches lateinische Adjektiv fehlt?'),
+    field('trait2','audax','Er muss trotz Gefahr wagemutig bleiben. Welches lateinische Adjektiv fehlt?'),
+    field('trait3','felix','Er ist gerade nicht glücklich. Welches lateinische Adjektiv muss hinter NON stehen?')
+  ];
+  const people = steady ? [
+    opt('clara','Clara','Berät mit innerer Festigkeit. Tritt energisch auf. Hat kein königliches Amt.'),
+    opt('nero','Nero','Berät mit innerer Festigkeit. Tritt energisch auf. Ist königlicher Beauftragter.', ['regius']),
+    opt('livia','Livia','Berät leichtfertig. Tritt energisch auf. Hat kein königliches Amt.', ['gravis']),
+    opt('dama','Dama','Berät mit innerer Festigkeit. Tritt kraftlos auf. Hat kein königliches Amt.', ['acer'])
+  ] : [
+    opt('clara','Clara','Kann sofort vorausgehen. Nimmt einen gefährlichen Weg in Kauf. Ist über ihre letzte Niederlage unglücklich.'),
+    opt('nero','Nero','Kann sofort vorausgehen. Nimmt einen gefährlichen Weg in Kauf. Ist mit seinem Leben rundum glücklich.', ['felix']),
+    opt('livia','Livia','Trifft erst lange nach allen anderen ein. Nimmt einen gefährlichen Weg in Kauf. Ist über ihre Niederlage unglücklich.', ['celer']),
+    opt('dama','Dama','Kann sofort vorausgehen. Verweigert jeden gefährlichen Weg. Ist über seine Niederlage unglücklich.', ['audax'])
+  ];
+  const groups = [
+    group('carrier','Wer trägt den Beweis?',['comes',...personWords],'clara',people),
+    group('evidence','Was wird übergeben?',['vas','singularis','grandis','omnis'],'complete',[
+      opt('large','Großes Gefäß · alle Akten','Gewöhnliche Vorratsform, aber vollständig beladen.', ['singularis','grandis']),
+      opt('complete','Unverwechselbares Gefäß · alle Akten','Einmalige Form und vollständiger Aktenbestand.'),
+      opt('partial','Unverwechselbares Gefäß · eine Akte','Einmalige Form, mit nur dem ersten Zeugenbericht.', ['omnis']),
+      opt('board','Unverwechselbares Schreibbrett · alle Akten','Einmaliges Brett mit angeheftetem vollständigem Aktenbestand.', ['vas'])
+    ]),
+    group('route','Welches Verfahren gilt?',['mos','alius','modus','varius','velut'],'changed',[
+      opt('habit','Beim bisherigen Ablauf bleiben','Alle Nachrichten weiter ausschließlich durch das Westtor.', ['alius','modus']),
+      opt('changed','Den bisherigen Ablauf ändern','Verschiedene Wege zulassen; das Osttor ist ein mögliches Beispiel.'),
+      opt('eastonly','Den bisherigen Ablauf ändern','Ab jetzt ausschließlich das Osttor benutzen; andere Wege sind ausgeschlossen.', ['velut','varius']),
+      opt('same','Beim bisherigen Ablauf bleiben','Der unveränderte Ablauf verbietet nun das bisherige Westtor.', ['mos','alius','modus'])
+    ]),
+    { ...group('handover','Wann und mit welchen Arbeitsvermerken?',['ubi','cognoscere','agere','dividere','praebere'],'signal',[
+      opt('before',`${L('dividere')} → ${L('praebere')}`,'Vor dem Glockenzeichen den Befund erfahren, dann entsprechend handeln.', ['ubi']),
+      opt('signal',`${L('dividere')} → ${L('praebere')}`,'Beim Glockenzeichen den Befund erfahren, dann entsprechend handeln.'),
+      opt('reverse',`${L('praebere')} → ${L('dividere')}`,'Beim Glockenzeichen den Befund erfahren, dann entsprechend handeln.', ['dividere','praebere']),
+      opt('actfirst',`${L('dividere')} → ${L('praebere')}`,'Beim Glockenzeichen zuerst handeln, den Befund erst danach erfahren.', ['cognoscere','agere'])
+    ]), evidenceDirections:{dividere:'g2l',praebere:'g2l'} }
+  ];
+  const p = { ...PUZZLES.finalDispatch, fields, groups, personWords, variant };
+  p.wordIds = [...new Set([...fields.map(f=>f.word),...groups.flatMap(g=>g.wordIds)])];
+  return p;
+}
+for (const p of Object.values(PUZZLES)) p.wordIds = [...new Set([...p.fields.map(f => f.word),...p.groups.flatMap(g => g.wordIds)])];
+function puzzleForRoom(roomId, solvedPuzzles) { return Object.values(PUZZLES).find(p=>p.room===roomId && !solvedPuzzles.includes(p.id)) || null; }
+
+
+// src/rooms.js
+const ROOM_META = {
+  prolog: { title: 'Rom, 63 v. Chr.', objective: 'Sichere die abgefangene Nachricht.' },
+  forum: { title: 'Tor zum Forum', objective: 'Vertraue die Nachricht dem richtigen Wachmann an.' },
+  archive: { title: 'Archiv', objective: 'Stelle den Inhalt des beschädigten Registers wieder her.' },
+  messengers: { title: 'Botenzentrale', objective: 'Führe den echten Kurierauftrag aus.' },
+  files: { title: 'Geheimakten', objective: 'Widerlege den Fehlschluss und identifiziere den Auftraggeber.' },
+  senate: { title: 'Senat', objective: 'Sichere die Beweisgruppen, bevor die Wache zurückkehrt.' },
+  final: { title: 'Die letzte Übergabe', objective: 'Rekonstruiere den Auftrag und bringe die Beweise in den Senat.' },
+  results: { title: 'Auswertung', objective: 'Die Mission ist abgeschlossen. Prüfe deine Lernspuren.' }
+};
+const INVENTORY = {
+  interceptedNote: { name: 'Abgefangene Nachricht', shortName:'Nachricht', symbol: '✦', description: 'Eine hastig versiegelte Nachricht: „Vor der Sitzung muss alles vorbereitet sein.“ Die Personenbeschreibung auf der Rückseite hat dich ins Archiv geführt.' },
+  cipherLens: { name: 'Bronzene Lesescheibe', shortName:'Lesescheibe', symbol: '◉', description: 'Aus dem restaurierten Archivregister. Die Scheibe legt in der Botenzentrale die ursprünglichen Schriftzüge unter der Abschrift frei.' },
+  courierToken: { name: 'Versandbeleg', shortName:'Versandbeleg', symbol: '◆', description: 'Aelia hat die echte Sendung übernommen. Die Kopie behauptet zu Unrecht, ein weithin bekanntes Siegel müsse einen einzigen Besitzer haben.' },
+  suspectSeal: { name: 'Zeugenakte des Lucius', shortName:'Zeugenakte', symbol: 'L', description: 'Nicht der verbreitete Siegelabdruck allein: Rang und Begleitung stimmen nur bei Lucius mit dem Original überein. Die Akte enthält seinen belastenden Auftrag.' },
+  senateSeal: { name: 'Senatssiegel', shortName:'Senatssiegel', symbol: 'SPQR', description: 'Bestätigt den Empfangsweg der Beweise. Für den letzten Transport gelten der rekonstruierte Originalauftrag und die Vermerke über Umfang, Verfahren und Zeitpunkt.' }
+};
+
+
+// src/puzzleEngine.js
+
+
+
+
+function getPuzzleData(state, p) {
+  const raw = state.puzzleData[p.id] || {};
+  // Retain object identity: live handlers and the activity clock share this state.
+  const d = Object.assign(raw, { fields:{}, selections:{}, acceptedFields:[], acceptedGroups:[], attempts:{}, tab:0, responseTimes:{}, feedback:'', ...raw });
+  for (const k of ['fields','selections','attempts','responseTimes']) if (!d[k] || typeof d[k]!=='object' || Array.isArray(d[k])) d[k] = {};
+  for (const k of ['acceptedFields','acceptedGroups']) if (!Array.isArray(d[k])) d[k] = [];
+  if (!Number.isFinite(d.tab)) d.tab = 0;
+  state.puzzleData[p.id] = d;
+  return d;
+}
+function activeDefinition(state,p) {
+  if (p.id !== 'finalDispatch') return p;
+  const d = getPuzzleData(state,p);
+  if (!['swift','steady'].includes(d.variant)) {
+    const score = ids=>ids.reduce((sum,id)=>sum+(state.diagnostics[id]?.incorrect||0)*3+(state.diagnostics[id]?.unresolved||0),0);
+    d.variant = score(['gravis','acer','regius']) > score(['celer','audax','felix']) ? 'steady' : 'swift';
+  }
+  return finalDefinition(d.variant);
+}
+function orderedOptions(options, seed, salt) {
+  let n = (Number(seed)||1) >>> 0;
+  for (const ch of salt) n = (Math.imul(n,31)+ch.charCodeAt(0))>>>0;
+  const result = [...options];
+  for (let i=result.length-1;i>0;i--) {
+    n = (Math.imul(n,1664525)+1013904223)>>>0;
+    const j=n%(i+1); [result[i],result[j]]=[result[j],result[i]];
+  }
+  return result;
+}
+function fieldCorrect(f, value) {
+  if (!isCorrectAnswer(f.word,f.direction,value)) return false;
+  return !f.accepted || f.accepted.some(v=>normalizeAnswer(v)===normalizeAnswer(value));
+}
+function recordEvidence(state,p,d,id,item,direction,method,outcome,extra={}) {
+  const hintLevel = state.hintsUsed[p.id]||0;
+  recordAttempt(state.diagnostics,id,{context:p.id,item,direction,method,outcome,usedHint:hintLevel>0||!!d.solutionShown,
+    hintLevel,responseMs:d.responseTimes[item]||0,retry:(d.attempts[item]||0)>0,...extra});
+  if (outcome==='incorrect'||outcome==='unresolved') queueReview(state,id);
+  else if (!needsReview(state.diagnostics[id])) state.reviewQueue = state.reviewQueue.filter(v=>v!==id);
+}
+function checkField(state,p,d,f) {
+  if (d.acceptedFields.includes(f.id)) return true;
+  const value=d.fields[f.id]||'';
+  if (!String(value).trim()) return null;
+  const correct=fieldCorrect(f,value);
+  const contextMismatch=!correct&&isCorrectAnswer(f.word,f.direction,value);
+  recordEvidence(state,p,d,f.word,f.id,f.direction,'active',correct?'correct':'incorrect',{reason:contextMismatch?'context-mismatch':''});
+  d.attempts[f.id]=(d.attempts[f.id]||0)+1;
+  d.responseTimes[f.id]=0;
+  if (correct) d.acceptedFields.push(f.id);
+  return correct;
+}
+function checkGroup(state,p,d,g,timed=false) {
+  if(d.acceptedGroups.includes(g.id))return true;
+  const chosen=g.options.find(v=>v.id===d.selections[g.id]);
+  if(!chosen)return null;
+  const correct=chosen.id===g.correct;
+  const bad=chosen.contradicts||[];
+  // Only one unambiguously violated lexical condition permits individual error
+  // attribution. A multi-condition mismatch is explicitly unresolved, not N errors.
+  for(const id of g.wordIds){
+    const outcome=correct?'correct':bad.length===1&&bad[0]===id?'incorrect':'unresolved';
+    recordEvidence(state,p,d,id,g.id,g.evidenceDirections?.[id]||g.direction,g.method,outcome,{timed,pooled:true});
+  }
+  d.attempts[g.id]=(d.attempts[g.id]||0)+1;
+  d.responseTimes[g.id]=0;
+  if(correct)d.acceptedGroups.push(g.id);
+  return correct;
+}
+function allAnswered(p,d) { return p.fields.every(f=>d.acceptedFields.includes(f.id)||String(d.fields[f.id]||'').trim())&&p.groups.every(g=>d.acceptedGroups.includes(g.id)||g.options.some(o=>o.id===d.selections[g.id])); }
+function allAccepted(p,d) { return p.fields.every(f=>d.acceptedFields.includes(f.id))&&p.groups.every(g=>d.acceptedGroups.includes(g.id)); }
+function finishPuzzle(state,p) { solvePuzzle(state,p.id);if(p.reward)addInventory(state,p.reward); }
+function revealSolution(state,p,d) {
+  d.solutionShown=true;
+  const pending=new Set([...p.fields.filter(f=>!d.acceptedFields.includes(f.id)).map(f=>f.word),...p.groups.filter(g=>!d.acceptedGroups.includes(g.id)).flatMap(g=>g.wordIds)]);
+  for(const id of pending)recordAttempt(state.diagnostics,id,{context:p.id,item:'solution',method:'application',outcome:'exposure',usedHint:true});
+  for(const f of p.fields)d.fields[f.id]=f.direction==='g2l'?VOCAB_BY_ID[f.word].latin:(f.accepted?.[0]||VOCAB_BY_ID[f.word].german[0]);
+  for(const g of p.groups)d.selections[g.id]=g.correct;
+  d.acceptedFields=p.fields.map(f=>f.id);d.acceptedGroups=p.groups.map(g=>g.id);
+  if(d.timer)d.timer.running=false;
+  finishPuzzle(state,p);
+}
+function timerState(state,d) {
+  if(!d.timer||typeof d.timer!=='object'||Array.isArray(d.timer))d.timer={remainingMs:55000,started:false,running:false,expired:false,disabled:!state.timePressure,penalties:0};
+  d.timer.remainingMs=Number.isFinite(d.timer.remainingMs)?Math.max(0,Math.min(55000,d.timer.remainingMs)):55000;
+  return d.timer;
+}
+function advanceTimer(timer,deltaMs) {
+  if(!timer.started||!timer.running||timer.expired||timer.disabled)return false;
+  timer.remainingMs=Math.max(0,timer.remainingMs-Math.max(0,deltaMs));
+  if(timer.remainingMs===0){timer.expired=true;timer.running=false;return true;}
+  return false;
+}
+function penalizeTimer(timer) { if(!timer.running||timer.disabled||timer.expired)return false;timer.penalties++;return advanceTimer(timer,3000); }
+
+
+// src/hints.js
+
+function revealNextHint(state,p,d) {
+  const before=state.hintsUsed[p.id]||0;
+  if(before>=3)return 3;
+  state.hintsUsed[p.id]=before+1;
+  const pending=[...p.fields.filter(f=>!d.acceptedFields.includes(f.id)).map(f=>f.word),...p.groups.filter(g=>!d.acceptedGroups.includes(g.id)).flatMap(g=>g.wordIds)];
+  markHint(state.diagnostics,pending);
+  return before+1;
+}
+
+
+// src/ui.js
+
+
+function escapeHtml(value = '') {
+  return String(value).replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+function formatTime(seconds) {
+  const n=Math.max(0,Math.floor(seconds||0));
+  return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;
+}
+function paperSource(p,d) {
+  let source=p.source;
+  if(p.id==='finalDispatch'&&p.fields.every(f=>d.acceptedFields.includes(f.id))){
+    const words=p.personWords.map(id=>VOCAB_BY_ID[id].latin.toUpperCase());
+    source=p.source.map((s,i)=>i? s:{...s,text:`COMES: ${words[0]} · ${words[1]} · non ${words[2]}`});
+  }
+  return `<aside class="source-sheet" aria-label="Dokument mit Hinweisen">
+    <div class="sheet-pin" aria-hidden="true"></div><p class="eyebrow dark">Original · gesicherte Quelle</p>
+    <h2>${escapeHtml(p.sourceTitle)}</h2>
+    ${source.map(s=>`<div class="source-line"><span>${escapeHtml(s.label)}</span><p>${escapeHtml(s.text)}</p></div>`).join('')}
+    <p class="document-footnote">${escapeHtml(p.footer)}</p>
+    <div class="reading-key"><strong>Leseschlüssel</strong><span>NON = nicht. Lateinische Stichwörter statt vollständiger Sätze. Neue Grammatik ist nicht nötig.</span></div>
+  </aside>`;
+}
+function puzzleTabs(p) {
+  const gs=p.groups.map(g=>({id:g.id,label:({guard:'Wachmann',courier:'Person',cargo:'Fracht',destination:'Ziel',action:'Handlung',interpretation:'Fehlschluss',suspect:'Akte',carrier:'Person',evidence:'Fracht',route:'Verfahren',handover:'Übergabe'})[g.id]||g.id,group:g}));
+  if(!p.fields.length)return gs;
+  const f={id:'fields',label:({archiveRegister:'Register',courierOrder:'Vermerke',dossierInquiry:'Wortbefund',finalDispatch:'Merkmale'})[p.id]||'Vermerke',fields:p.fields};
+  return p.id==='courierOrder'?[...gs,f]:[f,...gs];
+}
+function choiceGroup(state,p,d,g) {
+  const accepted=d.acceptedGroups.includes(g.id);
+  const selected=d.selections[g.id];
+  const order=orderedOptions(g.options,state.seed,`${p.id}:${g.id}`);
+  return `<fieldset class="case-group"><legend id="stage-heading" tabindex="-1">${escapeHtml(g.title)}</legend>
+    <p class="interaction-caption">${accepted?'Diese Station ist bereits gesichert.':'Eine Auswahl antippen. Die Markierung lässt sich vor der Ausführung ändern.'}</p>
+    <div class="case-options" role="group" aria-label="Mögliche Entscheidungen">${order.map((o,i)=>`
+      <button type="button" class="case-option ${selected===o.id?'selected':''}" data-select="${escapeHtml(o.id)}" data-group="${escapeHtml(g.id)}" aria-pressed="${selected===o.id}" ${accepted?'disabled':''}>
+        <span class="option-identity" aria-hidden="true">${['guard','courier','suspect','carrier'].includes(g.id)?escapeHtml(o.title.slice(0,1)):'⌁'}</span>
+        <span class="option-copy"><strong>${escapeHtml(o.title)}</strong><span>${escapeHtml(o.text)}</span></span>
+        <span class="choice-state" aria-hidden="true">${selected===o.id?'✓':'○'}</span>
+      </button>`).join('')}</div></fieldset>`;
+}
+function fieldsPanel(p,d,fields) {
+  return `<form data-fields-form autocomplete="off"><h2 id="stage-heading" tabindex="-1">${p.id==='archiveRegister'?'Register wiederherstellen':p.id==='finalDispatch'?'Fehlende Personenmerkmale':p.id==='dossierInquiry'?'Den Wortbefund selbst festhalten':'Die beschädigten Vermerke'}</h2>
+    <p class="interaction-caption">${fields[0]?.direction==='l2g'?'Eine passende deutsche Bedeutung je Feld.':'Lateinische Wörter selbst eintragen. Groß- und Kleinschreibung spielt keine Rolle.'}</p>
+    <div class="register-fields">${fields.map((f,i)=>{
+      const accepted=d.acceptedFields.includes(f.id);
+      const failed=(d.attempts[f.id]||0)>0&&!accepted;
+      return `<label class="register-entry ${accepted?'secured':''}" for="field-${escapeHtml(f.id)}"><span class="entry-number" aria-hidden="true">${String(i+1).padStart(2,'0')}</span><span class="entry-body"><span>${escapeHtml(f.prompt)}</span>
+        <input id="field-${escapeHtml(f.id)}" name="${escapeHtml(f.id)}" data-field="${escapeHtml(f.id)}" value="${escapeHtml(d.fields[f.id]||'')}" maxlength="120" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" ${accepted?'readonly':''} ${failed?'aria-invalid="true"':''} aria-describedby="field-state-${escapeHtml(f.id)}">
+        <small id="field-state-${escapeHtml(f.id)}">${accepted?'Eintrag gesichert':failed?'Eintrag noch nicht passend – überarbeite ihn.':f.direction==='l2g'?'Deutsch':'Latein'}</small></span></label>`;
+    }).join('')}</div>
+    <button type="submit" class="sr-only" tabindex="-1" aria-hidden="true">Einträge übernehmen</button></form>`;
+}
+function completedRoom(headline,body,buttonLabel,nextRoom,reward='') {
+  return `<section class="scene transition-scene"><div class="transition-card"><div class="success-glyph" aria-hidden="true">⌁</div><p class="eyebrow">Die Spur ist gesichert</p><h2 tabindex="-1">${escapeHtml(headline)}</h2><p>${escapeHtml(body)}</p>${reward?`<p class="found-item">Im Inventar: ${escapeHtml(reward)}</p>`:''}<button class="primary-btn" data-next-room="${escapeHtml(nextRoom)}">${escapeHtml(buttonLabel)}</button></div></section>`;
+}
+
+
+// src/inventory.js
+
+
+function renderInventory(state) {
+  return `<footer class="inventory-bar" aria-label="Inventar"><span class="inventory-title">Fundstücke</span><div class="inventory-items">${state.inventory.filter(id=>INVENTORY[id]).map(id=>{
+    const item=INVENTORY[id];
+    return `<button class="inventory-item" data-item="${escapeHtml(id)}" aria-label="${escapeHtml(item.name)} untersuchen"><span class="inventory-symbol" aria-hidden="true">${escapeHtml(item.symbol)}</span><span>${escapeHtml(item.shortName)}</span></button>`;
+  }).join('')||'<span class="inventory-empty">Noch keine Fundstücke.</span>'}</div></footer>`;
+}
+
+
+// src/practice.js
+
+
+function buildPractice(state) {
+  const priority=s=>s.status===STATUS.NOT_MASTERED?100+s.incorrect:s.status===STATUS.UNTESTED?50:20+s.incorrect*3+s.unresolved;
+  const words=VOCABULARY.filter(w=>calculateStatus(state.diagnostics[w.id])!==STATUS.SAFE)
+    .sort((a,b)=>priority(state.diagnostics[b.id])-priority(state.diagnostics[a.id])).slice(0,8);
+  state.practiceRuns++;
+  return {run:state.practiceRuns,index:0,items:words.map(w=>{
+    const events=state.diagnostics[w.id].events.filter(e=>e.method==='active'&&e.outcome==='correct'&&!e.usedHint&&!e.retry);
+    const direction=events.filter(e=>e.direction==='l2g').length<=events.filter(e=>e.direction==='g2l').length?'l2g':'g2l';
+    return {id:w.id,direction,answer:'',helped:false,attempts:0,done:false,responseMs:0,feedback:''};
+  })};
+}
+
+
+// src/sound.js
+let ctx = null;
+
+function getContext() {
+  if (!ctx) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) { try { ctx = new AudioCtx(); } catch { return null; } }
+  }
+  return ctx;
+}
+
+function playSound(kind, enabled = true) {
+  if (!enabled) return;
+  const audio = getContext();
+  if (!audio) return;
+  if (audio.state === 'suspended') audio.resume().catch(() => {});
+  const now = audio.currentTime;
+  const oscillator = audio.createOscillator();
+  const gain = audio.createGain();
+  const map = {
+    tap: [320, 0.025, 0.025],
+    success: [520, 0.08, 0.05],
+    error: [150, 0.06, 0.04],
+    unlock: [240, 0.12, 0.08],
+    paper: [700, 0.035, 0.02]
+  };
+  const [freq, duration, volume] = map[kind] || map.tap;
+  oscillator.type = kind === 'error' ? 'square' : 'sine';
+  oscillator.frequency.setValueAtTime(freq, now);
+  if (kind === 'success') oscillator.frequency.exponentialRampToValueAtTime(760, now + duration);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  oscillator.connect(gain).connect(audio.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.01);
+}
+
+
+// src/app.js
+
+
+
+
+
+
+
+
+
+
+
+
+const app = document.querySelector('#app');
+let state = loadState() || createInitialState();
+let screen = 'landing';
+let lastClock = performance.now();
+let lastAutoSave = performance.now();
+let inspectionCleanup = null;
+let modalOpen = false;
+let modalKind = '';
+let restoreFocus = null;
+let toastTimeout = null;
+
+function currentPuzzle() {
+  const base=puzzleForRoom(state.currentRoom,state.solvedPuzzles);
+  return base?activeDefinition(state,base):null;
+}
+function tickActivity() {
+  const now=performance.now();
+  const elapsed=Math.max(0,now-lastClock);lastClock=now;
+  if(document.hidden)return;
+  if(modalKind==='practice'&&state.practice){
+    const item=state.practice.items[state.practice.index];
+    if(item&&!item.done)item.responseMs=(item.responseMs||0)+elapsed;
+  }
+  if(screen!=='game'||modalOpen||!state.started||state.completed)return;
+  state.accumulatedSeconds+=elapsed/1000;
+  const p=currentPuzzle();
+  if(!p)return;
+  const d=getPuzzleData(state,p);
+  if(p.id==='senateSignal'){
+    const t=timerState(state,d);
+    if(t.started){
+      const g=p.groups.find(g=>!d.acceptedGroups.includes(g.id));
+      if(g)d.responseTimes[g.id]=(d.responseTimes[g.id]||0)+elapsed;
+    }
+    if(advanceTimer(t,elapsed)){
+      d.feedback='Die Wache zieht vorbei. Der Seitengang bleibt erreichbar. Setze die noch offenen Anweisungen ohne Zeitlimit fort.';
+      toast('Das Zeitfenster ist geschlossen. Du kannst ohne Zeitdruck fortsetzen.');
+      renderRoom();
+    }else updateTimerDisplay();
+    return;
+  }
+  const tabs=puzzleTabs(p);const tab=tabs[d.tab]||tabs[0];
+  if(tab?.group&&!d.acceptedGroups.includes(tab.id))d.responseTimes[tab.id]=(d.responseTimes[tab.id]||0)+elapsed;
+  if(tab?.fields)for(const f of tab.fields)if(!d.acceptedFields.includes(f.id))d.responseTimes[f.id]=(d.responseTimes[f.id]||0)+elapsed;
+}
+function persist() {
+  tickActivity();const success=saveState(state);
+  const notice=app.querySelector('#storage-notice');
+  if(notice){notice.hidden=success;notice.textContent=success?'':storageNotice;}
+  return success;
+}
+function sound(kind){try{playSound(kind,state.soundEnabled);}catch{/* Audio never blocks an interaction. */}}
+
+function startNewGame() {
+  closeInspection(false);
+  state=createInitialState();state.started=true;state.startedAt=new Date().toISOString();
+  addInventory(state,'interceptedNote');screen='game';lastClock=performance.now();persist();render();
+}
+function confirmNewGame() {
+  if((state.started||storageNotice)&&!window.confirm('V2-Fortschritt und Lernwerte ersetzen? Der ursprüngliche V1-Spielstand bleibt separat erhalten.'))return;
+  startNewGame();
+}
+function continueGame(){screen='game';state.started=true;lastClock=performance.now();persist();render();}
+function renderLanding() {
+  const hasSave=state.started;
+  app.innerHTML=`<main class="landing-shell" aria-labelledby="game-title"><div class="landing-vignette"></div><section class="landing-card">
+    <div class="spqr-mark" aria-hidden="true">SPQR</div><p class="eyebrow">Rom · 63 v. Chr. · Version 2</p>
+    <h1 id="game-title">Die Verschwörung<br><span>im Senat</span></h1>
+    <p class="landing-copy">Ein falscher Auftrag. Ein verbreitetes Siegel. Nur wer die lateinischen Spuren versteht, bringt die richtigen Beweise in den Senat.</p>
+    ${state.migrationNotice?`<p class="migration-note">${escapeHtml(state.migrationNotice)}</p>`:''}
+    <div class="landing-actions">${hasSave?'<button class="primary-btn" data-action="continue">Spiel fortsetzen</button>':''}<button class="${hasSave?'secondary':'primary'}-btn" data-action="new">${hasSave?'Neues Spiel':'Mission beginnen'}</button></div>
+    <p class="landing-note">Sechs Schauplätze · keine Zahlencodes · lokal gespeichert</p>
+    <button class="landing-import text-btn" data-action="import">Spielstand laden (V1 / V2)</button>
+    <p class="storage-warning" id="storage-notice" role="status" ${storageNotice?'':'hidden'}>${escapeHtml(storageNotice)}</p>
+    <p class="landing-note">Fiktive Ermittlung vor historischer Kulisse. Kein Vorwissen zur Verschwörung nötig.</p>
+  </section></main>`;
+  app.querySelector('[data-action="continue"]')?.addEventListener('click',continueGame);
+  app.querySelector('[data-action="new"]').addEventListener('click',confirmNewGame);
+  app.querySelector('[data-action="import"]').addEventListener('click',importSave);
+}
+function render() {
+  closeInspection(false);
+  if(screen==='landing'){renderLanding();return;}
+  const meta=ROOM_META[state.currentRoom];
+  const chapter=Math.max(0,ROOM_ORDER.indexOf(state.currentRoom));
+  app.innerHTML=`<div class="game-shell room-${escapeHtml(state.currentRoom)}">
+    <header class="topbar"><div class="objective-wrap"><span class="location-label">${escapeHtml(meta.title)}${chapter>0&&chapter<7?` · ${chapter} / 6`:''}</span><strong class="objective">${escapeHtml(meta.objective)}</strong></div>
+    <div class="top-actions"><button class="icon-btn hint-btn" data-action="hint" aria-label="Hinweise öffnen" ${!currentPuzzle()?'disabled':''}><span aria-hidden="true">?</span><span class="icon-label">Hinweis</span></button><button class="icon-btn" data-action="menu" aria-label="Menü öffnen"><span class="menu-lines" aria-hidden="true"></span><span class="icon-label">Menü</span></button></div></header>
+    <main class="world" id="world" tabindex="-1"></main>${renderInventory(state)}
+    <div id="inspection-root"></div><div id="toast-root" class="toast-root" aria-live="polite"></div>
+    <div class="storage-warning floating-warning" id="storage-notice" role="status" ${storageNotice?'':'hidden'}>${escapeHtml(storageNotice)}</div></div>`;
+  app.querySelector('[data-action="hint"]').addEventListener('click',showHint);
+  app.querySelector('[data-action="menu"]').addEventListener('click',showMenu);
+  app.querySelectorAll('[data-item]').forEach(button=>button.addEventListener('click',()=>inspectItem(button.dataset.item)));
+  renderRoom();
+}
+function renderRoom(focusStage=false) {
+  if(screen!=='game')return;
+  const world=app.querySelector('#world');if(!world)return;
+  if(state.currentRoom==='prolog'){renderProlog(world);return;}
+  if(state.currentRoom==='results'){renderResults(world);return;}
+  const base=Object.values(PUZZLES).find(p=>p.room===state.currentRoom);
+  if(!base)return;
+  const p=activeDefinition(state,base);
+  const hintButton=app.querySelector('[data-action="hint"]');if(hintButton)hintButton.disabled=isSolved(state,p.id);
+  if(isSolved(state,p.id)){
+    world.innerHTML=completedRoom(p.success,p.aftermath,p.nextLabel,p.next,p.reward?INVENTORY[p.reward].name:'');
+    world.querySelector('[data-next-room]').addEventListener('click',()=>goToRoom(p.next));
+    if(state.puzzleData[p.id]?.solutionShown){
+      const replay=document.createElement('button');replay.className='secondary-btn solution-replay';replay.textContent='Angewendeten Lösungsweg ansehen';replay.dataset.solutionReplay='';
+      world.querySelector('.transition-card').append(replay);replay.addEventListener('click',()=>openInspection('Angewendeter Lösungsweg',solutionTranscript(p)));
+    }
+    return;
+  }
+  if(p.id==='senateSignal')renderTimedRoom(world,p);
+  else renderOperation(world,p);
+  if(focusStage)world.querySelector('#stage-heading')?.focus({preventScroll:true});
+}
+function renderProlog(world) {
+  world.innerHTML=`<section class="scene prolog-scene"><article class="intercept-table"><div class="seal-mark" aria-hidden="true">C</div><p class="eyebrow dark">Abgefangen am Forum</p><h2>„Vor der Sitzung muss alles vorbereitet sein.“</h2><p>Der Absender fehlt. Ein Wachmann soll wissen, wer die Nachricht im Archiv abgeschrieben hat. Seine Beschreibung steht auf der Rückseite.</p><button class="primary-btn" data-prolog>Nachricht sichern und zum Forum</button></article>
+    <aside class="story-aside"><strong>Dein Auftrag</strong><span>Vergleiche die Quellen. Vertraue keinem einzelnen Merkmal. Bringe Beweise, nicht bloß einen Verdacht.</span><span>Antippen wählt aus. Erst „Ausführen“ setzt einen Auftrag um. Hinweise stehen jederzeit bereit.</span><label class="plain-toggle"><input type="checkbox" data-time ${state.timePressure?'checked':''}> Einen kurzen Zeitdruckmoment zulassen</label></aside></section>`;
+  world.querySelector('[data-prolog]').addEventListener('click',()=>goToRoom('forum'));
+  world.querySelector('[data-time]').addEventListener('change',e=>{state.timePressure=e.target.checked;persist();});
+}
+function renderOperation(world,p) {
+  const d=getPuzzleData(state,p),tabs=puzzleTabs(p);
+  d.tab=Math.min(Math.max(0,d.tab),tabs.length-1);
+  const reconstruct=p.id==='finalDispatch'&&!p.fields.every(f=>d.acceptedFields.includes(f.id));
+  if(reconstruct)d.tab=0;
+  const active=tabs[d.tab];
+  const pending=p.fields.filter(f=>!d.acceptedFields.includes(f.id)&&!String(d.fields[f.id]||'').trim()).length+p.groups.filter(g=>!d.selections[g.id]).length;
+  const canSubmit=reconstruct?p.fields.every(f=>String(d.fields[f.id]||'').trim()):allAnswered(p,d);
+  const label=reconstruct?'Merkmale wiederherstellen':({forumPass:'Nachricht anvertrauen',archiveRegister:'Register wiederherstellen',courierOrder:'Kurierauftrag ausführen',dossierInquiry:'Befund abgleichen',finalDispatch:'Beweistransport ausführen'})[p.id];
+  world.innerHTML=`<section class="scene ${sceneClass(p.room)} operation-scene"><div class="scene-architecture" aria-hidden="true"></div><div class="operation-wrap">
+    <header class="operation-heading"><div><p class="eyebrow">${escapeHtml(p.kicker)}</p><h1>${escapeHtml(p.title)}</h1><p>${escapeHtml(p.story)}</p></div><span class="chapter-seal" aria-hidden="true">${['','I','II','III','IV','V','VI'][ROOM_ORDER.indexOf(p.room)]}</span></header>
+    <div class="operation-layout"><div class="document-column">${paperSource(p,d)}<button class="document-inspect secondary-btn" data-source>Original groß ansehen</button></div>
+    <section class="operation-board" aria-label="Arbeitsfläche"><nav ${tabs.length===1?'hidden':''} class="station-tabs" aria-label="Stationen im Auftrag">${tabs.map((t,i)=>{
+      const done=t.fields?t.fields.every(f=>d.acceptedFields.includes(f.id)):d.acceptedGroups.includes(t.id);
+      const selected=t.fields?t.fields.every(f=>String(d.fields[f.id]||'').trim()):!!d.selections[t.id];
+      return `<button data-tab="${i}" class="station-tab ${d.tab===i?'active':''}" aria-current="${d.tab===i?'step':'false'}" ${reconstruct&&i>0?'disabled':''}>${escapeHtml(t.label)}<span class="station-marker" aria-hidden="true">${done?'✓':selected?'●':'·'}</span></button>`;
+    }).join('')}</nav>
+    <div class="operation-feedback" role="status" ${d.feedback?'':'hidden'}>${escapeHtml(d.feedback||'')}</div>
+    <div class="stage-body">${active.fields?fieldsPanel(p,d,active.fields):choiceGroup(state,p,d,active.group)}</div>
+    <footer class="operation-controls"><span>${reconstruct?'Drei Merkmale. Erst danach lässt sich die Person auswählen.':pending?`${pending} Angaben fehlen noch im Auftrag.`:'Alle Angaben sind vorgemerkt. Prüfe den vollständigen Auftrag.'}</span><div class="control-buttons">${tabs.length>1&&!reconstruct?`<button class="secondary-btn" data-next-tab>${d.tab<tabs.length-1?'Nächste Station':'Zur Übersicht'}</button>`:''}<button class="primary-btn" data-check ${canSubmit?'':'disabled'}>${escapeHtml(label)}</button></div></footer>
+    </section></div></div></section>`;
+  world.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{tickActivity();d.tab=Number(btn.dataset.tab);persist();renderRoom(true);}));
+  world.querySelector('[data-next-tab]')?.addEventListener('click',()=>{tickActivity();d.tab=(d.tab+1)%tabs.length;persist();renderRoom(true);});
+  world.querySelectorAll('[data-select]').forEach(btn=>btn.addEventListener('click',()=>{
+    tickActivity();d.selections[btn.dataset.group]=btn.dataset.select;d.feedback='Vorgemerkt. Der Auftrag ist noch nicht ausgeführt.';
+    if(d.tab<tabs.length-1)d.tab++;
+    sound('paper');persist();renderRoom(true);
+  }));
+  wireFields(world,p,d);
+  world.querySelector('[data-check]').addEventListener('click',()=>submitOperation(p,d,reconstruct));
+  world.querySelector('[data-source]').addEventListener('click',()=>openInspection(p.sourceTitle,paperSource(p,d)));
+}
+function sceneClass(room){return({forum:'forum-scene',archive:'archive-scene',messengers:'messenger-scene',files:'files-scene',senate:'senate-scene',final:'final-scene'})[room]||'';}
+function wireFields(world,p,d) {
+  world.querySelectorAll('[data-field]').forEach(input=>input.addEventListener('input',()=>{
+    d.fields[input.dataset.field]=input.value;persist();
+    const reconstruct=p.id==='finalDispatch'&&!p.fields.every(f=>d.acceptedFields.includes(f.id));
+    const btn=world.querySelector('[data-check]');
+    if(btn)btn.disabled=!(reconstruct?p.fields.every(f=>String(d.fields[f.id]||'').trim()):allAnswered(p,d));
+  }));
+  world.querySelector('[data-fields-form]')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const reconstruct=p.id==='finalDispatch'&&!p.fields.every(f=>d.acceptedFields.includes(f.id));
+    if(reconstruct||allAnswered(p,d))submitOperation(p,d,reconstruct);
+    else{
+      const tabs=puzzleTabs(p);const next=tabs.findIndex(t=>t.group&&!d.selections[t.id]);
+      if(next>=0){d.tab=next;persist();renderRoom(true);}else toast('Vervollständige noch die leeren Einträge.');
+    }
+  });
+}
+function submitOperation(p,d,reconstruct=false) {
+  tickActivity();
+  if(reconstruct){
+    if(!p.fields.every(f=>String(d.fields[f.id]||'').trim()))return;
+    for(const f of p.fields)checkField(state,p,d,f);
+    if(p.fields.every(f=>d.acceptedFields.includes(f.id))){d.tab=1;d.feedback='Die Merkmale sind rekonstruiert. Kombiniere jetzt alle vier Auftragsteile.';sound('unlock');}
+    else{d.feedback='Noch nicht alle Merkmale passen. Gesicherte Einträge bleiben erhalten.';sound('error');}
+    persist();renderRoom(true);return;
+  }
+  if(!allAnswered(p,d)){toast('Im Auftrag fehlen noch Angaben.');return;}
+  for(const f of p.fields)checkField(state,p,d,f);
+  for(const g of p.groups)checkGroup(state,p,d,g);
+  if(allAccepted(p,d)){finishPuzzle(state,p);persist();sound('unlock');render();return;}
+  const tabs=puzzleTabs(p);
+  d.tab=tabs.findIndex(t=>t.fields?!t.fields.every(f=>d.acceptedFields.includes(f.id)):!d.acceptedGroups.includes(t.id));
+  d.feedback=p.id==='dossierInquiry'?'Der Befund enthält noch einen Widerspruch. Eine Wörterbuchbedeutung muss hier auch zum beschriebenen Kontext passen.':'Der Auftrag widerspricht noch mindestens einer Quellenangabe. Gesicherte Stationen bleiben erhalten; prüfe die noch offenen.';
+  persist();sound('error');renderRoom(true);
+}
+function renderTimedRoom(world,p) {
+  const d=getPuzzleData(state,p),t=timerState(state,d);
+  if(!t.started){
+    world.innerHTML=`<section class="scene senate-scene"><div class="senate-depth" aria-hidden="true"></div><article class="timing-brief"><p class="eyebrow">${escapeHtml(p.kicker)}</p><h1>${escapeHtml(p.title)}</h1><p>${escapeHtml(p.story)}</p><div class="timing-seal" aria-hidden="true">${p.timedSeconds}</div><p>Drei kurze Anweisungen. ${p.timedSeconds} Sekunden aktives Zeitfenster. Ein Fehlversuch kostet drei Sekunden; der Stand bleibt erhalten.</p><p>Menü, Hinweise und ein inaktiver Tab pausieren die Uhr. Nach Ablauf kannst du ohne Zeitlimit weiterarbeiten.</p><div class="landing-actions"><button class="primary-btn" data-start-timed>${state.timePressure?'Zeitfenster öffnen':'Ohne Zeitdruck beginnen'}</button>${state.timePressure?'<button class="secondary-btn" data-start-untimed>Ohne Zeitdruck beginnen</button>':''}</div></article></section>`;
+    const begin=untimed=>{t.started=true;t.disabled=untimed||!state.timePressure;t.running=!t.disabled;persist();renderRoom(true);};
+    world.querySelector('[data-start-timed]').addEventListener('click',()=>begin(false));
+    world.querySelector('[data-start-untimed]')?.addEventListener('click',()=>begin(true));
+    return;
+  }
+  const g=p.groups.find(g=>!d.acceptedGroups.includes(g.id));
+  if(!g){finishPuzzle(state,p);persist();render();return;}
+  world.innerHTML=`<section class="scene senate-scene operation-scene"><div class="senate-depth" aria-hidden="true"></div><div class="timed-wrap"><header class="timed-header"><div><p class="eyebrow">Einsatztafel · ${d.acceptedGroups.length+1} von ${p.groups.length}</p><h1>Die Wache kommt zurück.</h1></div><div class="timer-display" data-timer aria-live="off"></div></header>
+    <div class="operation-board timed-board">${choiceGroup(state,p,d,g)}<p class="reading-key">NON = nicht. Ein Fehlversuch stoppt die Mission nicht.</p><div class="operation-feedback" role="status">${escapeHtml(d.feedback||'Wähle die vollständige Handlung, nicht nur ein passendes Teilstück.')}</div><footer class="operation-controls"><button class="secondary-btn" data-disable-time ${t.disabled||t.expired?'disabled':''}>Zeitdruck ausschalten</button><button class="primary-btn" data-execute ${d.selections[g.id]?'':'disabled'}>Anweisung ausführen</button></footer></div></div></section>`;
+  world.querySelectorAll('[data-select]').forEach(btn=>btn.addEventListener('click',()=>{tickActivity();d.selections[g.id]=btn.dataset.select;sound('paper');persist();renderRoom();}));
+  world.querySelector('[data-disable-time]').addEventListener('click',()=>{tickActivity();t.disabled=true;t.running=false;d.feedback='Der Einsatz läuft ohne Zeitlimit weiter. Das zählt nicht als Vokabelfehler.';persist();renderRoom();});
+  world.querySelector('[data-execute]').addEventListener('click',()=>{
+    tickActivity();const ok=checkGroup(state,p,d,g,t.running&&!t.expired&&!t.disabled);
+    if(ok){d.feedback='Diese Anweisung ist ausgeführt. Die nächste Tafel liegt bereit.';sound('tap');}
+    else{const expired=penalizeTimer(t);d.feedback=expired?'Die Wache zieht vorbei. Prüfe die Anweisung jetzt ohne Zeitlimit.':'Die Handlung widerspricht dem Auftrag. Prüfe Umfang, Empfänger und Tätigkeit noch einmal.';sound('error');}
+    if(allAccepted(p,d)){t.running=false;finishPuzzle(state,p);persist();sound('unlock');render();}else{persist();renderRoom(true);}
+  });
+  updateTimerDisplay();
+}
+function updateTimerDisplay(){
+  const target=app.querySelector('[data-timer]');if(!target)return;
+  const d=state.puzzleData.senateSignal;const t=d?.timer;if(!t)return;
+  target.textContent=t.expired?'Wache vorbei · ohne Zeitlimit':t.disabled?'Ohne Zeitlimit':`${Math.ceil(t.remainingMs/1000)} s`;
+  const disableButton=app.querySelector('[data-disable-time]');if(disableButton)disableButton.disabled=t.disabled||t.expired;
+  target.classList.toggle('timer-low',!t.expired&&!t.disabled&&t.remainingMs<=15000);
+}
+function goToRoom(id) {
+  tickActivity();closeInspection(false);
+  const next=ROOM_ORDER.indexOf(id),current=ROOM_ORDER.indexOf(state.currentRoom);
+  if(next!==current+1)return;
+  const base=Object.values(PUZZLES).find(p=>p.room===state.currentRoom);
+  if(base&&!isSolved(state,base.id))return;
+  state.currentRoom=id;state.selectedInventoryItem=null;
+  if(id==='results')state.completed=true;
+  persist();sound('tap');render();app.querySelector('#world')?.focus({preventScroll:true});
+}
+
+function showHint() {
+  const p=currentPuzzle();if(!p)return;
+  const d=getPuzzleData(state,p),level=state.hintsUsed[p.id]||0;
+  const content=`<div class="hint-panel"><p class="eyebrow dark">${escapeHtml(p.title)}</p><h2>Hinweissiegel</h2><p>Hinweise helfen beim Weiterkommen. Unterstützte Antworten bleiben in den Lernspuren als solche erkennbar.</p>
+    ${level?`<div class="revealed-hints">${p.hints.slice(0,level).map((h,i)=>`<article><strong>Hinweis ${i+1}</strong><p>${escapeHtml(h)}</p></article>`).join('')}</div>`:'<p>Noch kein Hinweis für diesen Abschnitt verwendet.</p>'}
+    ${level===3&&p.id==='finalDispatch'?`<p>Die fehlenden Personenmerkmale sind: ${p.fields.map(f=>escapeHtml(VOCAB_BY_ID[f.word].latin.toUpperCase())).join(' · ')}. Das dritte Merkmal wird verneint.</p>`:''}
+    <div class="hint-actions">${level<3?`<button class="primary-btn" data-reveal-hint>Hinweis ${level+1} aufdecken</button>`:'<button class="danger-quiet" data-show-solution>Lösung zeigen und Handlung ausführen</button>'}<button class="secondary-btn" data-close>Zurück zum Schauplatz</button></div></div>`;
+  openInspection('Hinweise',content,root=>{
+    root.querySelector('[data-reveal-hint]')?.addEventListener('click',()=>{revealNextHint(state,p,d);persist();showHint();});
+    root.querySelector('[data-show-solution]')?.addEventListener('click',()=>{
+      revealSolution(state,p,d);persist();closeInspection(false);sound('unlock');render();
+      app.querySelector('[data-next-room]')?.focus({preventScroll:true});
+      openInspection('Angewendeter Lösungsweg',solutionTranscript(p));
+    });
+  });
+}
+function solutionTranscript(p) {
+  const entries=[...p.fields.map(f=>({title:f.prompt,answer:f.direction==='g2l'?VOCAB_BY_ID[f.word].latin:(f.accepted?.[0]||VOCAB_BY_ID[f.word].german[0])})),...p.groups.map(g=>{
+    const chosen=g.options.find(o=>o.id===g.correct);return {title:g.title,answer:`${chosen.title}: ${chosen.text}`};
+  })];
+  return `<div class="solution-transcript"><p class="eyebrow dark">Mit Hilfe ausgeführt</p><h2>${escapeHtml(p.title)}</h2><p>Die Handlung geht weiter. Diese Lösungsanzeige wird nicht als selbstständige richtige Antwort gezählt.</p>${entries.map(e=>`<article><strong>${escapeHtml(e.title)}</strong><p>${escapeHtml(e.answer)}</p></article>`).join('')}<button class="primary-btn" data-close>Zurück zur gesicherten Spur</button></div>`;
+}
+function inspectItem(id) {
+  const item=INVENTORY[id];if(!item||!state.inventory.includes(id))return;
+  sound('paper');
+  openInspection(item.name,`<div class="object-inspection"><div class="large-object-token" aria-hidden="true">${escapeHtml(item.symbol)}</div><p>${escapeHtml(item.description)}</p><button class="primary-btn" data-close>Zurück zum Schauplatz</button></div>`);
+}
+function showMenu() {
+  openInspection('Menü',`<div class="menu-panel"><div class="menu-stat"><span>Ort</span><strong>${escapeHtml(ROOM_META[state.currentRoom].title)}</strong></div><div class="menu-stat"><span>Aktive Spielzeit</span><strong>${formatTime(state.accumulatedSeconds)}</strong></div>
+    <label class="plain-toggle"><input type="checkbox" data-sound ${state.soundEnabled?'checked':''}> Sound</label>
+    <label class="plain-toggle"><input type="checkbox" data-pressure ${state.timePressure?'checked':''}> Zeitdruck zulassen</label>
+    <p>Menü, Hinweise und ein inaktiver Browser-Tab pausieren die Zeit. Eine abgelaufene Einsatzzeit startet dadurch nicht neu.</p>
+    <button class="primary-btn" data-close>Weiterspielen</button><div class="menu-file-actions"><button class="secondary-btn" data-export>Spielstand sichern</button><button class="secondary-btn" data-import>Spielstand laden</button></div>
+    <button class="secondary-btn" data-home>Speichern und zum Titel</button><button class="danger-quiet" data-new>Neues Spiel starten</button>
+    ${state.legacy?'<p>V1-Historie ist erhalten. Ihre früheren Prüfungsarten lassen sich nicht zuverlässig rekonstruieren.</p>':''}</div>`,root=>{
+    root.querySelector('[data-sound]').addEventListener('change',e=>{state.soundEnabled=e.target.checked;persist();if(state.soundEnabled)sound('tap');});
+    root.querySelector('[data-pressure]').addEventListener('change',e=>{
+      state.timePressure=e.target.checked;const t=state.puzzleData.senateSignal?.timer;
+      if(t&&!t.expired){t.disabled=!state.timePressure;t.running=t.started&&state.timePressure;}
+      persist();
+    });
+    root.querySelector('[data-export]').addEventListener('click',()=>exportJSON(state,'senat-spielstand-v2.json'));
+    root.querySelector('[data-import]').addEventListener('click',importSave);
+    root.querySelector('[data-home]').addEventListener('click',()=>{persist();closeInspection(false);screen='landing';render();});
+    root.querySelector('[data-new]').addEventListener('click',confirmNewGame);
+  });
+}
+function exportJSON(value,filename) {
+  persist();const blob=new Blob([JSON.stringify(value,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;
+  document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+  toast('Die Sicherungsdatei wurde zum Speichern bereitgestellt.');
+}
+function importSave() {
+  const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.setAttribute('aria-label','Spielstanddatei auswählen');
+  input.addEventListener('change',async()=>{
+    const file=input.files?.[0];if(!file)return;
+    try{
+      if(file.size>2*1024*1024)throw new Error('Die Datei ist größer als 2 MB.');
+      const candidate=validateState(JSON.parse(await file.text()));
+      if(state.started&&!window.confirm('Aktuellen V2-Stand durch diese Sicherung ersetzen?'))return;
+      closeInspection(false);state=candidate;screen='landing';lastClock=performance.now();persist();render();
+    }catch(e){const message=`Spielstand nicht geladen: ${e.message}`;if(screen==='landing'){const box=app.querySelector('#storage-notice');box.hidden=false;box.textContent=message;}else toast(message);}
+  });
+  input.click();
+}
+
+function renderResults(world) {
+  const groups=summarizeDiagnostics(state.diagnostics);
+  const labels={[STATUS.SAFE]:'Sicher',[STATUS.UNSURE]:'Unsicher',[STATUS.NOT_MASTERED]:'Noch üben',[STATUS.UNTESTED]:'Noch nicht geprüft'};
+  const timed=state.puzzleData.senateSignal?.timer;
+  world.innerHTML=`<section class="results-scene"><div class="mission-banner"><p class="eyebrow">Senat · Beweise gesichert</p><h1>Mission erfolgreich</h1><p>Die Verschwörung wurde rechtzeitig aufgedeckt. Du hast nicht dem bekanntesten Siegel vertraut, sondern dem sprachlich passenden Auftrag.</p></div>
+    <div class="analysis-panel"><h2>Lernspuren · Version 2</h2><div class="analysis-summary">${Object.values(STATUS).map(s=>`<div><strong>${groups[s].length}</strong><span>${labels[s]}</span></div>`).join('')}</div>
+    <p class="diagnostic-note"><strong>„Sicher“ verlangt mehr als eine Auswahl:</strong> selbstständigen aktiven Abruf in beiden Richtungen, in verschiedenen Kontexten, plus eine gelungene Anwendung. Korrigierte Sofortwiederholungen und Hilfen ersetzen diese Nachweise nicht. „Unsicher“ kann auch bedeuten, dass noch ein Nachweis fehlt – nicht, dass eine Antwort falsch war. Diese Einschätzung ist keine standardisierte Schulnote.</p>
+    <div class="mission-metrics"><span>Aktive Spielzeit: <strong>${formatTime(state.accumulatedSeconds)}</strong></span><span>Zeitfenster: <strong>${timed?(timed.expired?'abgelaufen; ohne Limit fortgesetzt':timed.disabled?'ohne Zeitdruck':'innerhalb des Fensters abgeschlossen'):'nicht als V2 gespielt'}</strong></span></div>
+    <div class="status-columns">${Object.values(STATUS).map((s,i)=>`<section class="status-column ${['safe','unsure','practice','untested'][i]}"><h3>${labels[s]}</h3><div class="status-word-list">${groups[s].length?groups[s].map(w=>`<button data-stats="${w.id}" aria-label="Lernspuren zu ${w.latin}">${escapeHtml(w.latin)}</button>`).join(''):'<span>Keine</span>'}</div></section>`).join('')}</div>
+    <p class="diagnostic-note">Tippe ein Wort an: Abrufart, Richtung, Hinweise, gemeinsame Aufgabenzeiten und Fehler unter Zeitdruck. Ein nicht eindeutig zuordenbarer Fehler in einem mehrteiligen Auftrag wird als „unklar“ geführt, nicht jedem Wort als falsch zugeschrieben.</p>
+    ${state.legacy?'<p class="migration-note">V1-Historie erhalten. Die Übersicht zählt ausschließlich V2-Nachweise; Details eines Wortes zeigen die alten Werte zusätzlich.</p>':''}
+    <div class="results-actions"><button class="primary-btn" data-practice>${state.practice?'Training fortsetzen':'Unsichere Vokabeln trainieren'}</button><button class="secondary-btn" data-analysis-export>Lernspuren sichern</button><button class="secondary-btn" data-restart>Neues Spiel</button></div></div></section>`;
+  world.querySelectorAll('[data-stats]').forEach(btn=>btn.addEventListener('click',()=>showWordStats(btn.dataset.stats)));
+  world.querySelector('[data-practice]').addEventListener('click',startPracticeMode);
+  world.querySelector('[data-analysis-export]').addEventListener('click',()=>exportJSON({version:2,exportedAt:new Date().toISOString(),diagnostics:state.diagnostics,legacy:state.legacy},'senat-lernspuren-v2.json'));
+  world.querySelector('[data-restart]').addEventListener('click',confirmNewGame);
+}
+function showWordStats(id) {
+  const w=VOCAB_BY_ID[id],s=state.diagnostics[id];if(!w||!s)return;
+  const avg=s.encounters?(s.totalResponseMs/s.encounters/1000).toFixed(1):'—';
+  const legacy=state.legacy?.diagnostics?.[id];
+  const row=(label,b)=>`<div class="detail-stat"><strong>${label}</strong><span>${b.correct||0} richtig · ${b.incorrect||0} falsch · ${b.unresolved||0} unklar</span></div>`;
+  openInspection(`Lernspuren: ${w.latin}`,`<div class="stats-detail"><p class="eyebrow dark">${escapeHtml(s.status)}</p><h2>${escapeHtml(w.latin)}</h2><p>${s.encounters} gewertete Begegnungen · ${s.unaidedCorrect} richtig ohne Hinweis · ${s.hints} Hinweisstufen · ${s.exposures} Lösungsanzeigen</p>
+    ${row('Latein → Deutsch',s.directions.l2g)}${row('Deutsch → Latein',s.directions.g2l)}${row('Aktiver Abruf',s.methods.active)}${row('Kontextanwendung',s.methods.application)}${row('Wiedererkennen',s.methods.recognition)}
+    <p>Mittlere sichtbare Aufgabenzeit: ${avg} s. Mehrteilige Vorlagen teilen sich eine Bearbeitungszeit; dies ist keine isolierte Reaktionszeit pro Wort.</p><p>${s.timedErrors} eindeutig zugeordnete Fehler und ${s.timedUnresolved||0} unklare Einzelwortbefunde unter Zeitdruck.</p>
+    <h3>Letzte Begegnungen</h3><div class="event-list">${s.events.slice(-6).reverse().map(e=>`<article><strong>${escapeHtml(PUZZLES[e.context]?.room?ROOM_META[PUZZLES[e.context].room].title:'Nachtraining')}</strong><span>${e.direction==='g2l'?'Deutsch → Latein':'Latein → Deutsch'} · ${{active:'aktiver Abruf',application:'Anwendung',recognition:'Wiedererkennen'}[e.method]}</span><span>${{correct:'richtig',incorrect:'nicht passend',unresolved:'Einzelwortbefund unklar',exposure:'Lösung gezeigt'}[e.outcome]}${e.usedHint?' · mit Hilfe':''}${e.retry?' · Wiederholungsversuch':''}${e.timed?' · unter Zeitdruck':''}</span></article>`).join('')||'<p>Noch kein V2-Nachweis.</p>'}</div>
+    ${legacy?`<aside class="legacy-note"><h3>V1-Historie · nicht neu bewertet</h3><p>${Number(legacy.encounters)||0} Begegnungen, ${Number(legacy.correct)||0} richtige und ${Number(legacy.incorrect)||0} falsche Antworten. Der frühere Antworttyp ist nicht sicher rekonstruierbar.</p></aside>`:''}</div>`);
+}
+function startPracticeMode() {
+  if(!state.practice)state.practice=buildPractice(state);
+  if(!state.practice.items.length){state.practice=null;toast('Alle Wörter haben bereits die vorgesehenen sicheren Nachweise.');return;}
+  persist();openPractice();
+}
+function openPractice() {
+  const plan=state.practice;if(!plan)return;
+  const item=plan.items[plan.index];
+  if(!item){state.practice=null;persist();closeInspection(false);renderRoom();toast('Diese Trainingsrunde ist abgeschlossen. Die Lernspuren sind aktualisiert.');return;}
+  const w=VOCAB_BY_ID[item.id];
+  if(!w){plan.index++;openPractice();return;}
+  const answer=item.direction==='g2l'?w.latin:w.german[0];
+  openInspection('Gezieltes Nachtraining',`<div class="practice-card"><p class="eyebrow dark">${plan.index+1} von ${plan.items.length} · freiwillige Runde</p><p>${item.direction==='g2l'?'Rekonstruiere das lateinische Stichwort.':'Halte eine passende deutsche Bedeutung fest.'}</p><h2>${escapeHtml(item.direction==='g2l'?w.german[0]:w.latin)}</h2>
+    <form data-practice-form><label for="practice-answer">${item.direction==='g2l'?'Latein':'Deutsch'}<input id="practice-answer" data-practice-input name="answer" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" value="${escapeHtml(item.answer||'')}" ${item.done?'readonly':''}></label><button class="primary-btn" ${item.done?'disabled':''}>Eintrag prüfen</button></form>
+    <p class="practice-feedback" role="status">${escapeHtml(item.feedback||'')}</p>${item.helped?`<p class="shown-answer">Lösung: <strong>${escapeHtml(answer)}</strong>. Weitere Antworten auf diesen Eintrag gelten als unterstützt.</p>`:''}
+    <div class="practice-actions">${!item.done?'<button class="secondary-btn" data-practice-help>Antwort zeigen</button><button class="secondary-btn" data-practice-skip>Für später lassen</button>':'<button class="primary-btn" data-practice-next>Nächster Eintrag</button>'}<button class="secondary-btn" data-close>Zur Auswertung</button></div></div>`,root=>{
+    root.querySelector('[data-practice-input]').addEventListener('input',e=>{item.answer=e.target.value;persist();});
+    root.querySelector('[data-practice-form]').addEventListener('submit',e=>{
+      e.preventDefault();if(item.done||!String(item.answer||'').trim())return;
+      tickActivity();const ok=isCorrectAnswer(item.id,item.direction,item.answer);
+      recordAttempt(state.diagnostics,item.id,{context:`practice-${plan.run}`,item:`${item.id}-${plan.index}`,direction:item.direction,method:'active',correct:ok,usedHint:item.helped,retry:item.attempts>0,responseMs:item.responseMs});
+      item.attempts++;item.responseMs=0;item.done=ok;item.feedback=ok?'Der Eintrag ist gesichert.':'Noch nicht passend. Versuche es erneut oder decke die Antwort ausdrücklich auf.';
+      persist();sound(ok?'tap':'error');openPractice();
+    });
+    root.querySelector('[data-practice-help]')?.addEventListener('click',()=>{
+      if(!item.helped){item.helped=true;markHint(state.diagnostics,[item.id]);recordAttempt(state.diagnostics,item.id,{context:`practice-${plan.run}`,item:`${item.id}-${plan.index}`,direction:item.direction,method:'active',outcome:'exposure',usedHint:true});}
+      persist();openPractice();
+    });
+    const next=()=>{plan.index++;persist();openPractice();};
+    root.querySelector('[data-practice-next]')?.addEventListener('click',next);
+    root.querySelector('[data-practice-skip]')?.addEventListener('click',next);
+  },'practice');
+}
+
+function openInspection(title,content,setup,kind='inspection') {
+  tickActivity();
+  const oldFocus=modalOpen?restoreFocus:document.activeElement;
+  closeInspection(false);restoreFocus=oldFocus;
+  const root=app.querySelector('#inspection-root');if(!root)return;
+  modalOpen=true;modalKind=kind;
+  if(state.started)saveState(state);
+  root.innerHTML=`<div class="inspection-overlay" role="dialog" aria-modal="true" aria-labelledby="inspection-title"><div class="inspection-backdrop" data-backdrop></div><section class="inspection-card"><header><h1 id="inspection-title">${escapeHtml(title)}</h1><button class="close-btn" data-close aria-label="Schließen">×</button></header><div class="inspection-content">${content}</div></section></div>`;
+  for(const el of app.querySelectorAll('.topbar,.world,.inventory-bar')){el.inert=true;el.setAttribute('aria-hidden','true');}
+  const overlay=root.querySelector('.inspection-overlay');
+  root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeInspection()));
+  root.querySelector('[data-backdrop]').addEventListener('click',()=>closeInspection());
+  const keyHandler=e=>{
+    if(e.key==='Escape'){e.preventDefault();closeInspection();return;}
+    if(e.key!=='Tab')return;
+    const focusables=[...overlay.querySelectorAll('button:not([disabled]),input:not([disabled]),a[href],[tabindex="0"]')].filter(el=>el.getClientRects().length);
+    const first=focusables[0],last=focusables.at(-1);if(!first)return;
+    if(e.shiftKey&&(document.activeElement===first||!overlay.contains(document.activeElement))){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&(document.activeElement===last||!overlay.contains(document.activeElement))){e.preventDefault();first.focus();}
+  };
+  document.addEventListener('keydown',keyHandler);inspectionCleanup=()=>document.removeEventListener('keydown',keyHandler);
+  setup?.(overlay);requestAnimationFrame(()=>overlay.classList.add('open'));
+  root.querySelector('.close-btn')?.focus({preventScroll:true});
+}
+function closeInspection(restore=true) {
+  if(inspectionCleanup)inspectionCleanup();inspectionCleanup=null;
+  const wasKind=modalKind;
+  modalOpen=false;modalKind='';lastClock=performance.now();
+  const root=app.querySelector('#inspection-root');if(root)root.innerHTML='';
+  for(const el of app.querySelectorAll('.topbar,.world,.inventory-bar')){el.inert=false;el.removeAttribute('aria-hidden');}
+  if(restore&&restoreFocus?.isConnected)restoreFocus.focus({preventScroll:true});
+  if(restore&&wasKind==='practice'){saveState(state);renderRoom();}
+}
+function toast(message) {
+  const root=app.querySelector('#toast-root');if(!root)return;
+  clearTimeout(toastTimeout);root.innerHTML=`<div class="toast">${escapeHtml(message)}</div>`;
+  toastTimeout=setTimeout(()=>{if(root.isConnected)root.innerHTML='';},4200);
+}
+window.addEventListener('pagehide',()=>{tickActivity();if(state.started)saveState(state);});
+window.addEventListener('beforeunload',()=>{tickActivity();if(state.started)saveState(state);});
+document.addEventListener('visibilitychange',()=>{tickActivity();lastClock=performance.now();if(state.started)saveState(state);});
+window.setInterval(()=>{tickActivity();if(screen==='game'&&state.started&&performance.now()-lastAutoSave>=1000){lastAutoSave=performance.now();saveState(state);}},250);
+render();
+
+})();</script></body></html>
